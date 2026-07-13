@@ -1,0 +1,52 @@
+.qa-page { padding: 28px; max-width: 900px; margin: 0 auto; background: #0f1117; min-height: 100vh; }
+.qa-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; flex-wrap: wrap; gap: 16px; }
+.qa-title { color: #f1f5f9; font-size: 22px; font-weight: 800; margin: 0 0 4px; }
+.qa-sub { color: #6b7280; font-size: 13px; margin: 0; }
+.qa-filters { display: flex; gap: 8px; flex-wrap: wrap; }
+.qa-filter-btn { background: #1a1f2e; border: 1px solid #2a3042; color: #94a3b8; padding: 6px 14px; border-radius: 20px; font-size: 12px; cursor: pointer; transition: all .2s; }
+.qa-filter-btn:hover { border-color: #4f46e5; color: #e2e8f0; }
+.qa-filter-active { border-color: #4f46e5 !important; color: #818cf8 !important; background: #1e1b4b !important; }
+.qa-filter-urgent { }
+
+/* Cards */
+.qa-list { display: flex; flex-direction: column; gap: 14px; }
+.qa-card { background: #1a1f2e; border: 1px solid #2a3042; border-radius: 12px; padding: 18px; transition: border-color .2s; }
+.qa-card-urgent { border-color: #f59e0b88; background: #1c1508; }
+.qa-card-answered { opacity: .75; }
+.qa-card-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; flex-wrap: wrap; gap: 8px; }
+.qa-meta { display: flex; align-items: center; gap: 10px; }
+.qa-avatar { width: 34px; height: 34px; border-radius: 50%; background: #4f46e5; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; flex-shrink: 0; }
+.qa-student { display: block; color: #e2e8f0; font-size: 13px; font-weight: 600; }
+.qa-context { font-size: 11px; color: #6b7280; }
+.qa-context em { font-style: normal; color: #818cf8; }
+.qa-badges { display: flex; align-items: center; gap: 8px; }
+.qa-badge { font-size: 11px; padding: 2px 8px; border-radius: 20px; font-weight: 600; }
+.qa-badge-urgent { background: #78350f; color: #fcd34d; }
+.qa-badge-pending { background: #1e3a5f; color: #93c5fd; }
+.qa-badge-done { background: #064e3b; color: #6ee7b7; }
+.qa-age { font-size: 11px; color: #475569; }
+.qa-question { color: #cbd5e1; font-size: 14px; line-height: 1.6; margin-bottom: 12px; white-space: pre-wrap; }
+.qa-answer-block { background: #0a1628; border-left: 3px solid #34d399; padding: 10px 14px; border-radius: 0 8px 8px 0; margin-bottom: 12px; }
+.qa-answer-by { font-size: 11px; color: #34d399; font-weight: 600; }
+.qa-answer-text { color: #94a3b8; font-size: 13px; margin: 4px 0 0; line-height: 1.5; white-space: pre-wrap; }
+.qa-reply-form { display: flex; flex-direction: column; gap: 8px; }
+.qa-textarea { background: #0f1117; border: 1px solid #2a3042; color: #e2e8f0; border-radius: 8px; padding: 10px 12px; font-size: 13px; resize: vertical; font-family: inherit; }
+.qa-textarea:focus { outline: none; border-color: #4f46e5; }
+.qa-reply-actions { display: flex; gap: 8px; justify-content: flex-end; }
+.qa-actions { }
+.qa-btn { padding: 7px 16px; border-radius: 8px; border: none; cursor: pointer; font-size: 12px; font-weight: 600; background: #2a3042; color: #94a3b8; transition: background .2s; }
+.qa-btn:hover { background: #374151; color: #e2e8f0; }
+.qa-btn-primary { background: #4f46e5; color: #fff; }
+.qa-btn-primary:hover:not(:disabled) { background: #4338ca; }
+.qa-btn-primary:disabled { opacity: .5; cursor: not-allowed; }
+.qa-btn-reply { background: none; border: 1px solid #2a3042; color: #818cf8; }
+.qa-btn-reply:hover { background: #1e1b4b; border-color: #4f46e5; }
+
+/* Skeleton */
+.qa-sk-list { display: flex; flex-direction: column; gap: 14px; }
+.qa-sk-card { background: #1a1f2e; border-radius: 12px; padding: 18px; }
+.qa-sk-top { height: 34px; background: #2a3042; border-radius: 8px; width: 60%; margin-bottom: 14px; animation: pulse 1.5s infinite; }
+.qa-sk-body { height: 52px; background: #2a3042; border-radius: 8px; animation: pulse 1.5s infinite; }
+.qa-empty { text-align: center; padding: 60px; color: #6b7280; }
+.qa-empty-icon { font-size: 36px; display: block; margin-bottom: 8px; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }

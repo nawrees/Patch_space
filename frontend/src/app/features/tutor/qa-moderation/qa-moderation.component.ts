@@ -1,0 +1,87 @@
+import { Component, OnInit } from '@angular/core';
+import { ApiService } from '../../../core/services/api.service';
+
+@Component({
+  selector: 'app-qa-moderation',
+  templateUrl: './qa-moderation.component.html',
+  styleUrls: ['./qa-moderation.component.css'],
+})
+export class QaModerationComponent implements OnInit {
+  all: any[] = [];
+  filtered: any[] = [];
+  loading = true;
+  filter: 'all' | 'urgent' | 'pending' | 'answered' = 'all';
+  activeReply: string | null = null;
+  replyText = '';
+  submitting = false;
+
+  get urgentCount() { return this.all.filter(q => q.urgency === 'urgent').length; }
+  get pendingCount() { return this.all.filter(q => q.urgency === 'pending').length; }
+
+  constructor(private api: ApiService) {}
+
+  ngOnInit() { this.loadQuestions(); }
+
+  loadQuestions() {
+    this.loading = true;
+    this.api.getAllQuestions().subscribe({
+      next: r => {
+        this.all = r.questions ?? [];
+        this.applyFilter();
+        this.loading = false;
+      },
+      error: () => { this.loading = false; },
+    });
+  }
+
+  setFilter(f: typeof this.filter) {
+    this.filter = f;
+    this.applyFilter();
+  }
+
+  applyFilter() {
+    this.filtered = this.filter === 'all'
+      ? this.all
+      : this.all.filter(q => q.urgency === this.filter);
+  }
+
+  startReply(id: string, existing: string | null) {
+    this.activeReply = id;
+    this.replyText = existing ?? '';
+  }
+
+  cancelReply() {
+    this.activeReply = null;
+    this.replyText = '';
+  }
+
+  submitAnswer(id: string) {
+    if (!this.replyText.trim()) return;
+    this.submitting = true;
+    this.api.answerQuestion(id, this.replyText.trim()).subscribe({
+      next: r => {
+        const idx = this.all.findIndex(q => q.id === id);
+        if (idx !== -1) this.all[idx] = { ...r.question, urgency: 'answered' };
+        this.applyFilter();
+        this.activeReply = null;
+        this.replyText = '';
+        this.submitting = false;
+      },
+      error: () => { this.submitting = false; },
+    });
+  }
+
+  initial(name: string): string {
+    return name ? name.trim()[0].toUpperCase() : '?';
+  }
+
+  timeAgo(iso: string): string {
+    const diff = Date.now() - new Date(iso).getTime();
+    const m = Math.floor(diff / 60000);
+    if (m < 1) return 'just now';
+    if (m < 60) return `${m}m ago`;
+    const h = Math.floor(m / 60);
+    if (h < 24) return `${h}h ago`;
+    return `${Math.floor(h / 24)}d ago`;
+  }
+}

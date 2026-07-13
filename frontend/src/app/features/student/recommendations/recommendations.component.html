@@ -1,0 +1,48 @@
+    <div class="rec-wrap">
+      <div class="rec-header">
+        <span class="rec-title">✨ Recommended for You</span>
+        <button class="rec-refresh" (click)="load()" title="Refresh">⟳</button>
+      </div>
+
+      <div *ngIf="loading" class="rec-list">
+        <div *ngFor="let i of [1,2,3]" class="rec-card rec-sk">
+          <div class="rec-sk-img"></div>
+          <div class="rec-sk-lines">
+            <div class="rec-sk-line rec-sk-s"></div>
+            <div class="rec-sk-line"></div>
+            <div class="rec-sk-line rec-sk-m"></div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="!loading && items.length === 0" class="rec-empty">
+        No recommendations yet — keep learning to unlock personalised suggestions!
+      </div>
+
+      <div *ngIf="!loading && items.length > 0" class="rec-list">
+        <div *ngFor="let item of items" class="rec-card" (click)="go(item)">
+          <div class="rec-thumb"
+               [style.backgroundImage]="item.courseThumbnail ? 'url('+item.courseThumbnail+')' : 'none'">
+            <span *ngIf="!item.courseThumbnail" class="rec-thumb-ph">📚</span>
+            <span class="rec-priority"
+                  [class.rec-p-high]="item.priority === 'high'"
+                  [class.rec-p-med]="item.priority === 'medium'"
+                  [class.rec-p-low]="item.priority === 'low'">
+              {{ item.priority === 'high' ? '🔥' : item.priority === 'medium' ? '⚡' : '🌱' }}
+            </span>
+          </div>
+          <div class="rec-body">
+            <span class="rec-type" [class.rec-type-review]="item.type === 'review'"
+                                   [class.rec-type-new]="item.type === 'new_course'">
+              {{ item.type === 'next_lesson' ? 'Continue' : item.type === 'review' ? 'Review' : 'New Course' }}
+            </span>
+            <p class="rec-course">{{ item.courseTitle }}</p>
+            <p *ngIf="item.lessonTitle" class="rec-lesson">{{ item.lessonTitle }}</p>
+            <p class="rec-reason">{{ item.reason }}</p>
+            <div *ngIf="item.completionPct !== null && item.type !== 'new_course'" class="rec-bar">
+              <div class="rec-bar-fill" [style.width.%]="item.completionPct"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>

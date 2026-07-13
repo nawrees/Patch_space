@@ -1,0 +1,94 @@
+    <div class="sd-page">
+      <!-- Hero welcome -->
+      <div class="sd-hero">
+        <div class="sd-hero-left">
+          <span class="sd-greeting">Welcome back 👋</span>
+          <h1 class="sd-name">{{ currentUser?.profile?.full_name || 'Student' }}</h1>
+          <p class="sd-sub">Keep the momentum going — consistency beats intensity.</p>
+        </div>
+        <div class="sd-hero-stats">
+          <div class="sd-hs">
+            <span class="sd-hs-val">{{ enrollments.length }}</span>
+            <span class="sd-hs-lbl">Courses</span>
+          </div>
+          <div class="sd-hs">
+            <span class="sd-hs-val">{{ totalCompleted }}</span>
+            <span class="sd-hs-lbl">Lessons Done</span>
+          </div>
+          <div class="sd-hs">
+            <span class="sd-hs-val">{{ overallPct }}%</span>
+            <span class="sd-hs-lbl">Overall</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main grid -->
+      <div class="sd-grid">
+        <!-- Left column -->
+        <div class="sd-col-main">
+          <!-- Continue Learning -->
+          <section class="sd-section">
+            <h2 class="sd-section-title">Pick up where you left off</h2>
+            <app-continue-learning></app-continue-learning>
+          </section>
+
+          <!-- Enrolled courses -->
+          <section class="sd-section">
+            <div class="sd-section-head">
+              <h2 class="sd-section-title">My Courses</h2>
+              <a routerLink="/student/courses" class="sd-link">Browse all →</a>
+            </div>
+
+            <div *ngIf="loading" class="sd-sk-grid">
+              <div *ngFor="let i of [1,2,3]" class="sd-sk-card">
+                <div class="sd-sk-thumb"></div>
+                <div class="sd-sk-body">
+                  <div class="sd-sk-line"></div>
+                  <div class="sd-sk-line sd-sk-s"></div>
+                  <div class="sd-sk-bar"></div>
+                </div>
+              </div>
+            </div>
+
+            <div *ngIf="!loading && enrollments.length === 0" class="sd-empty">
+              <p>You're not enrolled in any courses yet.</p>
+              <a routerLink="/student/courses" class="sd-btn-primary">Browse Courses</a>
+            </div>
+
+            <div *ngIf="!loading && enrollments.length > 0" class="sd-course-grid">
+              <div *ngFor="let e of enrollments" class="sd-course-card">
+                <div class="sd-cc-thumb"
+                     [style.backgroundImage]="e.courses?.thumbnail_url ? 'url('+e.courses.thumbnail_url+')' : 'none'">
+                  <span *ngIf="!e.courses?.thumbnail_url" class="sd-cc-ph">📚</span>
+                  <span class="sd-cc-diff" [ngClass]="'diff-'+e.courses?.difficulty">
+                    {{ e.courses?.difficulty }}
+                  </span>
+                </div>
+                <div class="sd-cc-body">
+                  <p class="sd-cc-cat">{{ e.courses?.category }}</p>
+                  <h4 class="sd-cc-title">{{ e.courses?.title }}</h4>
+                  <div class="sd-cc-bar">
+                    <div class="sd-cc-fill" [style.width.%]="getProgressPercent(e)"></div>
+                  </div>
+                  <div class="sd-cc-foot">
+                    <span class="sd-cc-pct">{{ getProgressPercent(e) }}% complete</span>
+                    <a [routerLink]="['/student/course', e.course_id]" class="sd-cc-btn">Continue</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- Right column -->
+        <div class="sd-col-side">
+          <section class="sd-section">
+            <h2 class="sd-section-title">Activity</h2>
+            <app-study-calendar></app-study-calendar>
+          </section>
+          <section class="sd-section">
+            <app-recommendations></app-recommendations>
+          </section>
+        </div>
+      </div>
+    </div>

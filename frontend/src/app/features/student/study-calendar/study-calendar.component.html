@@ -1,0 +1,53 @@
+    <div class="sc-card">
+      <div class="sc-header">
+        <span class="sc-title">📅 Study Calendar</span>
+        <span class="sc-sub" *ngIf="pace">{{ pace.lessonsPerDay }} lessons/day avg</span>
+      </div>
+
+      <div *ngIf="!loading && pace" class="sc-body">
+        <!-- Heatmap: last 35 days -->
+        <div class="sc-heatmap">
+          <div *ngFor="let cell of heatmap" class="sc-cell"
+               [title]="cell.label"
+               [class.sc-c0]="cell.count === 0"
+               [class.sc-c1]="cell.count === 1"
+               [class.sc-c2]="cell.count === 2"
+               [class.sc-c3]="cell.count >= 3">
+          </div>
+        </div>
+        <div class="sc-legend">
+          <span>Less</span>
+          <div class="sc-cell sc-c0"></div>
+          <div class="sc-cell sc-c1"></div>
+          <div class="sc-cell sc-c2"></div>
+          <div class="sc-cell sc-c3"></div>
+          <span>More</span>
+        </div>
+
+        <!-- Pace stats -->
+        <div class="sc-stats">
+          <div class="sc-stat">
+            <span class="sc-stat-val">{{ pace.completedLessons }}</span>
+            <span class="sc-stat-lbl">Lessons done</span>
+          </div>
+          <div class="sc-stat">
+            <span class="sc-stat-val">{{ pace.activeDays }}</span>
+            <span class="sc-stat-lbl">Active days</span>
+          </div>
+          <div class="sc-stat" *ngIf="estimatedCompletion">
+            <span class="sc-stat-val sc-eta">{{ estimatedCompletion | date:'MMM d' }}</span>
+            <span class="sc-stat-lbl">Est. finish</span>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="!loading && !pace" class="sc-empty">
+        Start learning to see your activity calendar here.
+      </div>
+
+      <div *ngIf="loading" class="sc-skeleton">
+        <div class="sc-sk-heatmap">
+          <div *ngFor="let i of skArr" class="sc-cell sc-c0 sc-sk-pulse"></div>
+        </div>
+      </div>
+    </div>

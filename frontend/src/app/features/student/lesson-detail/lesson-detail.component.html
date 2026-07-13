@@ -1,0 +1,117 @@
+    <div class="lesson-page">
+      <div *ngIf="loading" class="loading">Loading lesson...</div>
+      <div *ngIf="error" class="error-state">{{ error }}</div>
+
+      <ng-container *ngIf="!loading && lesson">
+        <div class="lesson-header">
+          <a [routerLink]="['/student/course', courseId]" class="back-link">← Back to Course</a>
+          <div class="header-meta">
+            <span class="lesson-type-badge" [ngClass]="'type-' + lesson.lesson_type">
+              {{ lesson.lesson_type }}
+            </span>
+            <span *ngIf="isComplete" class="completed-badge">✓ Completed</span>
+          </div>
+          <h1>{{ lesson.title }}</h1>
+        </div>
+
+        <div class="lesson-body">
+          <!-- Video -->
+          <div *ngIf="lesson.video_url" class="video-wrapper">
+            <iframe
+              [src]="safeVideoUrl"
+              frameborder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen
+            ></iframe>
+          </div>
+
+          <!-- Text content -->
+          <div *ngIf="lesson.content" class="text-content" [innerHTML]="lesson.content"></div>
+
+          <!-- Lab card -->
+          <app-lab *ngIf="lesson.lab" [lab]="lesson.lab"></app-lab>
+
+          <!-- Resources / PDF Attachments -->
+          <div *ngIf="resources.length > 0" class="resources-section">
+            <h3 class="res-heading">📎 Attachments</h3>
+
+            <div *ngFor="let res of resources" class="resource-item">
+              <div class="resource-info">
+                <span class="resource-type-icon">📄</span>
+                <div>
+                  <span class="resource-title">{{ res.title }}</span>
+                  <span class="resource-size">{{ fmtBytes(res.file_size_bytes) }}</span>
+                </div>
+              </div>
+              <div class="resource-btns">
+                <button class="btn-res btn-res-view"
+                        (click)="togglePdfView(res)"
+                        [disabled]="loadingViewId === res.id">
+                  <span *ngIf="loadingViewId !== res.id">
+                    {{ viewingResourceId === res.id ? '▲ Close' : '👁 View' }}
+                  </span>
+                  <span *ngIf="loadingViewId === res.id">Loading…</span>
+                </button>
+                <button class="btn-res btn-res-dl"
+                        (click)="downloadPdf(res)"
+                        [disabled]="loadingDlId === res.id">
+                  {{ loadingDlId === res.id ? '…' : '⬇ Download' }}
+                </button>
+              </div>
+            </div>
+
+            <!-- Inline PDF viewer -->
+            <div *ngIf="viewingUrl" class="pdf-viewer-wrap">
+              <div class="pdf-viewer-bar">
+                <span class="pdf-viewer-title">{{ viewingTitle }}</span>
+                <button class="pdf-viewer-close" (click)="closePdfViewer()">✕ Close</button>
+              </div>
+              <iframe class="pdf-viewer-frame" [src]="viewingUrl" title="PDF viewer"></iframe>
+            </div>
+          </div>
+
+          <!-- Complete button -->
+          <div class="completion-area">
+            <button
+              class="btn-complete"
+              [ngClass]="{ 'btn-done': isComplete }"
+              (click)="markComplete()"
+              [disabled]="isComplete || saving"
+            >
+              {{ isComplete ? '✓ Lesson Completed' : saving ? 'Saving...' : 'Mark as Complete' }}
+            </button>
+            <p *ngIf="saveError" class="save-error">{{ saveError }}</p>
+          </div>
+
+          <!-- Q&A section -->
+          <div class="qa-section">
+            <h3 class="qa-heading">💬 Questions & Answers</h3>
+
+            <!-- Ask form -->
+            <div class="qa-ask">
+              <textarea class="qa-input" [(ngModel)]="newQuestion" placeholder="Ask a question about this lesson…" rows="3"></textarea>
+              <button class="qa-submit" [disabled]="!newQuestion.trim() || submittingQ" (click)="submitQuestion()">
+                {{ submittingQ ? 'Submitting…' : 'Ask Question' }}
+              </button>
+            </div>
+
+            <!-- Questions list -->
+            <div *ngIf="questions.length === 0 && !loadingQ" class="qa-empty-msg">No questions yet — be the first to ask!</div>
+            <div *ngFor="let q of questions" class="qa-item">
+              <div class="qa-q-text">❓ {{ q.question }}</div>
+              <div class="qa-meta-row">
+                <span class="qa-by">You</span>
+                <span class="qa-time">{{ timeAgo(q.created_at) }}</span>
+                <span class="qa-status" [class.qa-status-answered]="q.answer" [class.qa-status-pending]="!q.answer">
+                  {{ q.answer ? '✅ Answered' : '⏳ Awaiting answer' }}
+                </span>
+              </div>
+              <div *ngIf="q.answer" class="qa-answer">
+                <span class="qa-answer-label">{{ q.answerer?.full_name || 'Tutor' }}:</span>
+                {{ q.answer }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </div>

@@ -1,0 +1,42 @@
+    <div class="cl-card" *ngIf="!loading">
+      <!-- Empty state -->
+      <div *ngIf="!item" class="cl-empty">
+        <div class="cl-empty-icon">🎓</div>
+        <p class="cl-empty-title">No courses in progress yet</p>
+        <p class="cl-empty-sub">Enroll in a course to start learning</p>
+        <button class="cl-btn" (click)="router.navigate(['/student/catalog'])">Browse Courses</button>
+      </div>
+
+      <!-- Active item -->
+      <div *ngIf="item" class="cl-content">
+        <div class="cl-thumb" [style.backgroundImage]="item.courseThumbnail ? 'url(' + item.courseThumbnail + ')' : 'none'">
+          <span *ngIf="!item.courseThumbnail" class="cl-thumb-placeholder">📚</span>
+          <span class="cl-badge" [class.cl-badge-video]="item.lessonType === 'video'"
+                                 [class.cl-badge-lab]="item.lessonType === 'lab'">
+            {{ item.lessonType === 'video' ? '▶ Video' : item.lessonType === 'lab' ? '🔬 Lab' : '📄 Reading' }}
+          </span>
+        </div>
+        <div class="cl-info">
+          <span class="cl-category">{{ item.courseCategory }}</span>
+          <h3 class="cl-course">{{ item.courseTitle }}</h3>
+          <p class="cl-module">{{ item.moduleName }}</p>
+          <p class="cl-lesson">📖 {{ item.lessonTitle }}</p>
+          <div *ngIf="item.lessonType === 'video' && item.videoTimestamp > 0" class="cl-ts">
+            ⏱ Resume at {{ formatTime(item.videoTimestamp) }}
+          </div>
+          <p class="cl-last">Last studied: {{ item.lastAccessed | date:'mediumDate' }}</p>
+          <button class="cl-btn cl-btn-primary" (click)="resume()">
+            {{ item.lessonType === 'video' && item.videoTimestamp > 0 ? '▶ Resume Video' : '→ Continue Lesson' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="loading" class="cl-skeleton">
+      <div class="cl-sk-thumb"></div>
+      <div class="cl-sk-lines">
+        <div class="cl-sk-line cl-sk-short"></div>
+        <div class="cl-sk-line"></div>
+        <div class="cl-sk-line cl-sk-mid"></div>
+      </div>
+    </div>

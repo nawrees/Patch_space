@@ -1,0 +1,68 @@
+.pf-page { padding: 32px; max-width: 1100px; margin: 0 auto; background: var(--bg-page); min-height: 100vh; }
+.pf-container { display: grid; grid-template-columns: 280px 1fr; gap: 28px; align-items: start; }
+
+/* Sidebar */
+.pf-sidebar { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; padding: 28px 24px; display: flex; flex-direction: column; gap: 0; }
+
+.pf-avatar-wrap { display: flex; flex-direction: column; align-items: center; gap: 10px; margin-bottom: 20px; }
+.pf-avatar { width: 96px; height: 96px; border-radius: 50%; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.pf-avatar-img { width: 100%; height: 100%; object-fit: cover; }
+.pf-avatar-init { font-size: 36px; font-weight: 800; color: #fff; }
+.av-student { background: linear-gradient(135deg, #4f46e5, #818cf8); }
+.av-tutor   { background: linear-gradient(135deg, #d97706, #fbbf24); }
+.av-admin   { background: linear-gradient(135deg, #dc2626, #f87171); }
+
+.pf-name { color: var(--text-1); font-size: 18px; font-weight: 700; margin: 0; text-align: center; }
+.pf-role-badge { font-size: 11px; font-weight: 700; padding: 3px 12px; border-radius: 20px; text-transform: uppercase; }
+.role-student { background: #064e3b; color: #6ee7b7; }
+.role-tutor   { background: #78350f; color: #fcd34d; }
+.role-admin   { background: #7f1d1d; color: #fca5a5; }
+
+.pf-meta { display: flex; flex-direction: column; gap: 10px; margin-bottom: 18px; }
+.pf-meta-row { display: flex; align-items: center; gap: 10px; }
+.pf-meta-icon { font-size: 14px; width: 20px; }
+.pf-meta-val { font-size: 13px; color: var(--text-2); word-break: break-all; }
+
+.pf-bio { font-size: 13px; color: var(--text-2); line-height: 1.6; margin-bottom: 20px; }
+.pf-bio-empty { color: var(--text-3); font-style: italic; }
+
+.pf-edit-btn { display: block; text-align: center; padding: 9px 0; background: var(--bg-hover); border: 1px solid var(--border); border-radius: 8px; color: var(--text-1); font-size: 13px; font-weight: 600; text-decoration: none; transition: border-color .2s; }
+.pf-edit-btn:hover { border-color: #4f46e5; color: #818cf8; }
+
+/* Main */
+.pf-main { }
+.pf-section-title { color: var(--text-1); font-size: 15px; font-weight: 700; margin: 0 0 16px; }
+
+/* Stats grid */
+.pf-stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+.pf-stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 18px 16px; text-align: center; }
+.pf-stat-val { display: block; font-size: 28px; font-weight: 800; color: #818cf8; }
+.pf-stat-lbl { display: block; font-size: 12px; color: var(--text-3); margin-top: 4px; }
+
+/* Skeleton */
+.pf-sk { }
+.pf-sk-val { height: 28px; background: var(--bg-skeleton); border-radius: 6px; margin: 0 auto 8px; width: 60%; animation: pulse 1.5s infinite; }
+.pf-sk-lbl { height: 12px; background: var(--bg-skeleton); border-radius: 4px; margin: 0 auto; width: 80%; animation: pulse 1.5s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+/* Course list */
+.pf-empty { color: var(--text-3); font-size: 13px; padding: 16px 0; }
+.pf-course-list { display: flex; flex-direction: column; gap: 10px; }
+.pf-course-row { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 14px 18px; display: flex; align-items: center; gap: 16px; }
+.pf-cr-info { flex: 1; }
+.pf-cr-title { display: block; color: var(--text-1); font-size: 14px; font-weight: 600; }
+.pf-cr-cat { font-size: 11px; color: var(--text-3); text-transform: uppercase; letter-spacing: .4px; }
+.pf-cr-progress { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.pf-cr-bar { width: 100px; height: 5px; background: var(--border-sub); border-radius: 3px; overflow: hidden; }
+.pf-cr-fill { height: 100%; background: linear-gradient(90deg, #4f46e5, #818cf8); border-radius: 3px; }
+.pf-cr-pct { font-size: 12px; color: var(--text-3); width: 36px; text-align: right; }
+
+/* Student row (tutor view) */
+.pf-student-row { text-decoration: none; transition: border-color .2s; }
+.pf-student-row:hover { border-color: #4f46e5; }
+.pf-student-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #d97706, #fbbf24); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; flex-shrink: 0; }
+
+@media (max-width: 800px) {
+  .pf-container { grid-template-columns: 1fr; }
+  .pf-stats-grid { grid-template-columns: repeat(2, 1fr); }
+}

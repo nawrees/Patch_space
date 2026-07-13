@@ -1,0 +1,108 @@
+<div class="manage-page">
+  <div class="page-header">
+    <div>
+      <h1>Course Management</h1>
+      <p class="subtitle">Create and manage your cybersecurity courses</p>
+    </div>
+    <button class="btn-primary" (click)="openForm()">+ New Course</button>
+  </div>
+
+  <!-- Create / Edit Form -->
+  <div class="form-panel" *ngIf="showForm">
+    <div class="form-panel-header">
+      <h2>{{ editingId ? 'Edit Course' : 'New Course' }}</h2>
+      <button class="btn-close" (click)="closeForm()">✕</button>
+    </div>
+
+    <div class="form-grid">
+      <div class="form-group full">
+        <label>Title *</label>
+        <input [(ngModel)]="form.title" placeholder="e.g. Introduction to Web Security" />
+      </div>
+
+      <div class="form-group full">
+        <label>Description</label>
+        <textarea [(ngModel)]="form.description" rows="3" placeholder="What will students learn?"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Category</label>
+        <select [(ngModel)]="form.category">
+          <option value="">Select category</option>
+          <option *ngFor="let c of categories" [value]="c">{{ c }}</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Difficulty</label>
+        <select [(ngModel)]="form.difficulty">
+          <option *ngFor="let d of difficulties" [value]="d">{{ d }}</option>
+        </select>
+      </div>
+
+      <div class="form-group full">
+        <label>Thumbnail URL</label>
+        <input [(ngModel)]="form.thumbnail_url" placeholder="https://..." />
+      </div>
+
+      <div class="form-group">
+        <label class="checkbox-label">
+          <input type="checkbox" [(ngModel)]="form.is_published" />
+          Publish this course (visible to students)
+        </label>
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button class="btn-secondary" (click)="closeForm()">Cancel</button>
+      <button class="btn-primary" (click)="saveCourse()" [disabled]="saving || !form.title.trim()">
+        {{ saving ? 'Saving...' : editingId ? 'Save Changes' : 'Create Course' }}
+      </button>
+    </div>
+    <p *ngIf="formError" class="form-error">{{ formError }}</p>
+  </div>
+
+  <!-- Course List -->
+  <div *ngIf="loading" class="loading">Loading courses...</div>
+
+  <div *ngIf="!loading && courses.length === 0 && !showForm" class="empty-state">
+    <p>No courses yet. Click <strong>New Course</strong> to create your first one.</p>
+  </div>
+
+  <div *ngIf="!loading && courses.length > 0" class="course-grid">
+    <div *ngFor="let course of courses" class="course-card">
+      <div class="card-top">
+        <div class="card-badges">
+          <span class="badge" [ngClass]="'level-' + course.difficulty">{{ course.difficulty }}</span>
+          <span class="badge" [ngClass]="course.is_published ? 'published' : 'draft'">
+            {{ course.is_published ? 'Published' : 'Draft' }}
+          </span>
+        </div>
+        <h3>{{ course.title }}</h3>
+        <p class="category">{{ course.category }}</p>
+        <p class="description">{{ course.description }}</p>
+      </div>
+      <div class="card-actions">
+        <a [routerLink]="['/manage/courses', course.id, 'content']" class="btn-action btn-content">
+          Manage Content
+        </a>
+        <button class="btn-action btn-edit" (click)="openEdit(course)">Edit</button>
+        <button class="btn-action btn-delete" (click)="deleteCourse(course)">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete confirmation -->
+  <div class="modal-overlay" *ngIf="deletingCourse" (click)="deletingCourse = null">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <h3>Delete Course</h3>
+      <p>Are you sure you want to delete <strong>{{ deletingCourse.title }}</strong>? This will remove all its modules, lessons, and labs.</p>
+      <div class="modal-actions">
+        <button class="btn-secondary" (click)="deletingCourse = null">Cancel</button>
+        <button class="btn-danger" (click)="confirmDelete()" [disabled]="deleting">
+          {{ deleting ? 'Deleting...' : 'Yes, Delete' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,194 @@
+<div class="admin-dashboard">
+  <h1>Admin Dashboard</h1>
+
+  <div class="tabs">
+    <button [ngClass]="{ active: activeTab === 'users' }" (click)="switchTab('users')">
+      User Management
+      <span class="tab-count" *ngIf="users.length">{{ users.length }}</span>
+    </button>
+    <button [ngClass]="{ active: activeTab === 'courses' }" (click)="switchTab('courses')">
+      Courses
+    </button>
+    <button [ngClass]="{ active: activeTab === 'assign' }" (click)="switchTab('assign')">
+      Assign Tutors
+    </button>
+  </div>
+
+  <!-- ── USER MANAGEMENT ────────────────────────────────── -->
+  <div *ngIf="activeTab === 'users'" class="tab-content">
+    <div class="tab-toolbar">
+      <input
+        class="search-input"
+        [(ngModel)]="search"
+        placeholder="Search by name or email..."
+      />
+      <div class="role-filters">
+        <button *ngFor="let r of roleFilters"
+          class="filter-btn"
+          [ngClass]="{ active: roleFilter === r }"
+          (click)="roleFilter = r"
+        >{{ r === '' ? 'All' : r }}</button>
+      </div>
+    </div>
+
+    <div *ngIf="loadingUsers" class="loading">Loading users...</div>
+
+    <table *ngIf="!loadingUsers" class="admin-table">
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Email</th>
+          <th>Role</th>
+          <th>Change Role</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of filteredUsers" [ngClass]="{ 'row-updating': user._updating }">
+          <td class="user-cell">
+            <div class="avatar-sm">{{ initials(user.full_name) }}</div>
+            <span>{{ user.full_name || 'No name' }}</span>
+          </td>
+          <td>{{ user.email }}</td>
+          <td>
+            <span class="badge" [ngClass]="'role-' + user.role">{{ user.role }}</span>
+          </td>
+          <td>
+            <div class="role-action">
+              <select
+                [(ngModel)]="user._newRole"
+                class="role-select"
+                [disabled]="user._updating"
+              >
+                <option value="student">student</option>
+                <option value="tutor">tutor</option>
+                <option value="admin">admin</option>
+              </select>
+              <button
+                class="btn-apply"
+                (click)="applyRoleChange(user)"
+                [disabled]="user._updating || user._newRole === user.role"
+              >
+                {{ user._updating ? '...' : 'Apply' }}
+              </button>
+              <span class="feedback ok"  *ngIf="user._feedback === 'ok'">✓</span>
+              <span class="feedback err" *ngIf="user._feedback === 'err'">✗</span>
+            </div>
+          </td>
+        </tr>
+        <tr *ngIf="filteredUsers.length === 0">
+          <td colspan="4" class="empty-row">No users match your search.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ── COURSES ─────────────────────────────────────────── -->
+  <div *ngIf="activeTab === 'courses'" class="tab-content">
+    <div class="courses-header">
+      <div class="courses-stats">
+        <div class="cstat">
+          <span class="cstat-val">{{ courses.length }}</span>
+          <span class="cstat-label">Total</span>
+        </div>
+        <div class="cstat">
+          <span class="cstat-val">{{ publishedCount }}</span>
+          <span class="cstat-label">Published</span>
+        </div>
+        <div class="cstat">
+          <span class="cstat-val">{{ courses.length - publishedCount }}</span>
+          <span class="cstat-label">Drafts</span>
+        </div>
+      </div>
+      <a routerLink="/manage/courses" class="btn-primary">Open Course Manager</a>
+    </div>
+
+    <div *ngIf="loadingCourses" class="loading">Loading courses...</div>
+
+    <table *ngIf="!loadingCourses && courses.length > 0" class="admin-table">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Category</th>
+          <th>Difficulty</th>
+          <th>Status</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let c of courses">
+          <td><strong>{{ c.title }}</strong></td>
+          <td>{{ c.category || '—' }}</td>
+          <td><span class="badge" [ngClass]="'level-' + c.difficulty">{{ c.difficulty }}</span></td>
+          <td>
+            <span class="badge" [ngClass]="c.is_published ? 'published' : 'draft'">
+              {{ c.is_published ? 'Published' : 'Draft' }}
+            </span>
+          </td>
+          <td>
+            <a [routerLink]="['/manage/courses', c.id, 'content']" class="btn-sm-link">Edit Content</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div *ngIf="!loadingCourses && courses.length === 0" class="empty-state">
+      No courses yet. <a routerLink="/manage/courses" class="link">Create one →</a>
+    </div>
+  </div>
+
+  <!-- ── ASSIGN TUTORS ───────────────────────────────────── -->
+  <div *ngIf="activeTab === 'assign'" class="tab-content">
+    <div class="assign-layout">
+      <div class="assign-form">
+        <h3>Assign a Tutor to a Student</h3>
+
+        <div class="form-group">
+          <label>Tutor</label>
+          <select [(ngModel)]="assignForm.tutorId" class="form-select">
+            <option value="">Select tutor...</option>
+            <option *ngFor="let u of tutors" [value]="u.id">
+              {{ u.full_name || u.email }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Student</label>
+          <select [(ngModel)]="assignForm.studentId" class="form-select">
+            <option value="">Select student...</option>
+            <option *ngFor="let u of students" [value]="u.id">
+              {{ u.full_name || u.email }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>Course <span class="optional">(optional — leave blank for all courses)</span></label>
+          <select [(ngModel)]="assignForm.courseId" class="form-select">
+            <option value="">All courses</option>
+            <option *ngFor="let c of courses" [value]="c.id">{{ c.title }}</option>
+          </select>
+        </div>
+
+        <button
+          class="btn-primary"
+          (click)="createAssignment()"
+          [disabled]="assigning || !assignForm.tutorId || !assignForm.studentId"
+        >
+          {{ assigning ? 'Assigning...' : 'Create Assignment' }}
+        </button>
+        <p class="feedback ok" *ngIf="assignFeedback === 'ok'">✓ Assignment created successfully</p>
+        <p class="feedback err" *ngIf="assignFeedback === 'err'">✗ Failed — assignment may already exist</p>
+      </div>
+
+      <div class="assign-info">
+        <h4>How it works</h4>
+        <ul>
+          <li>A tutor can view enrolled students' progress on the Tutor Dashboard</li>
+          <li>Assigning to "All courses" gives the tutor visibility across every course</li>
+          <li>Assigning to a specific course limits visibility to that course only</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

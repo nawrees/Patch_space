@@ -1,0 +1,47 @@
+<div class="sv-page">
+  <div class="sv-header">
+    <h1 class="sv-title">🔖 Saved Courses</h1>
+    <p class="sv-sub">{{ saved.length }} course{{ saved.length === 1 ? '' : 's' }} saved</p>
+  </div>
+
+  <!-- Skeleton -->
+  <div *ngIf="loading" class="sv-grid">
+    <div *ngFor="let i of [1,2,3]" class="sv-sk-card">
+      <div class="sv-sk-thumb"></div>
+      <div class="sv-sk-body">
+        <div class="sv-sk-line"></div>
+        <div class="sv-sk-line sv-sk-s"></div>
+        <div class="sv-sk-btn"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty -->
+  <div *ngIf="!loading && saved.length === 0" class="sv-empty">
+    <span class="sv-empty-icon">🔖</span>
+    <h3>No saved courses yet</h3>
+    <p>Tap the bookmark icon on any course to save it here.</p>
+    <a routerLink="/student/courses" class="sv-browse-btn">Browse Courses</a>
+  </div>
+
+  <!-- Grid -->
+  <div *ngIf="!loading && saved.length > 0" class="sv-grid">
+    <div *ngFor="let item of saved" class="sv-card">
+      <div class="sv-thumb"
+           [style.backgroundImage]="item.course?.thumbnail_url ? 'url('+item.course.thumbnail_url+')' : 'none'">
+        <span *ngIf="!item.course?.thumbnail_url" class="sv-thumb-ph">{{ item.course?.title?.charAt(0) }}</span>
+        <span class="sv-diff-badge" [ngClass]="'diff-' + item.course?.difficulty">{{ item.course?.difficulty }}</span>
+        <button class="sv-unsave" (click)="unsave(item)" title="Remove from saved">✕</button>
+      </div>
+      <div class="sv-body">
+        <p class="sv-cat">{{ item.course?.category }}</p>
+        <h3 class="sv-course-title">{{ item.course?.title }}</h3>
+        <p class="sv-desc">{{ item.course?.description }}</p>
+        <div class="sv-foot">
+          <span class="sv-saved-date">Saved {{ item.created_at | date:'MMM d' }}</span>
+          <a [routerLink]="['/student/course', item.course?.id]" class="sv-view-btn">View Course →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

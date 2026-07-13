@@ -1,0 +1,84 @@
+<div class="qa-page">
+  <div class="qa-header">
+    <div>
+      <h2 class="qa-title">💬 Q&A Moderation</h2>
+      <p class="qa-sub">Answer student questions sorted by urgency</p>
+    </div>
+    <div class="qa-filters">
+      <button class="qa-filter-btn" [class.qa-filter-active]="filter === 'all'" (click)="setFilter('all')">All</button>
+      <button class="qa-filter-btn qa-filter-urgent" [class.qa-filter-active]="filter === 'urgent'" (click)="setFilter('urgent')">
+        ⚠️ Urgent ({{ urgentCount }})
+      </button>
+      <button class="qa-filter-btn" [class.qa-filter-active]="filter === 'pending'" (click)="setFilter('pending')">
+        Pending ({{ pendingCount }})
+      </button>
+      <button class="qa-filter-btn" [class.qa-filter-active]="filter === 'answered'" (click)="setFilter('answered')">Answered</button>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="qa-sk-list">
+    <div *ngFor="let i of [1,2,3]" class="qa-sk-card">
+      <div class="qa-sk-top"></div>
+      <div class="qa-sk-body"></div>
+    </div>
+  </div>
+
+  <!-- Empty -->
+  <div *ngIf="!loading && filtered.length === 0" class="qa-empty">
+    <span class="qa-empty-icon">✅</span>
+    <p>No questions in this category</p>
+  </div>
+
+  <!-- Question cards -->
+  <div *ngIf="!loading" class="qa-list">
+    <div *ngFor="let q of filtered" class="qa-card" [class.qa-card-urgent]="q.urgency === 'urgent'"
+         [class.qa-card-answered]="q.urgency === 'answered'">
+      <!-- Card header -->
+      <div class="qa-card-head">
+        <div class="qa-meta">
+          <span class="qa-avatar">{{ initial(q.student?.full_name) }}</span>
+          <div>
+            <span class="qa-student">{{ q.student?.full_name || 'Student' }}</span>
+            <span class="qa-context">in <em>{{ q.lessons?.modules?.courses?.title }}</em> › {{ q.lessons?.title }}</span>
+          </div>
+        </div>
+        <div class="qa-badges">
+          <span class="qa-badge qa-badge-urgent" *ngIf="q.urgency === 'urgent'">⚠️ Urgent</span>
+          <span class="qa-badge qa-badge-pending" *ngIf="q.urgency === 'pending'">🕐 Pending</span>
+          <span class="qa-badge qa-badge-done" *ngIf="q.urgency === 'answered'">✅ Answered</span>
+          <span class="qa-age">{{ timeAgo(q.created_at) }}</span>
+        </div>
+      </div>
+
+      <!-- Question text -->
+      <div class="qa-question">{{ q.question }}</div>
+
+      <!-- Existing answer -->
+      <div *ngIf="q.answer" class="qa-answer-block">
+        <span class="qa-answer-by">{{ q.answerer?.full_name || 'Tutor' }} answered:</span>
+        <p class="qa-answer-text">{{ q.answer }}</p>
+      </div>
+
+      <!-- Quick reply form -->
+      <div *ngIf="activeReply === q.id" class="qa-reply-form">
+        <textarea class="qa-textarea" [(ngModel)]="replyText"
+                  placeholder="Type your answer..." rows="3"></textarea>
+        <div class="qa-reply-actions">
+          <button class="qa-btn" (click)="cancelReply()">Cancel</button>
+          <button class="qa-btn qa-btn-primary" [disabled]="!replyText.trim() || submitting"
+                  (click)="submitAnswer(q.id)">
+            {{ submitting ? 'Sending…' : 'Send Answer' }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Action buttons -->
+      <div class="qa-actions" *ngIf="activeReply !== q.id">
+        <button class="qa-btn qa-btn-reply" (click)="startReply(q.id, q.answer)">
+          {{ q.answer ? '✏️ Edit Answer' : '💬 Quick Reply' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

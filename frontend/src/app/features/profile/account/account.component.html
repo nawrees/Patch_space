@@ -1,0 +1,77 @@
+<div class="ac-page">
+  <div class="ac-container">
+
+    <div class="ac-header">
+      <a routerLink="/profile" class="ac-back">← Back to Profile</a>
+      <h1 class="ac-title">Manage Account</h1>
+      <p class="ac-sub">Update your personal information</p>
+    </div>
+
+    <div class="ac-card">
+
+      <!-- Avatar preview -->
+      <div class="ac-avatar-row">
+        <div class="ac-avatar" [ngClass]="'av-' + (profile?.role || 'student')">
+          <img *ngIf="form.avatar_url" [src]="form.avatar_url" alt="avatar"
+               class="ac-avatar-img" (error)="imgError = true" />
+          <span *ngIf="!form.avatar_url" class="ac-avatar-init">{{ initial }}</span>
+        </div>
+        <div class="ac-avatar-info">
+          <p class="ac-avatar-hint">Enter an image URL below to set a custom avatar.</p>
+          <p class="ac-avatar-or">Or your initials will be used automatically.</p>
+        </div>
+      </div>
+
+      <!-- Form -->
+      <div class="ac-section">
+        <h3 class="ac-section-title">Personal Information</h3>
+
+        <div class="ac-form-group">
+          <label>Full Name</label>
+          <input type="text" [(ngModel)]="form.full_name" placeholder="Your full name" maxlength="80" />
+        </div>
+
+        <div class="ac-form-group">
+          <label>Bio</label>
+          <textarea [(ngModel)]="form.bio" placeholder="A short bio about yourself…" rows="4" maxlength="400"></textarea>
+          <span class="ac-char-count">{{ form.bio?.length ?? 0 }} / 400</span>
+        </div>
+
+        <div class="ac-form-group">
+          <label>Avatar URL</label>
+          <input type="url" [(ngModel)]="form.avatar_url" placeholder="https://…" />
+        </div>
+      </div>
+
+      <div class="ac-section ac-section-readonly">
+        <h3 class="ac-section-title">Account Details</h3>
+        <div class="ac-readonly-row">
+          <span class="ac-ro-label">Email</span>
+          <span class="ac-ro-val">{{ profile?.email }}</span>
+        </div>
+        <div class="ac-readonly-row">
+          <span class="ac-ro-label">Role</span>
+          <span class="ac-ro-badge" [ngClass]="'role-' + profile?.role">{{ profile?.role }}</span>
+        </div>
+        <div class="ac-readonly-row">
+          <span class="ac-ro-label">Member since</span>
+          <span class="ac-ro-val">{{ profile?.created_at | date:'MMMM d, yyyy' }}</span>
+        </div>
+        <p class="ac-ro-note">Email and role can only be changed by an administrator.</p>
+      </div>
+
+      <!-- Actions -->
+      <div class="ac-actions">
+        <p class="ac-success" *ngIf="saved">✓ Profile updated successfully</p>
+        <p class="ac-error" *ngIf="errorMsg">{{ errorMsg }}</p>
+        <div class="ac-btn-row">
+          <a routerLink="/profile" class="ac-btn-cancel">Cancel</a>
+          <button class="ac-btn-save" (click)="save()" [disabled]="saving">
+            {{ saving ? 'Saving…' : 'Save Changes' }}
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

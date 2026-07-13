@@ -1,0 +1,71 @@
+<div class="td-page">
+  <!-- Hero -->
+  <div class="td-hero">
+    <div>
+      <p class="td-greeting">Tutor Portal</p>
+      <h1 class="td-name">Welcome, {{ currentUser?.profile?.full_name || 'Tutor' }}!</h1>
+      <p class="td-sub">Monitor progress, spot drop-offs, and answer questions</p>
+    </div>
+    <div class="td-hero-stats">
+      <div class="td-hs"><span class="td-hs-val">{{ students.length }}</span><span class="td-hs-lbl">Students</span></div>
+      <div class="td-hs"><span class="td-hs-val">—</span><span class="td-hs-lbl">Avg Progress</span></div>
+    </div>
+  </div>
+
+  <!-- Tab nav -->
+  <nav class="td-tabs">
+    <button class="td-tab" [class.td-tab-active]="activeTab === 'students'" (click)="activeTab = 'students'">
+      👥 Students
+    </button>
+    <button class="td-tab" [class.td-tab-active]="activeTab === 'analytics'" (click)="activeTab = 'analytics'">
+      📊 Drop-off Analytics
+    </button>
+    <button class="td-tab" [class.td-tab-active]="activeTab === 'qa'" (click)="activeTab = 'qa'">
+      💬 Q&A Moderation
+      <span class="td-badge" *ngIf="urgentQaCount > 0">{{ urgentQaCount }}</span>
+    </button>
+  </nav>
+
+  <!-- STUDENTS TAB -->
+  <div *ngIf="activeTab === 'students'" class="td-panel">
+    <div *ngIf="loading" class="td-loading">
+      <div *ngFor="let i of [1,2,3]" class="td-sk-row">
+        <div class="td-sk-av"></div>
+        <div class="td-sk-lines">
+          <div class="td-sk-line"></div>
+          <div class="td-sk-line td-sk-s"></div>
+        </div>
+        <div class="td-sk-btn"></div>
+      </div>
+    </div>
+
+    <div *ngIf="!loading && students.length === 0" class="td-empty">
+      No students assigned yet. Ask an administrator to assign students to you.
+    </div>
+
+    <div *ngIf="!loading && students.length > 0" class="td-student-list">
+      <div *ngFor="let s of students" class="td-student-card">
+        <div class="td-sc-avatar">{{ initial(s.student?.full_name) }}</div>
+        <div class="td-sc-info">
+          <span class="td-sc-name">{{ s.student?.full_name }}</span>
+          <span class="td-sc-email">{{ s.student?.email }}</span>
+        </div>
+        <div class="td-sc-actions">
+          <a [routerLink]="['/tutor/student', s.student_id]"
+             [queryParams]="{ name: s.student?.full_name, email: s.student?.email }"
+             class="td-btn">View Progress</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ANALYTICS TAB -->
+  <div *ngIf="activeTab === 'analytics'" class="td-panel td-panel-flush">
+    <app-drop-off></app-drop-off>
+  </div>
+
+  <!-- Q&A TAB -->
+  <div *ngIf="activeTab === 'qa'" class="td-panel td-panel-flush">
+    <app-qa-moderation></app-qa-moderation>
+  </div>
+</div>

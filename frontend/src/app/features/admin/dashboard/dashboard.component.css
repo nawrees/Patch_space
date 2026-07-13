@@ -1,0 +1,289 @@
+.admin-dashboard {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+h1 { color: #1a1a2e; margin-bottom: 1.5rem; }
+
+/* Tabs */
+.tabs {
+  display: flex;
+  gap: 0;
+  margin-bottom: 0;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.tabs button {
+  padding: 0.75rem 1.5rem;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  cursor: pointer;
+  color: #666;
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.tabs button.active { color: #667eea; border-bottom-color: #667eea; }
+.tabs button:hover { color: #667eea; }
+
+.tab-count {
+  background: #667eea;
+  color: white;
+  border-radius: 10px;
+  padding: 0.1rem 0.45rem;
+  font-size: 0.72rem;
+}
+
+/* Tab content */
+.tab-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 0 0 10px 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+}
+
+/* Toolbar */
+.tab-toolbar {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.search-input {
+  flex: 1;
+  min-width: 200px;
+  padding: 0.6rem 0.9rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.search-input:focus { outline: none; border-color: #667eea; }
+
+.role-filters { display: flex; gap: 0.4rem; }
+
+.filter-btn {
+  padding: 0.4rem 0.9rem;
+  border: 1px solid #ddd;
+  background: white;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  cursor: pointer;
+  text-transform: capitalize;
+  transition: all 0.15s;
+}
+
+.filter-btn.active { background: #667eea; color: white; border-color: #667eea; }
+.filter-btn:hover:not(.active) { border-color: #667eea; color: #667eea; }
+
+/* Table */
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.admin-table th {
+  background: #f8f9fa;
+  padding: 0.85rem 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: #555;
+  font-size: 0.85rem;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.admin-table td {
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.admin-table tbody tr:hover { background: #fafbff; }
+.admin-table tbody tr.row-updating { opacity: 0.6; }
+
+.user-cell { display: flex; align-items: center; gap: 0.6rem; }
+
+.avatar-sm {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.empty-row { text-align: center; color: #999; padding: 2rem; }
+
+/* Badges */
+.badge {
+  display: inline-block;
+  padding: 0.2rem 0.65rem;
+  border-radius: 12px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.role-student { background: #d4edda; color: #155724; }
+.role-tutor   { background: #fff3cd; color: #856404; }
+.role-admin   { background: #f8d7da; color: #721c24; }
+.published    { background: #d4edda; color: #155724; }
+.draft        { background: #e2e3e5; color: #383d41; }
+.level-beginner     { background: #d4edda; color: #155724; }
+.level-intermediate { background: #fff3cd; color: #856404; }
+.level-advanced     { background: #f8d7da; color: #721c24; }
+
+/* Role action */
+.role-action { display: flex; align-items: center; gap: 0.5rem; }
+
+.role-select {
+  padding: 0.35rem 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.btn-apply {
+  padding: 0.35rem 0.7rem;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.btn-apply:hover:not(:disabled) { background: #5568d3; }
+.btn-apply:disabled { background: #ccc; cursor: not-allowed; }
+
+.feedback { font-size: 1rem; font-weight: 700; }
+.feedback.ok  { color: #28a745; }
+.feedback.err { color: #dc3545; }
+
+/* Courses tab */
+.courses-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.courses-stats { display: flex; gap: 1.5rem; }
+
+.cstat {
+  text-align: center;
+  background: #f8f9ff;
+  padding: 0.75rem 1.25rem;
+  border-radius: 8px;
+  min-width: 80px;
+}
+
+.cstat-val {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #667eea;
+}
+
+.cstat-label {
+  display: block;
+  font-size: 0.75rem;
+  color: #999;
+  text-transform: uppercase;
+}
+
+.btn-sm-link {
+  color: #667eea;
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.btn-sm-link:hover { text-decoration: underline; }
+
+.empty-state { text-align: center; padding: 2rem; color: #666; }
+.link { color: #667eea; text-decoration: none; font-weight: 600; }
+
+/* Assign tab */
+.assign-layout {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 2rem;
+}
+
+.assign-form h3 { margin: 0 0 1.5rem; color: #1a1a2e; font-size: 1rem; }
+
+.form-group { margin-bottom: 1rem; }
+
+.form-group label {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 0.35rem;
+}
+
+.optional { font-weight: normal; color: #999; }
+
+.form-select {
+  width: 100%;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 0.9rem;
+}
+
+.form-select:focus { outline: none; border-color: #667eea; }
+
+.assign-info {
+  background: #f8f9ff;
+  border-radius: 8px;
+  padding: 1.5rem;
+  align-self: start;
+}
+
+.assign-info h4 { margin: 0 0 1rem; color: #333; font-size: 0.9rem; }
+
+.assign-info ul {
+  margin: 0;
+  padding-left: 1.2rem;
+  color: #555;
+  font-size: 0.875rem;
+  line-height: 1.8;
+}
+
+/* Buttons */
+.btn-primary {
+  padding: 0.6rem 1.25rem;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-block;
+  transition: background 0.2s;
+}
+
+.btn-primary:hover:not(:disabled) { background: #5568d3; }
+.btn-primary:disabled { background: #ccc; cursor: not-allowed; }
+
+.loading { text-align: center; padding: 2rem; color: #666; }

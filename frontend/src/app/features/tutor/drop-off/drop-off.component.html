@@ -1,0 +1,79 @@
+<div class="do-page">
+  <div class="do-header">
+    <div>
+      <h2 class="do-title">📊 Completion Funnel</h2>
+      <p class="do-sub">See where students drop off in each lesson</p>
+    </div>
+  </div>
+
+  <!-- Course selector -->
+  <div class="do-picker">
+    <label class="do-label">Select a course to analyse:</label>
+    <select class="do-select" [(ngModel)]="selectedCourseId" (ngModelChange)="loadFunnel($event)">
+      <option value="">-- Choose course --</option>
+      <option *ngFor="let c of courses" [value]="c.id">{{ c.title }}</option>
+    </select>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="do-loading">
+    <div *ngFor="let i of [1,2,3,4,5]" class="do-sk-row">
+      <div class="do-sk-label"></div>
+      <div class="do-sk-bar"></div>
+      <div class="do-sk-num"></div>
+    </div>
+  </div>
+
+  <!-- No selection -->
+  <div *ngIf="!loading && !selectedCourseId" class="do-empty">
+    Choose a course above to see the lesson-by-lesson funnel.
+  </div>
+
+  <!-- Funnel results -->
+  <div *ngIf="!loading && selectedCourseId && funnel.length > 0" class="do-funnel">
+    <div class="do-summary">
+      <div class="do-sum-card">
+        <span class="do-sum-val">{{ totalEnrolled }}</span>
+        <span class="do-sum-lbl">Enrolled</span>
+      </div>
+      <div class="do-sum-card do-sum-warn" *ngIf="biggestDrop">
+        <span class="do-sum-val">{{ biggestDrop.dropOffRate }}%</span>
+        <span class="do-sum-lbl">Biggest drop-off: {{ biggestDrop.lessonTitle }}</span>
+      </div>
+      <div class="do-sum-card do-sum-ok" *ngIf="avgCompletion !== null">
+        <span class="do-sum-val">{{ avgCompletion }}%</span>
+        <span class="do-sum-lbl">Avg completion</span>
+      </div>
+    </div>
+
+    <div class="do-module" *ngFor="let group of grouped">
+      <div class="do-module-title">📁 {{ group.moduleTitle }}</div>
+      <div class="do-row" *ngFor="let row of group.lessons">
+        <div class="do-row-label">
+          <span class="do-type-icon">{{ typeIcon(row.lessonType) }}</span>
+          <span class="do-lesson-name">{{ row.lessonTitle }}</span>
+          <span class="do-alarm" *ngIf="row.dropOffRate > 60" title="High drop-off">⚠️</span>
+        </div>
+        <div class="do-bars">
+          <div class="do-bar-track">
+            <div class="do-bar-started"   [style.width.%]="pct(row.started, totalEnrolled)"    title="Started: {{row.started}}"></div>
+          </div>
+          <div class="do-bar-track do-bar-track-sm">
+            <div class="do-bar-completed" [style.width.%]="pct(row.completed, totalEnrolled)"  title="Completed: {{row.completed}}"></div>
+          </div>
+        </div>
+        <div class="do-row-stats">
+          <span class="do-stat-started">{{ row.started }}/{{ totalEnrolled }} started</span>
+          <span class="do-stat-done">{{ row.completed }} done</span>
+          <span class="do-stat-pct" [class.do-red]="row.completionRate < 40" [class.do-yellow]="row.completionRate >= 40 && row.completionRate < 70" [class.do-green]="row.completionRate >= 70">
+            {{ row.completionRate }}%
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!loading && selectedCourseId && funnel.length === 0" class="do-empty">
+    No lessons found in this course yet.
+  </div>
+</div>

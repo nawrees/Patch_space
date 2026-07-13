@@ -1,0 +1,86 @@
+    <div class="catalog">
+      <div class="catalog-head">
+        <div>
+          <h1 class="catalog-title">Cybersecurity Courses</h1>
+          <p class="catalog-sub">{{ courses.length }} courses available</p>
+        </div>
+        <div class="search-wrap">
+          <span class="search-icon">🔍</span>
+          <input
+            class="search-input"
+            type="text"
+            [(ngModel)]="searchQuery"
+            (ngModelChange)="applyFilters()"
+            placeholder="Search courses…"
+          />
+          <button *ngIf="searchQuery" class="search-clear" (click)="clearSearch()">✕</button>
+        </div>
+      </div>
+
+      <div class="filters">
+        <button *ngFor="let d of difficulties"
+                [class.active]="selectedDifficulty === (d === 'All' ? '' : d)"
+                (click)="filterByDifficulty(d)">
+          {{ d }}
+        </button>
+      </div>
+
+      <p *ngIf="searchQuery && !loading" class="search-results-label">
+        {{ filteredCourses.length }} result{{ filteredCourses.length === 1 ? '' : 's' }} for
+        <strong>"{{ searchQuery }}"</strong>
+        <button class="search-results-clear" (click)="clearSearch()">Clear</button>
+      </p>
+
+      <div *ngIf="loading" class="cat-sk-grid">
+        <div *ngFor="let i of [1,2,3,4,5,6]" class="cat-sk-card">
+          <div class="cat-sk-thumb"></div>
+          <div class="cat-sk-body">
+            <div class="cat-sk-line"></div>
+            <div class="cat-sk-line cat-sk-s"></div>
+            <div class="cat-sk-line cat-sk-xs"></div>
+            <div class="cat-sk-btn"></div>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="!loading && filteredCourses.length === 0" class="empty-state">
+        <span style="font-size:32px">🔍</span>
+        <p *ngIf="searchQuery">No courses match <strong>"{{ searchQuery }}"</strong>.</p>
+        <p *ngIf="!searchQuery">No courses match this filter.</p>
+        <button *ngIf="searchQuery || selectedDifficulty" class="empty-reset" (click)="resetFilters()">Reset filters</button>
+      </div>
+
+      <div *ngIf="!loading && filteredCourses.length > 0" class="course-grid">
+        <div *ngFor="let course of filteredCourses" class="course-card">
+
+          <!-- Thumbnail + bookmark -->
+          <div class="course-thumb"
+               [style.backgroundImage]="course.thumbnail_url ? 'url('+course.thumbnail_url+')' : 'none'">
+            <span *ngIf="!course.thumbnail_url" class="thumb-ph">{{ course.title.charAt(0) }}</span>
+            <button class="btn-save"
+                    [class.saved]="savedIds.has(course.id)"
+                    [title]="savedIds.has(course.id) ? 'Remove from saved' : 'Save course'"
+                    (click)="$event.stopPropagation(); toggleSave(course.id)">
+              {{ savedIds.has(course.id) ? '★' : '☆' }}
+            </button>
+            <span class="diff-badge" [ngClass]="'diff-' + course.difficulty">{{ course.difficulty }}</span>
+          </div>
+
+          <div class="course-body">
+            <p class="course-cat">{{ course.category }}</p>
+            <h3 class="course-title">{{ course.title }}</h3>
+            <p class="course-desc">{{ course.description }}</p>
+            <div class="course-foot">
+              <button class="btn-enroll"
+                      [disabled]="enrolledIds.has(course.id)"
+                      (click)="enroll(course.id)">
+                {{ enrolledIds.has(course.id) ? '✓ Enrolled' : 'Enroll Now' }}
+              </button>
+              <a *ngIf="enrolledIds.has(course.id)" [routerLink]="['/student/course', course.id]" class="btn-continue">
+                Continue →
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>

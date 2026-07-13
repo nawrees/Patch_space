@@ -1,0 +1,130 @@
+<div class="pf-page">
+  <div class="pf-container">
+
+    <!-- Left: Avatar card -->
+    <aside class="pf-sidebar">
+      <div class="pf-avatar-wrap">
+        <div class="pf-avatar" [ngClass]="'av-' + (profile?.role || 'student')">
+          <img *ngIf="profile?.avatar_url" [src]="profile.avatar_url" alt="avatar" class="pf-avatar-img" />
+          <span *ngIf="!profile?.avatar_url" class="pf-avatar-init">{{ initial }}</span>
+        </div>
+        <h2 class="pf-name">{{ profile?.full_name || 'No name set' }}</h2>
+        <span class="pf-role-badge" [ngClass]="'role-' + profile?.role">{{ profile?.role }}</span>
+      </div>
+
+      <div class="pf-meta">
+        <div class="pf-meta-row">
+          <span class="pf-meta-icon">✉️</span>
+          <span class="pf-meta-val">{{ profile?.email }}</span>
+        </div>
+        <div class="pf-meta-row">
+          <span class="pf-meta-icon">📅</span>
+          <span class="pf-meta-val">Joined {{ profile?.created_at | date:'MMMM yyyy' }}</span>
+        </div>
+      </div>
+
+      <p class="pf-bio" *ngIf="profile?.bio">{{ profile.bio }}</p>
+      <p class="pf-bio pf-bio-empty" *ngIf="!profile?.bio">No bio yet.</p>
+
+      <a routerLink="/account" class="pf-edit-btn">✏️ Edit Profile</a>
+    </aside>
+
+    <!-- Right: Stats -->
+    <main class="pf-main">
+      <h3 class="pf-section-title">Activity</h3>
+
+      <div class="pf-stats-grid" *ngIf="!statsLoading && !isTutor">
+        <div class="pf-stat-card">
+          <span class="pf-stat-val">{{ stats.enrollments }}</span>
+          <span class="pf-stat-lbl">Courses Enrolled</span>
+        </div>
+        <div class="pf-stat-card">
+          <span class="pf-stat-val">{{ stats.completed }}</span>
+          <span class="pf-stat-lbl">Lessons Completed</span>
+        </div>
+        <div class="pf-stat-card">
+          <span class="pf-stat-val">{{ stats.labsSolved }}</span>
+          <span class="pf-stat-lbl">Labs Solved</span>
+        </div>
+        <div class="pf-stat-card">
+          <span class="pf-stat-val">{{ stats.overallPct }}%</span>
+          <span class="pf-stat-lbl">Overall Progress</span>
+        </div>
+      </div>
+
+      <div class="pf-stats-grid" *ngIf="!statsLoading && isTutor">
+        <div class="pf-stat-card">
+          <span class="pf-stat-val">{{ tutorStats.studentsCount }}</span>
+          <span class="pf-stat-lbl">Students Assigned</span>
+        </div>
+        <div class="pf-stat-card">
+          <span class="pf-stat-val">{{ tutorStats.coursesCreated }}</span>
+          <span class="pf-stat-lbl">Courses Created</span>
+        </div>
+        <div class="pf-stat-card">
+          <span class="pf-stat-val">{{ tutorStats.questionsAnswered }}</span>
+          <span class="pf-stat-lbl">Questions Answered</span>
+        </div>
+        <div class="pf-stat-card">
+          <span class="pf-stat-val">{{ tutorStats.pendingQuestions }}</span>
+          <span class="pf-stat-lbl">Pending Questions</span>
+        </div>
+      </div>
+
+      <div class="pf-stats-grid" *ngIf="statsLoading">
+        <div class="pf-stat-card pf-sk" *ngFor="let i of [1,2,3,4]">
+          <div class="pf-sk-val"></div>
+          <div class="pf-sk-lbl"></div>
+        </div>
+      </div>
+
+      <!-- Enrolled courses list (students) -->
+      <ng-container *ngIf="!isTutor">
+        <h3 class="pf-section-title" style="margin-top:28px">Enrolled Courses</h3>
+
+        <div *ngIf="!statsLoading && enrollments.length === 0" class="pf-empty">
+          Not enrolled in any courses yet.
+        </div>
+
+        <div class="pf-course-list" *ngIf="!statsLoading && enrollments.length > 0">
+          <div *ngFor="let e of enrollments" class="pf-course-row">
+            <div class="pf-cr-info">
+              <span class="pf-cr-title">{{ e.courses?.title }}</span>
+              <span class="pf-cr-cat">{{ e.courses?.category }}</span>
+            </div>
+            <div class="pf-cr-progress">
+              <div class="pf-cr-bar">
+                <div class="pf-cr-fill" [style.width.%]="e._pct"></div>
+              </div>
+              <span class="pf-cr-pct">{{ e._pct }}%</span>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+
+      <!-- My students list (tutors) -->
+      <ng-container *ngIf="isTutor">
+        <h3 class="pf-section-title" style="margin-top:28px">My Students</h3>
+
+        <div *ngIf="!statsLoading && myStudents.length === 0" class="pf-empty">
+          No students assigned yet.
+        </div>
+
+        <div class="pf-course-list" *ngIf="!statsLoading && myStudents.length > 0">
+          <a
+            *ngFor="let s of myStudents"
+            class="pf-course-row pf-student-row"
+            [routerLink]="['/tutor/student', s.student_id]"
+          >
+            <div class="pf-student-avatar">{{ initials(s.student?.full_name) }}</div>
+            <div class="pf-cr-info">
+              <span class="pf-cr-title">{{ s.student?.full_name }}</span>
+              <span class="pf-cr-cat">{{ s.student?.email }}</span>
+            </div>
+          </a>
+        </div>
+      </ng-container>
+    </main>
+
+  </div>
+</div>

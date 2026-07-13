@@ -1,0 +1,77 @@
+<div class="sc-page">
+
+  <div class="sc-head">
+    <div>
+      <h1 class="sc-title">{{ isAdmin ? 'Course Library' : 'Browse Courses' }}</h1>
+      <p class="sc-sub">{{ filteredCourses.length }} of {{ courses.length }} course{{ courses.length === 1 ? '' : 's' }}</p>
+    </div>
+    <div class="sc-search-wrap">
+      <span class="sc-search-icon">🔍</span>
+      <input class="sc-search" type="text" [(ngModel)]="query" (ngModelChange)="applyFilters()"
+             placeholder="Search courses…" />
+      <button *ngIf="query" class="sc-search-clear" (click)="query=''; applyFilters()">✕</button>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <div class="sc-filters">
+    <div class="sc-filter-group">
+      <button *ngFor="let d of difficulties"
+              [class.active]="difficulty === (d === 'All' ? '' : d)"
+              (click)="difficulty = (d === 'All' ? '' : d); applyFilters()">{{ d }}</button>
+    </div>
+    <div class="sc-filter-group" *ngIf="isAdmin">
+      <button [class.active]="statusFilter === ''" (click)="statusFilter=''; applyFilters()">All</button>
+      <button [class.active]="statusFilter === 'published'" (click)="statusFilter='published'; applyFilters()">Published</button>
+      <button [class.active]="statusFilter === 'draft'" (click)="statusFilter='draft'; applyFilters()">Draft</button>
+    </div>
+  </div>
+
+  <p *ngIf="query && !loading" class="sc-results-lbl">
+    {{ filteredCourses.length }} result{{ filteredCourses.length === 1 ? '' : 's' }} for <strong>"{{ query }}"</strong>
+    <button class="sc-results-clear" (click)="query=''; applyFilters()">Clear</button>
+  </p>
+
+  <!-- Skeleton -->
+  <div *ngIf="loading" class="sc-grid">
+    <div *ngFor="let i of [1,2,3,4,5,6]" class="sc-sk-card">
+      <div class="sc-sk-thumb"></div>
+      <div class="sc-sk-body">
+        <div class="sc-sk-line"></div>
+        <div class="sc-sk-line sc-sk-s"></div>
+        <div class="sc-sk-btn"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty -->
+  <div *ngIf="!loading && filteredCourses.length === 0" class="sc-empty">
+    <span style="font-size:32px">🔍</span>
+    <p *ngIf="query">No courses match <strong>"{{ query }}"</strong></p>
+    <p *ngIf="!query">No courses found.</p>
+    <button *ngIf="query || difficulty || statusFilter" class="sc-reset" (click)="resetFilters()">Reset filters</button>
+  </div>
+
+  <!-- Grid -->
+  <div *ngIf="!loading && filteredCourses.length > 0" class="sc-grid">
+    <div *ngFor="let c of filteredCourses" class="sc-card">
+      <div class="sc-thumb"
+           [style.backgroundImage]="c.thumbnail_url ? 'url('+c.thumbnail_url+')' : 'none'">
+        <span *ngIf="!c.thumbnail_url" class="sc-thumb-ph">{{ c.title?.charAt(0) }}</span>
+        <span class="sc-diff-badge" [ngClass]="'diff-' + c.difficulty">{{ c.difficulty }}</span>
+        <span *ngIf="!c.is_published" class="sc-draft-badge">Draft</span>
+      </div>
+      <div class="sc-body">
+        <p class="sc-cat">{{ c.category }}</p>
+        <h3 class="sc-course-title">{{ c.title }}</h3>
+        <p class="sc-desc">{{ c.description }}</p>
+        <div class="sc-foot">
+          <span class="sc-meta">
+            <span class="sc-meta-item">📚 {{ c.modules?.length ?? '—' }} modules</span>
+          </span>
+          <a [routerLink]="routePrefix + '/course/' + c.id" class="sc-view-btn">View →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

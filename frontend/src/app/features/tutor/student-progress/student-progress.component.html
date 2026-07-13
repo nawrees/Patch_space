@@ -1,0 +1,74 @@
+<div class="progress-page">
+  <a routerLink="/tutor/dashboard" class="back-link">← Back to Dashboard</a>
+
+  <div *ngIf="loading" class="loading">Loading student progress...</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+
+  <ng-container *ngIf="!loading && !error">
+    <!-- Student header -->
+    <div class="student-header">
+      <div class="avatar">{{ initials }}</div>
+      <div>
+        <h1>{{ studentName }}</h1>
+        <p class="email">{{ studentEmail }}</p>
+      </div>
+      <div class="summary-stats">
+        <div class="stat">
+          <span class="stat-value">{{ enrollments.length }}</span>
+          <span class="stat-label">Courses</span>
+        </div>
+        <div class="stat">
+          <span class="stat-value">{{ totalCompleted }}</span>
+          <span class="stat-label">Lessons Done</span>
+        </div>
+        <div class="stat">
+          <span class="stat-value">{{ overallPercent }}%</span>
+          <span class="stat-label">Overall</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty state -->
+    <div *ngIf="enrollments.length === 0" class="empty-state">
+      <p>This student is not enrolled in any courses yet.</p>
+    </div>
+
+    <!-- Course cards -->
+    <div class="courses-grid" *ngIf="enrollments.length > 0">
+      <div *ngFor="let e of enrichedEnrollments" class="course-card">
+        <div class="course-top">
+          <div class="course-meta">
+            <span class="category">{{ e.courses?.category }}</span>
+            <span class="badge" [ngClass]="'level-' + e.courses?.difficulty">
+              {{ e.courses?.difficulty }}
+            </span>
+          </div>
+          <h3>{{ e.courses?.title }}</h3>
+        </div>
+
+        <div class="progress-row">
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="e.percent"></div>
+          </div>
+          <span class="percent-label">{{ e.percent }}%</span>
+        </div>
+
+        <p class="lesson-count">
+          {{ e.completedLessons }} / {{ e.totalLessons }} lessons completed
+        </p>
+
+        <!-- Lesson breakdown -->
+        <div class="lesson-breakdown" *ngIf="e.lessons?.length > 0">
+          <div *ngFor="let lesson of e.lessons" class="lesson-item"
+               [ngClass]="{ done: lesson.completed }">
+            <span class="lesson-check">{{ lesson.completed ? '✓' : '○' }}</span>
+            <span class="lesson-name">{{ lesson.title }}</span>
+            <span class="lesson-status" *ngIf="lesson.completed">
+              {{ lesson.status }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </ng-container>
+</div>

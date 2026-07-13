@@ -1,0 +1,108 @@
+<div class="app-container">
+  <nav class="navbar" *ngIf="isAuthenticated">
+    <div class="navbar-brand">
+      <h2>E-Learning</h2>
+    </div>
+
+    <div class="navbar-menu">
+      <div class="navbar-start">
+        <a routerLink="/student/dashboard" routerLinkActive="active" *ngIf="isStudent">
+          My Courses
+        </a>
+        <a routerLink="/student/courses" routerLinkActive="active" *ngIf="isStudent">
+          Browse Courses
+        </a>
+        <a routerLink="/tutor/dashboard" routerLinkActive="active" *ngIf="isTutor">
+          My Students
+        </a>
+        <a routerLink="/tutor/courses" routerLinkActive="active" *ngIf="isTutor">
+          Browse Courses
+        </a>
+        <a routerLink="/manage/courses" routerLinkActive="active" *ngIf="isTutor || isAdmin">
+          Manage Courses
+        </a>
+        <a routerLink="/admin/dashboard" routerLinkActive="active" *ngIf="isAdmin">
+          Admin Panel
+        </a>
+        <a routerLink="/admin/courses" routerLinkActive="active" *ngIf="isAdmin">
+          Browse Courses
+        </a>
+      </div>
+
+      <div class="navbar-end">
+        <!-- Streak badge (students only) -->
+        <div *ngIf="isStudent && streak > 0" class="streak-badge" [class.active-today]="streakActiveToday" title="{{streak}}-day streak">
+          🔥 {{ streak }}
+        </div>
+
+        <!-- Avatar + dropdown -->
+        <div class="nav-profile" (click)="$event.stopPropagation()">
+          <button class="nav-avatar" (click)="dropdownOpen = !dropdownOpen" [ngClass]="'avatar-' + (currentUser?.profile?.role || 'student')">
+            {{ avatarInitial }}
+          </button>
+
+          <div class="nav-dropdown" [class.open]="dropdownOpen">
+            <!-- User info header -->
+            <div class="nd-header">
+              <span class="nd-avatar" [ngClass]="'avatar-' + (currentUser?.profile?.role || 'student')">{{ avatarInitial }}</span>
+              <div>
+                <p class="nd-name">{{ currentUser?.profile?.full_name }}</p>
+                <span class="nd-role" [ngClass]="'role-' + currentUser?.profile?.role">{{ currentUser?.profile?.role }}</span>
+              </div>
+            </div>
+
+            <div class="nd-divider"></div>
+
+            <!-- Navigation items -->
+            <a class="nd-item" routerLink="/profile" (click)="dropdownOpen = false">
+              <span class="nd-icon">👤</span> View Profile
+            </a>
+            <a class="nd-item" routerLink="/account" (click)="dropdownOpen = false">
+              <span class="nd-icon">⚙️</span> Manage Account
+            </a>
+
+            <div class="nd-divider"></div>
+
+            <!-- Toggles -->
+            <div class="nd-item nd-toggle-row" (click)="theme.toggle()">
+              <span class="nd-icon">🌙</span> Dark Mode
+              <div class="nd-toggle" [class.on]="theme.isDark">
+                <div class="nd-toggle-thumb"></div>
+              </div>
+            </div>
+            <div class="nd-item nd-toggle-row" (click)="toggleSound()">
+              <span class="nd-icon">🔊</span> Sound Effects
+              <div class="nd-toggle" [class.on]="soundEnabled">
+                <div class="nd-toggle-thumb"></div>
+              </div>
+            </div>
+
+            <ng-container *ngIf="isStudent">
+              <div class="nd-divider"></div>
+              <a class="nd-item" routerLink="/saved" (click)="dropdownOpen = false">
+                <span class="nd-icon">🔖</span> Saved
+              </a>
+              <a class="nd-item" routerLink="/badges" (click)="dropdownOpen = false">
+                <span class="nd-icon">🏅</span> Badges
+              </a>
+              <a class="nd-item" routerLink="/rewards" (click)="dropdownOpen = false">
+                <span class="nd-icon">🎁</span> Rewards
+              </a>
+            </ng-container>
+
+            <div class="nd-divider"></div>
+
+            <!-- Logout -->
+            <button class="nd-item nd-logout" (click)="onLogout()">
+              <span class="nd-icon">🚪</span> Log out
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="main-content">
+    <router-outlet></router-outlet>
+  </main>
+</div>

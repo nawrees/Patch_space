@@ -1,0 +1,43 @@
+.do-page { padding: 28px; max-width: 1000px; margin: 0 auto; background: #0f1117; min-height: 100vh; }
+.do-header { margin-bottom: 24px; }
+.do-title { color: #f1f5f9; font-size: 22px; font-weight: 800; margin: 0 0 4px; }
+.do-sub { color: #6b7280; font-size: 13px; margin: 0; }
+.do-picker { margin-bottom: 24px; display: flex; align-items: center; gap: 14px; }
+.do-label { color: #94a3b8; font-size: 13px; white-space: nowrap; }
+.do-select { background: #1a1f2e; border: 1px solid #2a3042; color: #e2e8f0; padding: 8px 12px; border-radius: 8px; font-size: 14px; flex: 1; max-width: 420px; }
+.do-loading { display: flex; flex-direction: column; gap: 12px; }
+.do-sk-row { display: flex; gap: 12px; align-items: center; }
+.do-sk-label { width: 200px; height: 14px; background: #1e2535; border-radius: 4px; animation: pulse 1.5s infinite; }
+.do-sk-bar { flex: 1; height: 22px; background: #1e2535; border-radius: 4px; animation: pulse 1.5s infinite; }
+.do-sk-num { width: 60px; height: 14px; background: #1e2535; border-radius: 4px; animation: pulse 1.5s infinite; }
+.do-empty { text-align: center; color: #6b7280; padding: 48px 0; font-size: 14px; }
+
+/* Summary cards */
+.do-summary { display: flex; gap: 14px; margin-bottom: 28px; }
+.do-sum-card { background: #1a1f2e; border: 1px solid #2a3042; border-radius: 10px; padding: 14px 20px; flex: 1; text-align: center; }
+.do-sum-card.do-sum-warn { border-color: #f59e0b44; background: #271e0b; }
+.do-sum-card.do-sum-ok { border-color: #34d39944; background: #052015; }
+.do-sum-val { display: block; font-size: 24px; font-weight: 800; color: #f1f5f9; }
+.do-sum-lbl { font-size: 11px; color: #6b7280; }
+
+/* Module grouping */
+.do-module { margin-bottom: 24px; }
+.do-module-title { color: #94a3b8; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 10px; }
+.do-row { display: flex; align-items: center; gap: 14px; padding: 10px 0; border-top: 1px solid #1e2535; }
+.do-row-label { width: 220px; display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.do-type-icon { font-size: 13px; }
+.do-lesson-name { color: #e2e8f0; font-size: 13px; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.do-alarm { flex-shrink: 0; }
+.do-bars { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+.do-bar-track { height: 12px; background: #1e2535; border-radius: 6px; overflow: hidden; }
+.do-bar-track-sm { height: 8px; }
+.do-bar-started { height: 100%; background: #3b4fc8; border-radius: 6px; transition: width .5s; }
+.do-bar-completed { height: 100%; background: #4f46e5; border-radius: 6px; transition: width .5s; }
+.do-row-stats { width: 150px; flex-shrink: 0; display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+.do-stat-started { font-size: 11px; color: #6b7280; }
+.do-stat-done { font-size: 11px; color: #94a3b8; }
+.do-stat-pct { font-size: 14px; font-weight: 800; }
+.do-red { color: #f87171; }
+.do-yellow { color: #fbbf24; }
+.do-green { color: #34d399; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }

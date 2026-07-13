@@ -1,0 +1,58 @@
+    .sd-page { padding: 28px 32px; max-width: 1280px; margin: 0 auto; background: var(--bg-page); min-height: 100vh; transition: background .25s; }
+
+    /* Hero — stays dark/gradient regardless of theme */
+    .sd-hero { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 32px; padding: 28px 32px; background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); border-radius: 16px; }
+    .sd-greeting { font-size: 13px; color: #a5b4fc; text-transform: uppercase; letter-spacing: 1px; }
+    .sd-name { color: #f1f5f9; font-size: 28px; font-weight: 800; margin: 4px 0 8px; }
+    .sd-sub { color: #94a3b8; font-size: 14px; margin: 0; }
+    .sd-hero-stats { display: flex; gap: 24px; }
+    .sd-hs { text-align: center; background: rgba(255,255,255,.08); padding: 14px 20px; border-radius: 12px; }
+    .sd-hs-val { display: block; font-size: 26px; font-weight: 800; color: #f1f5f9; }
+    .sd-hs-lbl { font-size: 11px; color: #94a3b8; }
+
+    /* Grid layout */
+    .sd-grid { display: grid; grid-template-columns: 1fr 340px; gap: 24px; align-items: start; }
+    .sd-col-main, .sd-col-side { display: flex; flex-direction: column; gap: 24px; }
+    .sd-section { }
+    .sd-section-title { color: var(--text-1); font-size: 16px; font-weight: 700; margin: 0 0 14px; transition: color .25s; }
+    .sd-section-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+    .sd-section-head .sd-section-title { margin: 0; }
+    .sd-link { color: var(--accent-lt); font-size: 13px; text-decoration: none; }
+    .sd-link:hover { color: #a5b4fc; }
+
+    /* Course grid */
+    .sd-course-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
+    .sd-course-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; transition: transform .2s, border-color .2s, background .25s; }
+    .sd-course-card:hover { transform: translateY(-2px); border-color: #4f46e5; }
+    .sd-cc-thumb { height: 120px; background: var(--bg-page) center/cover; display: flex; align-items: center; justify-content: center; position: relative; }
+    .sd-cc-ph { font-size: 36px; }
+    .sd-cc-diff { position: absolute; top: 8px; right: 8px; font-size: 10px; text-transform: uppercase; padding: 2px 8px; border-radius: 20px; font-weight: 700; }
+    .diff-beginner { background: #064e3b; color: #6ee7b7; }
+    .diff-intermediate { background: #78350f; color: #fcd34d; }
+    .diff-advanced { background: #7f1d1d; color: #fca5a5; }
+    .sd-cc-body { padding: 14px; }
+    .sd-cc-cat { font-size: 10px; color: var(--accent-lt); text-transform: uppercase; letter-spacing: .5px; margin: 0 0 4px; }
+    .sd-cc-title { color: var(--text-1); font-size: 14px; font-weight: 600; margin: 0 0 12px; line-height: 1.3; transition: color .25s; }
+    .sd-cc-bar { height: 5px; background: var(--border-sub); border-radius: 3px; overflow: hidden; margin-bottom: 10px; }
+    .sd-cc-fill { height: 100%; background: linear-gradient(90deg, #4f46e5, #818cf8); border-radius: 3px; transition: width .4s; }
+    .sd-cc-foot { display: flex; justify-content: space-between; align-items: center; }
+    .sd-cc-pct { font-size: 11px; color: var(--text-3); }
+    .sd-cc-btn { font-size: 12px; color: #818cf8; text-decoration: none; font-weight: 600; }
+    .sd-cc-btn:hover { color: #a5b4fc; }
+
+    /* Empty / skeleton */
+    .sd-empty { text-align: center; padding: 32px; color: var(--text-3); }
+    .sd-btn-primary { display: inline-block; margin-top: 12px; padding: 10px 20px; background: #4f46e5; color: #fff; border-radius: 8px; text-decoration: none; font-size: 14px; font-weight: 600; }
+    .sd-sk-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
+    .sd-sk-card { background: var(--bg-card); border-radius: 12px; overflow: hidden; }
+    .sd-sk-thumb { height: 120px; background: var(--bg-skeleton); animation: pulse 1.5s infinite; }
+    .sd-sk-body { padding: 14px; display: flex; flex-direction: column; gap: 8px; }
+    .sd-sk-line { height: 12px; background: var(--bg-skeleton); border-radius: 4px; animation: pulse 1.5s infinite; }
+    .sd-sk-s { width: 55%; }
+    .sd-sk-bar { height: 5px; background: var(--bg-skeleton); border-radius: 3px; animation: pulse 1.5s infinite; margin-top: 4px; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+    @media (max-width: 900px) {
+      .sd-grid { grid-template-columns: 1fr; }
+      .sd-hero { flex-direction: column; gap: 20px; }
+    }

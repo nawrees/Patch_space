@@ -1,0 +1,75 @@
+    <div class="course-detail">
+      <div *ngIf="loading" class="loading">Loading course...</div>
+      <div *ngIf="error" class="error-state">{{ error }}</div>
+
+      <ng-container *ngIf="!loading && course">
+        <div class="course-header">
+          <a routerLink="/student/courses" class="back-link">← All Courses</a>
+          <div class="header-content">
+            <div class="header-info">
+              <span class="category-tag">{{ course.category }}</span>
+              <h1>{{ course.title }}</h1>
+              <p class="description">{{ course.description }}</p>
+              <div class="header-actions">
+                <span class="badge" [ngClass]="'level-' + course.difficulty">{{ course.difficulty }}</span>
+                <button class="btn-bookmark" [class.bookmarked]="isSaved" (click)="toggleSave()" [title]="isSaved ? 'Remove from saved' : 'Save course'">
+                  {{ isSaved ? '🔖 Saved' : '🔖 Save' }}
+                </button>
+              </div>
+            </div>
+            <div class="progress-summary">
+              <div class="progress-ring">
+                <span class="progress-value">{{ getCourseProgress() }}%</span>
+                <span class="progress-label">Complete</span>
+              </div>
+              <p class="progress-detail">{{ getCompletedLessons() }} / {{ getTotalLessons() }} lessons</p>
+            </div>
+          </div>
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="getCourseProgress()"></div>
+          </div>
+        </div>
+
+        <div class="course-content">
+          <div *ngIf="!course.modules || course.modules.length === 0" class="empty-state">
+            No content available yet.
+          </div>
+
+          <div *ngFor="let module of course.modules; let mi = index" class="module">
+            <div class="module-header" (click)="toggleModule(module.id)">
+              <div class="module-left">
+                <span class="module-toggle">{{ expandedModules.has(module.id) ? '▼' : '▶' }}</span>
+                <div>
+                  <span class="module-index">Module {{ mi + 1 }}</span>
+                  <h3>{{ module.title }}</h3>
+                </div>
+              </div>
+              <span class="module-count">{{ module.lessons?.length || 0 }} lessons</span>
+            </div>
+
+            <div class="lessons-list" *ngIf="expandedModules.has(module.id)">
+              <div
+                *ngFor="let lesson of module.lessons; let li = index"
+                class="lesson-row"
+                [ngClass]="{ completed: isLessonComplete(lesson.id) }"
+                [routerLink]="['/student/lesson', lesson.id]"
+                [queryParams]="{ courseId: course.id }"
+              >
+                <div class="lesson-left">
+                  <span class="lesson-icon">
+                    <ng-container [ngSwitch]="lesson.lesson_type">
+                      <span *ngSwitchCase="'video'">▶</span>
+                      <span *ngSwitchCase="'lab'">⚗</span>
+                      <span *ngSwitchDefault>📄</span>
+                    </ng-container>
+                  </span>
+                  <span class="lesson-title">{{ lesson.title }}</span>
+                  <span *ngIf="lesson.lab" class="lab-badge">Lab</span>
+                </div>
+                <span class="check" *ngIf="isLessonComplete(lesson.id)">✓</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </div>

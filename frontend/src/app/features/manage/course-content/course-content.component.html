@@ -1,0 +1,194 @@
+<div class="content-page">
+  <div class="page-header">
+    <a routerLink="/manage/courses" class="back-link">← Back to Courses</a>
+    <div class="header-row" *ngIf="course">
+      <div>
+        <h1>{{ course.title }}</h1>
+        <span class="badge" [ngClass]="course.is_published ? 'published' : 'draft'">
+          {{ course.is_published ? 'Published' : 'Draft' }}
+        </span>
+      </div>
+      <button class="btn-add" (click)="openAddModule()">+ Add Module</button>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="loading">Loading...</div>
+  <div *ngIf="error" class="error-msg">{{ error }}</div>
+
+  <!-- Side panel (module or lesson edit form) -->
+  <div class="panel-overlay" *ngIf="activePanel" (click)="closePanel()"></div>
+  <div class="side-panel" [class.open]="activePanel">
+    <ng-container *ngIf="activePanel === 'module'">
+      <h3>{{ editingModule?.id ? 'Edit Module' : 'Add Module' }}</h3>
+      <div class="form-group">
+        <label>Module Title *</label>
+        <input [(ngModel)]="moduleForm.title" placeholder="e.g. Getting Started" autofocus />
+      </div>
+      <div class="panel-actions">
+        <button class="btn-secondary" (click)="closePanel()">Cancel</button>
+        <button class="btn-primary" (click)="saveModule()" [disabled]="saving || !moduleForm.title.trim()">
+          {{ saving ? 'Saving...' : 'Save' }}
+        </button>
+      </div>
+      <p *ngIf="panelError" class="panel-error">{{ panelError }}</p>
+    </ng-container>
+
+    <ng-container *ngIf="activePanel === 'lesson'">
+      <h3>{{ lessonForm.id ? 'Edit Lesson' : 'Add Lesson' }}</h3>
+
+      <div class="form-group">
+        <label>Title *</label>
+        <input [(ngModel)]="lessonForm.title" placeholder="e.g. Introduction to SQL Injection" />
+      </div>
+
+      <div class="form-group">
+        <label>Type</label>
+        <select [(ngModel)]="lessonForm.lesson_type">
+          <option value="theory">Theory / Reading</option>
+          <option value="video">Video</option>
+          <option value="lab">Lab</option>
+        </select>
+      </div>
+
+      <div class="form-group" *ngIf="lessonForm.lesson_type === 'video' || lessonForm.lesson_type === 'theory'">
+        <label>Video URL</label>
+        <input [(ngModel)]="lessonForm.video_url" placeholder="https://youtube.com/embed/..." />
+      </div>
+
+      <div class="form-group">
+        <label>Content</label>
+        <textarea [(ngModel)]="lessonForm.content" rows="5" placeholder="Lesson text content..."></textarea>
+      </div>
+
+      <!-- Lab fields -->
+      <div class="lab-section" *ngIf="lessonForm.lesson_type === 'lab'">
+        <h4>Lab Configuration</h4>
+        <div class="form-group">
+          <label>Lab Title *</label>
+          <input [(ngModel)]="labForm.title" placeholder="e.g. SQL Injection Lab" />
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <input [(ngModel)]="labForm.description" placeholder="Short description" />
+        </div>
+        <div class="form-group">
+          <label>Docker Image *</label>
+          <input [(ngModel)]="labForm.docker_image" placeholder="e.g. webgoat/webgoat-8.0" />
+        </div>
+        <div class="form-group">
+          <label>Flag (plaintext — will be hashed)</label>
+          <input [(ngModel)]="labForm.flag" placeholder="CTF{...}" />
+        </div>
+        <div class="form-group">
+          <label>Instructions</label>
+          <textarea [(ngModel)]="labForm.instructions" rows="3" placeholder="Step-by-step instructions..."></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>CPU Limit</label>
+            <input [(ngModel)]="labForm.cpu_limit" placeholder="0.5" />
+          </div>
+          <div class="form-group">
+            <label>Memory (MB)</label>
+            <input [(ngModel)]="labForm.memory_limit_mb" type="number" placeholder="512" />
+          </div>
+          <div class="form-group">
+            <label>Max Duration (min)</label>
+            <input [(ngModel)]="labForm.max_duration_minutes" type="number" placeholder="60" />
+          </div>
+          <div class="form-group">
+            <label>Service Port</label>
+            <input [(ngModel)]="labForm.service_port" type="number" placeholder="80" />
+          </div>
+        </div>
+      </div>
+
+      <!-- PDF Attachments -->
+      <div class="pdf-section">
+        <div class="pdf-sec-header">
+          <h4>PDF Attachments</h4>
+          <span class="pdf-sec-hint">Visible to enrolled students</span>
+        </div>
+
+        <!-- Already-saved PDFs (edit mode) -->
+        <div *ngFor="let r of existingResources" class="pdf-item">
+          <span class="pdf-ic">📄</span>
+          <span class="pdf-nm">{{ r.title }}</span>
+          <span class="pdf-sz">{{ fmtBytes(r.file_size_bytes) }}</span>
+          <button class="pdf-rm" (click)="removeResource(r)" title="Remove">✕</button>
+        </div>
+
+        <!-- Pending (not yet uploaded) files -->
+        <div *ngFor="let f of pendingFiles; let i = index" class="pdf-item pdf-pending">
+          <span class="pdf-ic">📄</span>
+          <span class="pdf-nm">{{ f.name }}</span>
+          <span class="pdf-sz">{{ fmtBytes(f.size) }}</span>
+          <button class="pdf-rm" (click)="pendingFiles.splice(i, 1)" title="Remove">✕</button>
+        </div>
+
+        <!-- Drop zone -->
+        <div class="pdf-drop"
+             (click)="pdfInput.click()"
+             (dragover)="$event.preventDefault()"
+             (drop)="onPdfDrop($event)">
+          <input #pdfInput type="file" accept=".pdf,application/pdf" multiple
+                 (change)="onPdfSelect($event)" style="display:none" />
+          <span style="font-size:20px">📂</span>
+          <span>Click or drag PDFs here</span>
+          <span class="pdf-drop-hint">PDF only · max 20 MB each</span>
+        </div>
+      </div>
+
+      <div class="panel-actions">
+        <button class="btn-secondary" (click)="closePanel()">Cancel</button>
+        <button class="btn-primary" (click)="saveLesson()" [disabled]="saving || !lessonForm.title.trim()">
+          {{ saving ? 'Saving...' : (pendingFiles.length ? 'Save & Upload' : 'Save') }}
+        </button>
+      </div>
+      <p *ngIf="panelError" class="panel-error">{{ panelError }}</p>
+    </ng-container>
+  </div>
+
+  <!-- Modules list -->
+  <ng-container *ngIf="!loading && course">
+    <div *ngIf="!course.modules || course.modules.length === 0" class="empty-modules">
+      <p>No modules yet. Add your first module to get started.</p>
+    </div>
+
+    <div *ngFor="let module of course.modules; let mi = index" class="module-block">
+      <div class="module-header">
+        <div class="module-left">
+          <span class="module-num">{{ mi + 1 }}</span>
+          <h3>{{ module.title }}</h3>
+          <span class="lesson-count">{{ module.lessons?.length || 0 }} lessons</span>
+        </div>
+        <div class="module-actions">
+          <button class="btn-sm btn-outline" (click)="openEditModule(module)">Edit</button>
+          <button class="btn-sm btn-outline-danger" (click)="deleteModule(module, mi)">Delete</button>
+          <button class="btn-sm btn-primary-sm" (click)="openAddLesson(module)">+ Lesson</button>
+        </div>
+      </div>
+
+      <div class="lessons-list" *ngIf="module.lessons?.length > 0">
+        <div *ngFor="let lesson of module.lessons; let li = index" class="lesson-row">
+          <div class="lesson-left">
+            <span class="lesson-num">{{ li + 1 }}</span>
+            <div>
+              <span class="lesson-title">{{ lesson.title }}</span>
+              <span class="type-badge type-{{ lesson.lesson_type }}">{{ lesson.lesson_type }}</span>
+              <span class="lab-tag" *ngIf="lesson.lab">⚗ Lab attached</span>
+            </div>
+          </div>
+          <div class="lesson-actions">
+            <button class="btn-sm btn-outline" (click)="openEditLesson(module, lesson)">Edit</button>
+            <button class="btn-sm btn-outline-danger" (click)="deleteLesson(module, lesson, li)">Delete</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="no-lessons" *ngIf="!module.lessons || module.lessons.length === 0">
+        No lessons yet. <button class="btn-link" (click)="openAddLesson(module)">Add one</button>
+      </div>
+    </div>
+  </ng-container>
+</div>

@@ -1,0 +1,89 @@
+<div class="scd-page">
+
+  <div *ngIf="loading" class="scd-loading">
+    <div class="scd-sk-header"></div>
+    <div class="scd-sk-body">
+      <div *ngFor="let i of [1,2,3]" class="scd-sk-module">
+        <div class="scd-sk-line"></div>
+        <div class="scd-sk-line scd-sk-s"></div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!loading && error" class="scd-error">{{ error }}</div>
+
+  <ng-container *ngIf="!loading && course">
+
+    <!-- Header -->
+    <div class="scd-header">
+      <a [routerLink]="backRoute" class="scd-back">← Course Library</a>
+
+      <div class="scd-hrow">
+        <div class="scd-hinfo">
+          <div class="scd-htags">
+            <span class="scd-cat">{{ course.category }}</span>
+            <span class="scd-diff" [ngClass]="'diff-' + course.difficulty">{{ course.difficulty }}</span>
+            <span *ngIf="!course.is_published" class="scd-draft">Draft</span>
+          </div>
+          <h1 class="scd-title">{{ course.title }}</h1>
+          <p class="scd-desc">{{ course.description }}</p>
+        </div>
+
+        <!-- Stats -->
+        <div class="scd-hstats">
+          <div class="scd-stat">
+            <span class="scd-stat-val">{{ totalModules }}</span>
+            <span class="scd-stat-lbl">Modules</span>
+          </div>
+          <div class="scd-stat">
+            <span class="scd-stat-val">{{ totalLessons }}</span>
+            <span class="scd-stat-lbl">Lessons</span>
+          </div>
+          <div class="scd-stat">
+            <span class="scd-stat-val">{{ totalLabs }}</span>
+            <span class="scd-stat-lbl">Labs</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modules -->
+    <div class="scd-modules">
+      <div *ngFor="let m of course.modules; let mi = index" class="scd-module">
+
+        <div class="scd-module-header" (click)="toggle(m.id)">
+          <div class="scd-mh-left">
+            <span class="scd-mh-toggle">{{ expanded.has(m.id) ? '▾' : '▸' }}</span>
+            <div class="scd-mh-num">{{ mi + 1 }}</div>
+            <div>
+              <h3 class="scd-mh-title">{{ m.title }}</h3>
+              <span class="scd-mh-count">{{ m.lessons?.length || 0 }} lessons</span>
+            </div>
+          </div>
+        </div>
+
+        <div *ngIf="expanded.has(m.id)" class="scd-lessons">
+          <div *ngFor="let l of m.lessons; let li = index" class="scd-lesson-row">
+            <div class="scd-lr-left">
+              <span class="scd-lr-num">{{ li + 1 }}</span>
+              <span class="scd-type-badge" [ngClass]="'type-' + l.lesson_type">{{ l.lesson_type }}</span>
+              <span class="scd-lr-title">{{ l.title }}</span>
+              <span *ngIf="l.lab" class="scd-lab-chip">⚗️ Lab: {{ l.lab.title }}</span>
+            </div>
+            <div class="scd-lr-right">
+              <span *ngIf="l.lab" class="scd-lab-meta">
+                🐳 {{ l.lab.docker_image }}
+                · ⏱ {{ l.lab.max_duration_minutes }}m
+                · 💾 {{ l.lab.memory_limit_mb }}MB
+              </span>
+            </div>
+          </div>
+          <div *ngIf="!m.lessons?.length" class="scd-no-lessons">No lessons yet.</div>
+        </div>
+      </div>
+
+      <div *ngIf="!course.modules?.length" class="scd-empty-modules">No modules yet.</div>
+    </div>
+
+  </ng-container>
+</div>

@@ -1,0 +1,192 @@
+    <div class="lab-wrap" [class.lab-running]="state === 'running'" [class.lab-done]="state === 'stopped' || state === 'expired'">
+
+      <!-- ── Header ────────────────────────────────────────────── -->
+      <div class="lab-header">
+        <div class="lab-header-left">
+          <span class="lab-icon">⚗️</span>
+          <div>
+            <h3 class="lab-title">{{ lab.title }}</h3>
+            <span class="lab-image">{{ lab.docker_image }}</span>
+          </div>
+        </div>
+        <div class="lab-header-right">
+          <!-- State badge -->
+          <span class="lab-status-badge" [ngClass]="'lsb-' + state">
+            <span class="lab-pulse" *ngIf="state === 'running'"></span>
+            {{ stateLabel }}
+          </span>
+          <!-- Timer (running only) -->
+          <span class="lab-timer" *ngIf="state === 'running' && timerDisplay" [class.lab-timer-warn]="timerWarn">
+            ⏱ {{ timerDisplay }}
+          </span>
+        </div>
+      </div>
+
+      <!-- ── CHECKING ───────────────────────────────────────────── -->
+      <div *ngIf="state === 'checking'" class="lab-spinner-row">
+        <div class="lab-spinner"></div>
+        <span>Checking session…</span>
+      </div>
+
+      <!-- ── IDLE ──────────────────────────────────────────────── -->
+      <div *ngIf="state === 'idle'" class="lab-idle">
+        <div class="lab-info-grid">
+          <div class="lab-info-item">
+            <span class="lab-info-lbl">Duration</span>
+            <span class="lab-info-val">{{ lab.max_duration_minutes }} min</span>
+          </div>
+          <div class="lab-info-item">
+            <span class="lab-info-lbl">Memory</span>
+            <span class="lab-info-val">{{ lab.memory_limit_mb }} MB</span>
+          </div>
+          <div class="lab-info-item">
+            <span class="lab-info-lbl">CPU</span>
+            <span class="lab-info-val">{{ lab.cpu_limit }} core</span>
+          </div>
+          <div class="lab-info-item">
+            <span class="lab-info-lbl">Difficulty</span>
+            <span class="lab-info-val lab-diff-val" *ngIf="avgRating; else noRating">
+              {{ difficultyLabel(avgRating) }}
+              <span class="lab-diff-count">({{ totalRatings }})</span>
+            </span>
+            <ng-template #noRating>
+              <span class="lab-info-val" style="color:#8b949e;font-size:12px">No ratings yet</span>
+            </ng-template>
+          </div>
+        </div>
+        <div *ngIf="lab.instructions" class="lab-instructions">
+          <h4>Instructions</h4>
+          <p>{{ lab.instructions }}</p>
+        </div>
+        <button class="lab-btn lab-btn-start" (click)="start()">
+          🚀 Launch Lab
+        </button>
+      </div>
+
+      <!-- ── PROVISIONING ──────────────────────────────────────── -->
+      <div *ngIf="state === 'provisioning'" class="lab-provisioning">
+        <div class="lab-spinner lab-spinner-lg"></div>
+        <p class="lab-prov-title">Pulling image &amp; starting container…</p>
+        <p class="lab-prov-sub">This may take a minute if the image isn't cached locally.</p>
+      </div>
+
+      <!-- ── RUNNING ───────────────────────────────────────────── -->
+      <div *ngIf="state === 'running'" class="lab-running-body">
+        <!-- Access card -->
+        <div class="lab-access-card">
+          <div class="lab-access-info">
+            <span class="lab-access-label">Lab is live at</span>
+            <code class="lab-access-url">{{ session?.access_url }}</code>
+          </div>
+          <a [href]="session?.access_url" target="_blank" class="lab-btn lab-btn-open">
+            🌐 Open Lab
+          </a>
+        </div>
+
+        <!-- Instructions (reminder) -->
+        <div *ngIf="lab.instructions" class="lab-inst-collapsed">
+          <button class="lab-inst-toggle" (click)="showInstructions = !showInstructions">
+            {{ showInstructions ? '▾' : '▸' }} Instructions
+          </button>
+          <p *ngIf="showInstructions" class="lab-inst-text">{{ lab.instructions }}</p>
+        </div>
+
+        <!-- Flag submission -->
+        <div class="lab-flag-card">
+          <h4 class="lab-flag-title">🚩 Submit Flag</h4>
+          <p class="lab-flag-sub">Find the flag inside the lab and paste it below.</p>
+          <div class="lab-flag-form">
+            <input
+              class="lab-flag-input"
+              [(ngModel)]="flagInput"
+              placeholder="FLAG{...}"
+              [disabled]="submitting"
+              (keydown.enter)="submitFlag()"
+            />
+            <button class="lab-btn lab-btn-submit" [disabled]="!flagInput.trim() || submitting" (click)="submitFlag()">
+              {{ submitting ? '…' : 'Submit' }}
+            </button>
+          </div>
+
+          <!-- Result feedback -->
+          <div *ngIf="flagResult" class="lab-flag-result"
+               [class.lab-result-correct]="flagResult.isCorrect"
+               [class.lab-result-wrong]="!flagResult.isCorrect">
+            {{ flagResult.isCorrect ? '🎉 Correct! Lab completed.' : '❌ Wrong flag. Try again.' }}
+            <span class="lab-attempts">(attempt {{ flagResult.attempts }})</span>
+          </div>
+
+          <!-- Submission history -->
+          <div *ngIf="submissions.length > 0" class="lab-history">
+            <span class="lab-history-title">History</span>
+            <div *ngFor="let s of submissions" class="lab-history-row">
+              <span [class.lh-ok]="s.is_correct" [class.lh-fail]="!s.is_correct">
+                {{ s.is_correct ? '✓' : '✗' }}
+              </span>
+              <span class="lh-num">#{{ s.attempt_number }}</span>
+              <span class="lh-time">{{ s.submitted_at | date:'shortTime' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Logs -->
+        <div class="lab-logs-section">
+          <button class="lab-logs-toggle" (click)="toggleLogs()">
+            {{ showLogs ? '▾ Hide Logs' : '▸ Show Container Logs' }}
+          </button>
+          <div *ngIf="showLogs" class="lab-logs-panel">
+            <pre class="lab-logs-pre">{{ logs || '(no output yet)' }}</pre>
+          </div>
+        </div>
+
+        <!-- Stop button -->
+        <div class="lab-stop-row">
+          <button class="lab-btn lab-btn-stop" (click)="stop()" [disabled]="stopping">
+            {{ stopping ? 'Stopping…' : '⏹ Stop Lab' }}
+          </button>
+        </div>
+      </div>
+
+      <!-- ── STOPPED ────────────────────────────────────────────── -->
+      <div *ngIf="state === 'stopped'" class="lab-ended">
+        <span class="lab-ended-icon">{{ flagResult?.isCorrect ? '🏆' : '⏹' }}</span>
+        <h4>{{ flagResult?.isCorrect ? 'Lab Completed!' : 'Lab Session Ended' }}</h4>
+        <p>{{ flagResult?.isCorrect ? 'You captured the flag. Well done!' : 'Your session was stopped.' }}</p>
+
+        <!-- Difficulty rating (shown after solving or stopping) -->
+        <div class="lab-rating-box">
+          <p class="lab-rating-prompt">{{ userRating ? 'Your difficulty rating:' : 'How difficult was this lab?' }}</p>
+          <div class="lab-rating-btns">
+            <button *ngFor="let d of difficultyLevels; let i = index"
+                    class="lab-diff-btn"
+                    [class.lab-diff-selected]="userRating === i + 1"
+                    [ngClass]="'diff-' + (i + 1)"
+                    [disabled]="ratingSubmitting"
+                    (click)="rateLabDifficulty(i + 1)">
+              {{ d }}
+            </button>
+          </div>
+          <p *ngIf="avgRating" class="lab-rating-avg">
+            Community avg: <strong>{{ difficultyLabel(avgRating) }}</strong> ({{ totalRatings }} rating{{ totalRatings === 1 ? '' : 's' }})
+          </p>
+        </div>
+
+        <button class="lab-btn lab-btn-start" (click)="restart()">🔄 Start New Session</button>
+      </div>
+
+      <!-- ── EXPIRED ────────────────────────────────────────────── -->
+      <div *ngIf="state === 'expired'" class="lab-ended lab-ended-expired">
+        <span class="lab-ended-icon">⌛</span>
+        <h4>Time's Up</h4>
+        <p>The lab session expired after {{ lab.max_duration_minutes }} minutes.</p>
+        <button class="lab-btn lab-btn-start" (click)="restart()">🔄 Try Again</button>
+      </div>
+
+      <!-- ── ERROR ──────────────────────────────────────────────── -->
+      <div *ngIf="state === 'error'" class="lab-ended lab-ended-error">
+        <span class="lab-ended-icon">💥</span>
+        <h4>Container Error</h4>
+        <p>{{ errorMsg || 'The container stopped unexpectedly. Check Docker is running and the image is valid.' }}</p>
+        <button class="lab-btn lab-btn-start" (click)="restart()">🔄 Retry</button>
+      </div>
+    </div>
