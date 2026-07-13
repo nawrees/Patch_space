@@ -14,6 +14,12 @@ yarn-debug.log*
 frontend/.angular/
 frontend/dist/
 
+# ── Angular environment files (contain real Supabase keys locally) ──
+# Committed versions are placeholder-only. Fill in your real values
+# locally and never stage these files.
+frontend/src/environments/environment.ts
+frontend/src/environments/environment.prod.ts
+
 # ── Build outputs ───────────────────────────────────────
 backend/dist/
 
