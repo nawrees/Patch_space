@@ -1,4 +1,13 @@
 <div class="app-container">
+  <div class="profile-error-banner" *ngIf="isAuthenticated && profileLoadFailed">
+    <app-icon name="alert-triangle" [size]="16"></app-icon>
+    <span>We couldn't load your profile. Some features may be unavailable.</span>
+    <button (click)="retryLoadProfile()" [disabled]="profileLoadRetrying">
+      {{ profileLoadRetrying ? 'Retrying…' : 'Retry' }}
+    </button>
+    <button class="pe-logout" (click)="onLogout()">Log out</button>
+  </div>
+
   <nav class="navbar" *ngIf="isAuthenticated">
     <div class="navbar-brand">
       <h2>E-Learning</h2>
@@ -31,9 +40,34 @@
 
       <div class="navbar-end">
         <!-- Streak badge (students only) -->
-        <div *ngIf="isStudent && streak > 0" class="streak-badge" [class.active-today]="streakActiveToday" title="{{streak}}-day streak">
-          🔥 {{ streak }}
+        <div *ngIf="isStudent" class="streak-wrap" (click)="streakPopupOpen = !streakPopupOpen; $event.stopPropagation()">
+          <div class="streak-badge" [class.active-today]="streakActiveToday" [class.streak-broken]="streak === 0">
+            <app-icon [name]="streak === 0 ? 'heart-crack' : 'flame'" [size]="15"></app-icon> {{ streak }}
+          </div>
+
+          <div class="streak-popup" [class.open]="streakPopupOpen">
+            <div class="sp-row">
+              <span class="sp-icon"><app-icon name="flame" [size]="18"></app-icon></span>
+              <div>
+                <div class="sp-label">Current streak</div>
+                <div class="sp-value">{{ streak }} day{{ streak !== 1 ? 's' : '' }}</div>
+              </div>
+            </div>
+            <div class="sp-divider"></div>
+            <div class="sp-row">
+              <span class="sp-icon"><app-icon name="trophy" [size]="18"></app-icon></span>
+              <div>
+                <div class="sp-label">Longest streak</div>
+                <div class="sp-value">{{ longestStreak }} day{{ longestStreak !== 1 ? 's' : '' }}</div>
+              </div>
+            </div>
+            <div class="sp-divider"></div>
+            <a routerLink="/badges" class="sp-link" (click)="streakPopupOpen = false">View Badges →</a>
+          </div>
         </div>
+
+        <!-- Notification bell -->
+        <app-notification-bell></app-notification-bell>
 
         <!-- Avatar + dropdown -->
         <div class="nav-profile" (click)="$event.stopPropagation()">
@@ -55,23 +89,23 @@
 
             <!-- Navigation items -->
             <a class="nd-item" routerLink="/profile" (click)="dropdownOpen = false">
-              <span class="nd-icon">👤</span> View Profile
+              <span class="nd-icon"><app-icon name="user" [size]="16"></app-icon></span> View Profile
             </a>
             <a class="nd-item" routerLink="/account" (click)="dropdownOpen = false">
-              <span class="nd-icon">⚙️</span> Manage Account
+              <span class="nd-icon"><app-icon name="settings" [size]="16"></app-icon></span> Manage Account
             </a>
 
             <div class="nd-divider"></div>
 
             <!-- Toggles -->
             <div class="nd-item nd-toggle-row" (click)="theme.toggle()">
-              <span class="nd-icon">🌙</span> Dark Mode
+              <span class="nd-icon"><app-icon name="moon" [size]="16"></app-icon></span> Dark Mode
               <div class="nd-toggle" [class.on]="theme.isDark">
                 <div class="nd-toggle-thumb"></div>
               </div>
             </div>
             <div class="nd-item nd-toggle-row" (click)="toggleSound()">
-              <span class="nd-icon">🔊</span> Sound Effects
+              <span class="nd-icon"><app-icon name="volume" [size]="16"></app-icon></span> Sound Effects
               <div class="nd-toggle" [class.on]="soundEnabled">
                 <div class="nd-toggle-thumb"></div>
               </div>
@@ -80,13 +114,10 @@
             <ng-container *ngIf="isStudent">
               <div class="nd-divider"></div>
               <a class="nd-item" routerLink="/saved" (click)="dropdownOpen = false">
-                <span class="nd-icon">🔖</span> Saved
+                <span class="nd-icon"><app-icon name="bookmark" [size]="16"></app-icon></span> Saved
               </a>
               <a class="nd-item" routerLink="/badges" (click)="dropdownOpen = false">
-                <span class="nd-icon">🏅</span> Badges
-              </a>
-              <a class="nd-item" routerLink="/rewards" (click)="dropdownOpen = false">
-                <span class="nd-icon">🎁</span> Rewards
+                <span class="nd-icon"><app-icon name="award" [size]="16"></app-icon></span> Badges
               </a>
             </ng-container>
 
@@ -94,7 +125,7 @@
 
             <!-- Logout -->
             <button class="nd-item nd-logout" (click)="onLogout()">
-              <span class="nd-icon">🚪</span> Log out
+              <span class="nd-icon"><app-icon name="log-out" [size]="16"></app-icon></span> Log out
             </button>
           </div>
         </div>
