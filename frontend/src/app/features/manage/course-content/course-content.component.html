@@ -112,18 +112,18 @@
 
         <!-- Already-saved PDFs (edit mode) -->
         <div *ngFor="let r of existingResources" class="pdf-item">
-          <span class="pdf-ic">📄</span>
+          <span class="pdf-ic"><app-icon name="file-text" [size]="16"></app-icon></span>
           <span class="pdf-nm">{{ r.title }}</span>
           <span class="pdf-sz">{{ fmtBytes(r.file_size_bytes) }}</span>
-          <button class="pdf-rm" (click)="removeResource(r)" title="Remove">✕</button>
+          <button class="pdf-rm" (click)="removeResource(r)" title="Remove"><app-icon name="x" [size]="14"></app-icon></button>
         </div>
 
         <!-- Pending (not yet uploaded) files -->
         <div *ngFor="let f of pendingFiles; let i = index" class="pdf-item pdf-pending">
-          <span class="pdf-ic">📄</span>
+          <span class="pdf-ic"><app-icon name="file-text" [size]="16"></app-icon></span>
           <span class="pdf-nm">{{ f.name }}</span>
           <span class="pdf-sz">{{ fmtBytes(f.size) }}</span>
-          <button class="pdf-rm" (click)="pendingFiles.splice(i, 1)" title="Remove">✕</button>
+          <button class="pdf-rm" (click)="pendingFiles.splice(i, 1)" title="Remove"><app-icon name="x" [size]="14"></app-icon></button>
         </div>
 
         <!-- Drop zone -->
@@ -133,7 +133,7 @@
              (drop)="onPdfDrop($event)">
           <input #pdfInput type="file" accept=".pdf,application/pdf" multiple
                  (change)="onPdfSelect($event)" style="display:none" />
-          <span style="font-size:20px">📂</span>
+          <span><app-icon name="folder-open" [size]="22"></app-icon></span>
           <span>Click or drag PDFs here</span>
           <span class="pdf-drop-hint">PDF only · max 20 MB each</span>
         </div>
@@ -176,7 +176,7 @@
             <div>
               <span class="lesson-title">{{ lesson.title }}</span>
               <span class="type-badge type-{{ lesson.lesson_type }}">{{ lesson.lesson_type }}</span>
-              <span class="lab-tag" *ngIf="lesson.lab">⚗ Lab attached</span>
+              <span class="lab-tag" *ngIf="lesson.lab"><app-icon name="flask" [size]="13"></app-icon> Lab attached</span>
             </div>
           </div>
           <div class="lesson-actions">

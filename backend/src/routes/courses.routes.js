@@ -7,6 +7,8 @@ import {
   createCourse,
   updateCourse,
   deleteCourse,
+  uploadThumbnail,
+  thumbnailUploadMiddleware,
 } from '../controllers/courses.controller.js';
 
 const router = Router();
@@ -17,5 +19,6 @@ router.get('/:id', authenticate, getCourse);
 router.post('/', authenticate, staffOnly, createCourse);
 router.put('/:id', authenticate, staffOnly, updateCourse);
 router.delete('/:id', authenticate, staffOnly, deleteCourse);
+router.post('/:id/thumbnail', authenticate, staffOnly, thumbnailUploadMiddleware, uploadThumbnail);
 
 export default router;

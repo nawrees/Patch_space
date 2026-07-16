@@ -1,13 +1,13 @@
 <div class="qa-page">
   <div class="qa-header">
     <div>
-      <h2 class="qa-title">💬 Q&A Moderation</h2>
+      <h2 class="qa-title"><app-icon name="message-circle" [size]="20"></app-icon> Q&A Moderation</h2>
       <p class="qa-sub">Answer student questions sorted by urgency</p>
     </div>
     <div class="qa-filters">
       <button class="qa-filter-btn" [class.qa-filter-active]="filter === 'all'" (click)="setFilter('all')">All</button>
       <button class="qa-filter-btn qa-filter-urgent" [class.qa-filter-active]="filter === 'urgent'" (click)="setFilter('urgent')">
-        ⚠️ Urgent ({{ urgentCount }})
+        <app-icon name="alert-triangle" [size]="14"></app-icon> Urgent ({{ urgentCount }})
       </button>
       <button class="qa-filter-btn" [class.qa-filter-active]="filter === 'pending'" (click)="setFilter('pending')">
         Pending ({{ pendingCount }})
@@ -26,7 +26,7 @@
 
   <!-- Empty -->
   <div *ngIf="!loading && filtered.length === 0" class="qa-empty">
-    <span class="qa-empty-icon">✅</span>
+    <span class="qa-empty-icon"><app-icon name="check-circle" [size]="40"></app-icon></span>
     <p>No questions in this category</p>
   </div>
 
@@ -44,9 +44,9 @@
           </div>
         </div>
         <div class="qa-badges">
-          <span class="qa-badge qa-badge-urgent" *ngIf="q.urgency === 'urgent'">⚠️ Urgent</span>
-          <span class="qa-badge qa-badge-pending" *ngIf="q.urgency === 'pending'">🕐 Pending</span>
-          <span class="qa-badge qa-badge-done" *ngIf="q.urgency === 'answered'">✅ Answered</span>
+          <span class="qa-badge qa-badge-urgent" *ngIf="q.urgency === 'urgent'"><app-icon name="alert-triangle" [size]="12"></app-icon> Urgent</span>
+          <span class="qa-badge qa-badge-pending" *ngIf="q.urgency === 'pending'"><app-icon name="clock" [size]="12"></app-icon> Pending</span>
+          <span class="qa-badge qa-badge-done" *ngIf="q.urgency === 'answered'"><app-icon name="check-circle" [size]="12"></app-icon> Answered</span>
           <span class="qa-age">{{ timeAgo(q.created_at) }}</span>
         </div>
       </div>
@@ -76,7 +76,7 @@
       <!-- Action buttons -->
       <div class="qa-actions" *ngIf="activeReply !== q.id">
         <button class="qa-btn qa-btn-reply" (click)="startReply(q.id, q.answer)">
-          {{ q.answer ? '✏️ Edit Answer' : '💬 Quick Reply' }}
+          <app-icon [name]="q.answer ? 'edit' : 'message-circle'" [size]="14"></app-icon> {{ q.answer ? 'Edit Answer' : 'Quick Reply' }}
         </button>
       </div>
     </div>

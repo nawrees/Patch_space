@@ -35,15 +35,53 @@ export const getContinueLearning = asyncHandler(async (req, res) => {
 
   if (error) throw new ApiError(400, error.message);
   if (!lastProgress) {
-    // Fallback: return first lesson of first enrolled course
+    // Fallback: surface the first lesson of the most recently enrolled course
+    // so enrolled students always see something to start, not an empty card.
     const { data: enrollment } = await req.supabase
       .from('enrollments')
-      .select('course_id, courses(id, title, slug, thumbnail_url)')
+      .select(`
+        course_id,
+        courses (
+          id, title, slug, thumbnail_url, category, difficulty,
+          modules (
+            id, title, order_index,
+            lessons ( id, title, lesson_type, video_url, order_index )
+          )
+        )
+      `)
       .eq('student_id', req.user.id)
       .order('enrolled_at', { ascending: false })
       .limit(1)
       .maybeSingle();
-    return res.json({ continueLearning: null, enrollment: enrollment ?? null });
+
+    const course = enrollment?.courses;
+    if (!course) return res.json({ continueLearning: null });
+
+    const sortedModules = (course.modules ?? []).sort((a, b) => a.order_index - b.order_index);
+    let firstLesson = null;
+    let firstModule = null;
+    for (const mod of sortedModules) {
+      const sorted = (mod.lessons ?? []).sort((a, b) => a.order_index - b.order_index);
+      if (sorted.length) { firstLesson = sorted[0]; firstModule = mod; break; }
+    }
+    if (!firstLesson) return res.json({ continueLearning: null });
+
+    return res.json({
+      continueLearning: {
+        courseId: course.id,
+        courseTitle: course.title,
+        courseThumbnail: course.thumbnail_url,
+        courseCategory: course.category,
+        moduleName: firstModule.title,
+        lessonId: firstLesson.id,
+        lessonTitle: firstLesson.title,
+        lessonType: firstLesson.lesson_type,
+        videoUrl: firstLesson.video_url,
+        videoTimestamp: 0,
+        status: 'not_started',
+        lastAccessed: null,
+      },
+    });
   }
 
   const lesson = lastProgress.lessons;

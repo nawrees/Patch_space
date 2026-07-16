@@ -6,10 +6,10 @@
       <p class="sc-sub">{{ filteredCourses.length }} of {{ courses.length }} course{{ courses.length === 1 ? '' : 's' }}</p>
     </div>
     <div class="sc-search-wrap">
-      <span class="sc-search-icon">🔍</span>
+      <span class="sc-search-icon"><app-icon name="search" [size]="16"></app-icon></span>
       <input class="sc-search" type="text" [(ngModel)]="query" (ngModelChange)="applyFilters()"
              placeholder="Search courses…" />
-      <button *ngIf="query" class="sc-search-clear" (click)="query=''; applyFilters()">✕</button>
+      <button *ngIf="query" class="sc-search-clear" (click)="query=''; applyFilters()"><app-icon name="x" [size]="14"></app-icon></button>
     </div>
   </div>
 
@@ -46,7 +46,7 @@
 
   <!-- Empty -->
   <div *ngIf="!loading && filteredCourses.length === 0" class="sc-empty">
-    <span style="font-size:32px">🔍</span>
+    <span><app-icon name="search" [size]="32"></app-icon></span>
     <p *ngIf="query">No courses match <strong>"{{ query }}"</strong></p>
     <p *ngIf="!query">No courses found.</p>
     <button *ngIf="query || difficulty || statusFilter" class="sc-reset" (click)="resetFilters()">Reset filters</button>
@@ -67,7 +67,7 @@
         <p class="sc-desc">{{ c.description }}</p>
         <div class="sc-foot">
           <span class="sc-meta">
-            <span class="sc-meta-item">📚 {{ c.modules?.length ?? '—' }} modules</span>
+            <span class="sc-meta-item"><app-icon name="library" [size]="14"></app-icon> {{ c.modules?.length ?? '—' }} modules</span>
           </span>
           <a [routerLink]="routePrefix + '/course/' + c.id" class="sc-view-btn">View →</a>
         </div>

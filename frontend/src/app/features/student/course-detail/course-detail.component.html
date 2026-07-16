@@ -3,7 +3,7 @@
       <div *ngIf="error" class="error-state">{{ error }}</div>
 
       <ng-container *ngIf="!loading && course">
-        <div class="course-header">
+        <div class="course-header panel-bracket">
           <a routerLink="/student/courses" class="back-link">← All Courses</a>
           <div class="header-content">
             <div class="header-info">
@@ -13,7 +13,7 @@
               <div class="header-actions">
                 <span class="badge" [ngClass]="'level-' + course.difficulty">{{ course.difficulty }}</span>
                 <button class="btn-bookmark" [class.bookmarked]="isSaved" (click)="toggleSave()" [title]="isSaved ? 'Remove from saved' : 'Save course'">
-                  {{ isSaved ? '🔖 Saved' : '🔖 Save' }}
+                  <app-icon name="bookmark" [size]="14"></app-icon> {{ isSaved ? 'Saved' : 'Save' }}
                 </button>
               </div>
             </div>
@@ -58,9 +58,9 @@
                 <div class="lesson-left">
                   <span class="lesson-icon">
                     <ng-container [ngSwitch]="lesson.lesson_type">
-                      <span *ngSwitchCase="'video'">▶</span>
-                      <span *ngSwitchCase="'lab'">⚗</span>
-                      <span *ngSwitchDefault>📄</span>
+                      <span *ngSwitchCase="'video'"><app-icon name="play" [size]="14"></app-icon></span>
+                      <span *ngSwitchCase="'lab'"><app-icon name="flask" [size]="14"></app-icon></span>
+                      <span *ngSwitchDefault><app-icon name="file-text" [size]="14"></app-icon></span>
                     </ng-container>
                   </span>
                   <span class="lesson-title">{{ lesson.title }}</span>

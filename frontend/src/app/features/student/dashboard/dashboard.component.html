@@ -1,8 +1,8 @@
     <div class="sd-page">
       <!-- Hero welcome -->
-      <div class="sd-hero">
+      <div class="sd-hero panel-bracket">
         <div class="sd-hero-left">
-          <span class="sd-greeting">Welcome back 👋</span>
+          <span class="sd-greeting">Welcome back <app-icon name="hand" [size]="18"></app-icon></span>
           <h1 class="sd-name">{{ currentUser?.profile?.full_name || 'Student' }}</h1>
           <p class="sd-sub">Keep the momentum going — consistency beats intensity.</p>
         </div>
@@ -59,7 +59,7 @@
               <div *ngFor="let e of enrollments" class="sd-course-card">
                 <div class="sd-cc-thumb"
                      [style.backgroundImage]="e.courses?.thumbnail_url ? 'url('+e.courses.thumbnail_url+')' : 'none'">
-                  <span *ngIf="!e.courses?.thumbnail_url" class="sd-cc-ph">📚</span>
+                  <span *ngIf="!e.courses?.thumbnail_url" class="sd-cc-ph"><app-icon name="library" [size]="24"></app-icon></span>
                   <span class="sd-cc-diff" [ngClass]="'diff-'+e.courses?.difficulty">
                     {{ e.courses?.difficulty }}
                   </span>

@@ -13,6 +13,7 @@ import questionsRoutes from './questions.routes.js';
 import labsRoutes from './labs.routes.js';
 import savedRoutes from './saved.routes.js';
 import streaksRoutes from './streaks.routes.js';
+import notificationsRoutes from './notifications.routes.js';
 
 const router = Router();
 
@@ -30,5 +31,6 @@ router.use('/', questionsRoutes);       // /lessons/:id/questions, /questions, /
 router.use('/', labsRoutes);            // /labs/:id/session, /labs/:id/start, /labs/:id/submit, /labs/:id/logs
 router.use('/', savedRoutes);           // /saved, /saved/:courseId
 router.use('/', streaksRoutes);         // /streaks
+router.use('/', notificationsRoutes);   // /notifications
 
 export default router;

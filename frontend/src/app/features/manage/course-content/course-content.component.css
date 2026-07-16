@@ -8,7 +8,7 @@
 }
 
 .back-link {
-  color: #667eea;
+  color: var(--accent);
   text-decoration: none;
   font-size: 0.9rem;
   display: inline-block;
@@ -27,18 +27,21 @@ h1 { margin: 0 0 0.5rem; color: var(--text-1); transition: color .25s; }
 
 .badge {
   display: inline-block;
-  padding: 0.2rem 0.6rem;
-  border-radius: 12px;
-  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  font-size: 10.5px;
   font-weight: 600;
+  letter-spacing: .04em;
+  text-transform: uppercase;
 }
 
-.published { background: #d4edda; color: #155724; }
-.draft { background: #e2e3e5; color: #383d41; }
+.published { background: var(--sig-low-bg); color: var(--sig-low-fg); }
+.draft { background: var(--sig-info-bg); color: var(--sig-info-fg); }
 
 .loading, .error-msg, .empty-modules { text-align: center; padding: 3rem; color: var(--text-3); }
 
-.error-msg { color: #dc3545; }
+.error-msg { color: var(--sig-critical-fg); }
 
 /* Side panel */
 .panel-overlay {
@@ -74,7 +77,7 @@ label { font-size: 0.82rem; font-weight: 600; color: var(--text-2); }
 input, select, textarea {
   padding: 0.6rem 0.75rem;
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: var(--radius-md);
   font-size: 0.9rem;
   background: var(--bg-input);
   color: var(--text-1);
@@ -83,8 +86,8 @@ input, select, textarea {
 
 input:focus, select:focus, textarea:focus {
   outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102,126,234,0.15);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(var(--accent-rgb),0.15);
 }
 
 textarea { resize: vertical; }
@@ -95,7 +98,7 @@ textarea { resize: vertical; }
   gap: 0.75rem;
 }
 
-.lab-section { background: var(--bg-hover); border-radius: 8px; padding: 1rem; margin-bottom: 1rem; }
+.lab-section { background: var(--bg-hover); border-radius: var(--radius-md); padding: 1rem; margin-bottom: 1rem; }
 
 .panel-actions {
   display: flex;
@@ -104,12 +107,13 @@ textarea { resize: vertical; }
   margin-top: 1.5rem;
 }
 
-.panel-error { color: #dc3545; font-size: 0.85rem; text-align: right; margin-top: 0.5rem; }
+.panel-error { color: var(--sig-critical-fg); font-size: 0.85rem; text-align: right; margin-top: 0.5rem; }
 
 /* Module block */
 .module-block {
   background: var(--bg-card);
-  border-radius: 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow);
   margin-bottom: 1.25rem;
   overflow: hidden;
@@ -136,8 +140,9 @@ textarea { resize: vertical; }
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: #667eea;
-  color: white;
+  background: var(--accent);
+  color: #06181a;
+  font-family: var(--font-mono);
   font-size: 0.8rem;
   font-weight: 700;
   display: flex;
@@ -147,7 +152,7 @@ textarea { resize: vertical; }
 }
 
 .module-header h3 { margin: 0; color: var(--text-1); font-size: 0.95rem; }
-.lesson-count { font-size: 0.78rem; color: var(--text-3); }
+.lesson-count { font-family: var(--font-mono); font-size: 0.75rem; color: var(--text-3); }
 
 .module-actions {
   display: flex;
@@ -176,6 +181,7 @@ textarea { resize: vertical; }
 }
 
 .lesson-num {
+  font-family: var(--font-mono);
   font-size: 0.75rem;
   color: var(--text-3);
   width: 20px;
@@ -190,18 +196,21 @@ textarea { resize: vertical; }
 }
 
 .type-badge {
-  font-size: 0.7rem;
-  padding: 0.15rem 0.45rem;
-  border-radius: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  padding: 2px 9px;
+  border-radius: var(--radius-pill);
   font-weight: 600;
+  letter-spacing: .04em;
+  text-transform: uppercase;
   margin-right: 0.4rem;
 }
 
-.type-theory { background: #f0fdf4; color: #166534; }
-.type-video { background: #e8f4ff; color: #1a73e8; }
-.type-lab { background: #fdf4ff; color: #7e22ce; }
+.type-theory { background: var(--sig-info-bg); color: var(--sig-info-fg); }
+.type-video { background: var(--sig-medium-bg); color: var(--sig-medium-fg); }
+.type-lab { background: var(--sig-high-bg); color: var(--sig-high-fg); }
 
-.lab-tag { font-size: 0.75rem; color: #7e22ce; }
+.lab-tag { font-size: 0.75rem; color: var(--sig-high-fg); }
 
 .lesson-actions { display: flex; gap: 0.5rem; }
 
@@ -210,52 +219,52 @@ textarea { resize: vertical; }
 /* Buttons */
 .btn-add {
   padding: 0.6rem 1.1rem;
-  background: #667eea;
-  color: white;
+  background: var(--accent);
+  color: #06181a;
   border: none;
-  border-radius: 6px;
+  border-radius: var(--radius-md);
   cursor: pointer;
   font-size: 0.9rem;
   font-weight: 600;
 }
 
-.btn-add:hover { background: #5568d3; }
+.btn-add:hover { background: var(--accent-lt); }
 
 .btn-sm {
   padding: 0.3rem 0.7rem;
-  border-radius: 5px;
+  border-radius: var(--radius-sm);
   font-size: 0.8rem;
   cursor: pointer;
   transition: all 0.15s;
 }
 
 .btn-outline { background: var(--bg-card); border: 1px solid var(--border); color: var(--text-2); }
-.btn-outline:hover { border-color: #667eea; color: #667eea; }
-.btn-outline-danger { background: var(--bg-card); border: 1px solid var(--border); color: #dc3545; }
-.btn-outline-danger:hover { border-color: #dc3545; background: rgba(220,53,69,.05); }
-.btn-primary-sm { background: #667eea; color: white; border: none; }
-.btn-primary-sm:hover { background: #5568d3; }
+.btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+.btn-outline-danger { background: var(--bg-card); border: 1px solid var(--border); color: var(--sig-critical-fg); }
+.btn-outline-danger:hover { border-color: var(--sig-critical-fg); background: var(--sig-critical-bg); }
+.btn-primary-sm { background: var(--accent); color: #06181a; border: none; }
+.btn-primary-sm:hover { background: var(--accent-lt); }
 
 .btn-primary {
   padding: 0.6rem 1.25rem;
-  background: #667eea;
-  color: white;
+  background: var(--accent);
+  color: #06181a;
   border: none;
-  border-radius: 6px;
+  border-radius: var(--radius-md);
   cursor: pointer;
   font-size: 0.9rem;
   font-weight: 600;
 }
 
-.btn-primary:hover:not(:disabled) { background: #5568d3; }
-.btn-primary:disabled { background: #ccc; cursor: not-allowed; }
+.btn-primary:hover:not(:disabled) { background: var(--accent-lt); }
+.btn-primary:disabled { background: var(--bg-hover); color: var(--text-3); cursor: not-allowed; }
 
 .btn-secondary {
   padding: 0.6rem 1.25rem;
   background: var(--bg-card);
   color: var(--text-2);
   border: 1px solid var(--border);
-  border-radius: 6px;
+  border-radius: var(--radius-md);
   cursor: pointer;
   font-size: 0.9rem;
 }
@@ -265,7 +274,7 @@ textarea { resize: vertical; }
 .btn-link {
   background: none;
   border: none;
-  color: #667eea;
+  color: var(--accent);
   cursor: pointer;
   font-size: inherit;
   padding: 0;
@@ -280,27 +289,27 @@ textarea { resize: vertical; }
 
 .pdf-item {
   display: flex; align-items: center; gap: 8px;
-  padding: 7px 10px; border-radius: 8px;
+  padding: 7px 10px; border-radius: var(--radius-md);
   background: var(--bg-hover); border: 1px solid var(--border);
   margin-bottom: 6px; font-size: 13px;
 }
 .pdf-pending { border-style: dashed; }
 .pdf-ic { flex-shrink: 0; }
 .pdf-nm { flex: 1; color: var(--text-1); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.pdf-sz { font-size: 11px; color: var(--text-3); flex-shrink: 0; }
+.pdf-sz { font-family: var(--font-mono); font-size: 11px; color: var(--text-3); flex-shrink: 0; }
 .pdf-rm {
   background: none; border: none; color: var(--text-3);
-  cursor: pointer; font-size: 12px; padding: 2px 4px; border-radius: 4px;
+  cursor: pointer; font-size: 12px; padding: 2px 4px; border-radius: var(--radius-sm);
   flex-shrink: 0;
 }
-.pdf-rm:hover { background: rgba(220,53,69,.1); color: #dc3545; }
+.pdf-rm:hover { background: var(--sig-critical-bg); color: var(--sig-critical-fg); }
 
 .pdf-drop {
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   gap: 4px; padding: 16px;
-  border: 2px dashed var(--border); border-radius: 10px;
+  border: 2px dashed var(--border); border-radius: var(--radius-lg);
   cursor: pointer; color: var(--text-3); font-size: 13px;
   transition: border-color .2s, background .2s;
 }
-.pdf-drop:hover { border-color: #667eea; background: rgba(102,126,234,.05); color: var(--text-2); }
+.pdf-drop:hover { border-color: var(--accent); background: rgba(var(--accent-rgb),.06); color: var(--text-2); }
 .pdf-drop-hint { font-size: 11px; }

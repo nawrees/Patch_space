@@ -4,9 +4,10 @@ import { ProfileRoutingModule } from './profile-routing.module';
 import { ProfileComponent } from './profile/profile.component';
 import { AccountComponent } from './account/account.component';
 import { SavedComponent } from './saved/saved.component';
+import { BadgesComponent } from './badges/badges.component';
 
 @NgModule({
-  declarations: [ProfileComponent, AccountComponent, SavedComponent],
+  declarations: [ProfileComponent, AccountComponent, SavedComponent, BadgesComponent],
   imports: [SharedModule, ProfileRoutingModule],
 })
 export class ProfileModule {}

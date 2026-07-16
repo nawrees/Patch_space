@@ -1,4 +1,4 @@
-import { getUserClient } from '../config/supabaseClient.js';
+import { getUserClient, getAdminClient } from '../config/supabaseClient.js';
 import { ApiError } from '../utils/ApiError.js';
 import { asyncHandler } from './asyncHandler.js';
 
@@ -20,13 +20,17 @@ export const authenticate = asyncHandler(async (req, res, next) => {
     throw new ApiError(401, 'Missing bearer token');
   }
 
-  const userClient = getUserClient(token);
-  const { data: authData, error: authError } = await userClient.auth.getUser(token);
+  // Use the admin client to verify the token. Calling auth.getUser(jwt) on a
+  // user-scoped client with persistSession:false throws "Auth session missing!"
+  // in Supabase JS v2 because there is no internal session to lock against.
+  // The admin client has no such constraint and validates the JWT correctly.
+  const { data: authData, error: authError } = await getAdminClient().auth.getUser(token);
 
   if (authError || !authData?.user) {
     throw new ApiError(401, 'Invalid or expired token');
   }
 
+  const userClient = getUserClient(token);
   const { data: profile, error: profileError } = await userClient
     .from('profiles')
     .select('id, email, full_name, role')

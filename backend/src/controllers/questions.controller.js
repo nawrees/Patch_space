@@ -1,5 +1,6 @@
 import { asyncHandler } from '../middleware/asyncHandler.js';
 import { ApiError } from '../utils/ApiError.js';
+import { getAdminClient } from '../config/supabaseClient.js';
 
 // Student: ask a question on a lesson
 export const askQuestion = asyncHandler(async (req, res) => {
@@ -24,6 +25,27 @@ export const askQuestion = asyncHandler(async (req, res) => {
     .single();
 
   if (error) throw new ApiError(400, error.message);
+
+  // Notify every tutor assigned to this student for this course (or globally)
+  const admin = getAdminClient();
+  const { data: assignments } = await admin
+    .from('tutor_assignments')
+    .select('tutor_id')
+    .eq('student_id', req.user.id)
+    .or(`course_id.eq.${courseId},course_id.is.null`);
+
+  if (assignments?.length) {
+    await admin.from('notifications').insert(
+      assignments.map(a => ({
+        user_id:     a.tutor_id,
+        type:        'question_asked',
+        question_id: data.id,
+        lesson_id:   lessonId,
+        message:     `New question: "${question.trim().slice(0, 80)}"`,
+      }))
+    );
+  }
+
   res.status(201).json({ question: data });
 });
 
@@ -97,5 +119,16 @@ export const answerQuestion = asyncHandler(async (req, res) => {
     .single();
 
   if (error || !data) throw new ApiError(403, error?.message || 'Not allowed');
+
+  // Notify the student that their question was answered
+  const admin = getAdminClient();
+  await admin.from('notifications').insert({
+    user_id:     data.student_id,
+    type:        'question_answered',
+    question_id: data.id,
+    lesson_id:   data.lesson_id,
+    message:     `Your question was answered: "${data.question?.slice(0, 80)}"`,
+  });
+
   res.json({ question: data });
 });

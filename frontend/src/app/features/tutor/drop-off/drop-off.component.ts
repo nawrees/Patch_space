@@ -56,6 +56,6 @@ export class DropOffComponent implements OnInit {
   }
 
   typeIcon(type: string): string {
-    return type === 'video' ? '▶' : type === 'lab' ? '🔬' : '📄';
+    return type === 'video' ? 'play' : type === 'lab' ? 'microscope' : 'file-text';
   }
 }

@@ -15,7 +15,7 @@
   <ng-container *ngIf="!loading && course">
 
     <!-- Header -->
-    <div class="scd-header">
+    <div class="scd-header panel-bracket">
       <a [routerLink]="backRoute" class="scd-back">← Course Library</a>
 
       <div class="scd-hrow">
@@ -68,13 +68,13 @@
               <span class="scd-lr-num">{{ li + 1 }}</span>
               <span class="scd-type-badge" [ngClass]="'type-' + l.lesson_type">{{ l.lesson_type }}</span>
               <span class="scd-lr-title">{{ l.title }}</span>
-              <span *ngIf="l.lab" class="scd-lab-chip">⚗️ Lab: {{ l.lab.title }}</span>
+              <span *ngIf="l.lab" class="scd-lab-chip"><app-icon name="flask" [size]="14"></app-icon> Lab: {{ l.lab.title }}</span>
             </div>
             <div class="scd-lr-right">
               <span *ngIf="l.lab" class="scd-lab-meta">
-                🐳 {{ l.lab.docker_image }}
-                · ⏱ {{ l.lab.max_duration_minutes }}m
-                · 💾 {{ l.lab.memory_limit_mb }}MB
+                <app-icon name="box" [size]="13"></app-icon> {{ l.lab.docker_image }}
+                · <app-icon name="timer" [size]="13"></app-icon> {{ l.lab.max_duration_minutes }}m
+                · <app-icon name="hard-drive" [size]="13"></app-icon> {{ l.lab.memory_limit_mb }}MB
               </span>
             </div>
           </div>

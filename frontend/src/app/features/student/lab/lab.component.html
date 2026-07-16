@@ -3,7 +3,7 @@
       <!-- ── Header ────────────────────────────────────────────── -->
       <div class="lab-header">
         <div class="lab-header-left">
-          <span class="lab-icon">⚗️</span>
+          <span class="lab-icon"><app-icon name="flask" [size]="24"></app-icon></span>
           <div>
             <h3 class="lab-title">{{ lab.title }}</h3>
             <span class="lab-image">{{ lab.docker_image }}</span>
@@ -17,7 +17,7 @@
           </span>
           <!-- Timer (running only) -->
           <span class="lab-timer" *ngIf="state === 'running' && timerDisplay" [class.lab-timer-warn]="timerWarn">
-            ⏱ {{ timerDisplay }}
+            <app-icon name="timer" [size]="14"></app-icon> {{ timerDisplay }}
           </span>
         </div>
       </div>
@@ -50,7 +50,7 @@
               <span class="lab-diff-count">({{ totalRatings }})</span>
             </span>
             <ng-template #noRating>
-              <span class="lab-info-val" style="color:#8b949e;font-size:12px">No ratings yet</span>
+              <span class="lab-info-val" style="color:#5c6779;font-size:12px">No ratings yet</span>
             </ng-template>
           </div>
         </div>
@@ -59,7 +59,7 @@
           <p>{{ lab.instructions }}</p>
         </div>
         <button class="lab-btn lab-btn-start" (click)="start()">
-          🚀 Launch Lab
+          <app-icon name="rocket" [size]="16"></app-icon> Launch Lab
         </button>
       </div>
 
@@ -68,6 +68,9 @@
         <div class="lab-spinner lab-spinner-lg"></div>
         <p class="lab-prov-title">Pulling image &amp; starting container…</p>
         <p class="lab-prov-sub">This may take a minute if the image isn't cached locally.</p>
+        <button class="lab-btn lab-btn-stop" style="margin-top:20px" (click)="stop()" [disabled]="stopping">
+          <app-icon name="x" [size]="14" *ngIf="!stopping"></app-icon> {{ stopping ? 'Cancelling…' : 'Cancel' }}
+        </button>
       </div>
 
       <!-- ── RUNNING ───────────────────────────────────────────── -->
@@ -79,7 +82,7 @@
             <code class="lab-access-url">{{ session?.access_url }}</code>
           </div>
           <a [href]="session?.access_url" target="_blank" class="lab-btn lab-btn-open">
-            🌐 Open Lab
+            <app-icon name="globe" [size]="16"></app-icon> Open Lab
           </a>
         </div>
 
@@ -93,7 +96,7 @@
 
         <!-- Flag submission -->
         <div class="lab-flag-card">
-          <h4 class="lab-flag-title">🚩 Submit Flag</h4>
+          <h4 class="lab-flag-title"><app-icon name="flag" [size]="16"></app-icon> Submit Flag</h4>
           <p class="lab-flag-sub">Find the flag inside the lab and paste it below.</p>
           <div class="lab-flag-form">
             <input
@@ -112,7 +115,8 @@
           <div *ngIf="flagResult" class="lab-flag-result"
                [class.lab-result-correct]="flagResult.isCorrect"
                [class.lab-result-wrong]="!flagResult.isCorrect">
-            {{ flagResult.isCorrect ? '🎉 Correct! Lab completed.' : '❌ Wrong flag. Try again.' }}
+            <app-icon [name]="flagResult.isCorrect ? 'party-popper' : 'x-circle'" [size]="16"></app-icon>
+            {{ flagResult.isCorrect ? 'Correct! Lab completed.' : 'Wrong flag. Try again.' }}
             <span class="lab-attempts">(attempt {{ flagResult.attempts }})</span>
           </div>
 
@@ -142,14 +146,14 @@
         <!-- Stop button -->
         <div class="lab-stop-row">
           <button class="lab-btn lab-btn-stop" (click)="stop()" [disabled]="stopping">
-            {{ stopping ? 'Stopping…' : '⏹ Stop Lab' }}
+            <app-icon name="stop" [size]="14" *ngIf="!stopping"></app-icon> {{ stopping ? 'Stopping…' : 'Stop Lab' }}
           </button>
         </div>
       </div>
 
       <!-- ── STOPPED ────────────────────────────────────────────── -->
       <div *ngIf="state === 'stopped'" class="lab-ended">
-        <span class="lab-ended-icon">{{ flagResult?.isCorrect ? '🏆' : '⏹' }}</span>
+        <span class="lab-ended-icon"><app-icon [name]="flagResult?.isCorrect ? 'trophy' : 'stop'" [size]="40"></app-icon></span>
         <h4>{{ flagResult?.isCorrect ? 'Lab Completed!' : 'Lab Session Ended' }}</h4>
         <p>{{ flagResult?.isCorrect ? 'You captured the flag. Well done!' : 'Your session was stopped.' }}</p>
 
@@ -171,22 +175,22 @@
           </p>
         </div>
 
-        <button class="lab-btn lab-btn-start" (click)="restart()">🔄 Start New Session</button>
+        <button class="lab-btn lab-btn-start" (click)="restart()"><app-icon name="refresh" [size]="16"></app-icon> Start New Session</button>
       </div>
 
       <!-- ── EXPIRED ────────────────────────────────────────────── -->
       <div *ngIf="state === 'expired'" class="lab-ended lab-ended-expired">
-        <span class="lab-ended-icon">⌛</span>
+        <span class="lab-ended-icon"><app-icon name="hourglass" [size]="40"></app-icon></span>
         <h4>Time's Up</h4>
         <p>The lab session expired after {{ lab.max_duration_minutes }} minutes.</p>
-        <button class="lab-btn lab-btn-start" (click)="restart()">🔄 Try Again</button>
+        <button class="lab-btn lab-btn-start" (click)="restart()"><app-icon name="refresh" [size]="16"></app-icon> Try Again</button>
       </div>
 
       <!-- ── ERROR ──────────────────────────────────────────────── -->
       <div *ngIf="state === 'error'" class="lab-ended lab-ended-error">
-        <span class="lab-ended-icon">💥</span>
+        <span class="lab-ended-icon"><app-icon name="alert-octagon" [size]="40"></app-icon></span>
         <h4>Container Error</h4>
         <p>{{ errorMsg || 'The container stopped unexpectedly. Check Docker is running and the image is valid.' }}</p>
-        <button class="lab-btn lab-btn-start" (click)="restart()">🔄 Retry</button>
+        <button class="lab-btn lab-btn-start" (click)="restart()"><app-icon name="refresh" [size]="16"></app-icon> Retry</button>
       </div>
     </div>

@@ -1,0 +1,146 @@
+.bg-page { padding: 32px; max-width: 900px; margin: 0 auto; background: var(--bg-page); min-height: 100vh; }
+
+/* Header */
+.bg-header { margin-bottom: 28px; }
+.bg-title  { color: var(--text-1); font-size: 24px; font-weight: 700; margin: 0 0 4px; }
+.bg-sub    { color: var(--text-3); font-size: 14px; margin: 0; }
+
+/* Streak summary card */
+.bg-streak-card {
+  position: relative;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 28px 32px;
+  margin-bottom: 32px;
+}
+
+.bg-streak-stats {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.bg-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  position: relative;
+}
+
+.bg-stat-val  { font-family: var(--font-mono); font-size: 40px; font-weight: 700; color: var(--text-1); line-height: 1; }
+.bg-stat-lbl  { font-family: var(--font-mono); font-size: 11px; color: var(--text-3); text-transform: uppercase; letter-spacing: .06em; }
+.bg-streak-flame { font-size: 20px; margin-top: 4px; color: var(--sig-high-fg); }
+.bg-streak-flame.dim { opacity: .35; filter: grayscale(1); color: var(--text-3); }
+
+.bg-stat-divider {
+  width: 1px;
+  height: 60px;
+  background: var(--border);
+  flex-shrink: 0;
+}
+
+/* Progress bar */
+.bg-progress-wrap { display: flex; flex-direction: column; gap: 8px; }
+.bg-progress-labels { display: flex; justify-content: space-between; font-size: 13px; color: var(--text-2); }
+.bg-progress-labels strong { color: var(--text-1); }
+.bg-progress-count { font-family: var(--font-mono); color: var(--text-3); font-size: 12px; }
+
+.bg-progress-bar {
+  height: 10px;
+  background: var(--bg-skeleton);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+.bg-progress-fill {
+  height: 100%;
+  background: var(--sig-high-fg);
+  border-radius: var(--radius-pill);
+  transition: width .6s ease;
+}
+
+.bg-all-earned { color: var(--text-2); font-size: 14px; text-align: center; margin: 0; }
+
+/* Badge grid */
+.bg-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 16px;
+}
+
+/* Badge card */
+.bg-badge-card {
+  background: var(--bg-card);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px 16px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  text-align: center;
+  position: relative;
+  transition: transform .2s, border-color .2s, box-shadow .2s;
+}
+
+.bg-badge-card.earned {
+  border-color: var(--sig-high-fg);
+  box-shadow: 0 0 20px color-mix(in srgb, var(--sig-high-fg) 15%, transparent);
+}
+
+.bg-badge-card.earned:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 4px 24px color-mix(in srgb, var(--sig-high-fg) 25%, transparent);
+}
+
+.bg-badge-card.locked {
+  opacity: .45;
+  filter: grayscale(.6);
+}
+
+.bg-badge-icon  { font-size: 42px; line-height: 1; color: var(--accent); }
+.bg-badge-title { font-size: 14px; font-weight: 700; color: var(--text-1); }
+.bg-badge-desc  { font-size: 11px; color: var(--text-3); line-height: 1.4; }
+.bg-badge-days  { font-family: var(--font-mono); font-size: 11px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: .06em; }
+
+.bg-badge-check {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  width: 20px;
+  height: 20px;
+  background: var(--sig-high-fg);
+  color: #06181a;
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bg-badge-lock {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  font-size: 13px;
+  opacity: .5;
+  color: var(--text-3);
+}
+
+/* Skeleton */
+.bg-sk-card { min-height: 120px; display: flex; flex-direction: column; gap: 16px; }
+.bg-sk-line  { height: 14px; background: var(--bg-skeleton); border-radius: 4px; animation: pulse 1.5s infinite; }
+.bg-sk-s     { width: 55%; }
+.bg-sk-badge { height: 180px; background: var(--bg-card); border: 2px solid var(--border); border-radius: var(--radius-lg); animation: pulse 1.5s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+@media (max-width: 480px) {
+  .bg-page { padding: 20px 16px; }
+  .bg-streak-card { padding: 20px; }
+  .bg-stat-val { font-size: 30px; }
+  .bg-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+}

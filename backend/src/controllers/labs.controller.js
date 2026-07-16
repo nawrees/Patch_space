@@ -135,9 +135,19 @@ export const startLab = asyncHandler(async (req, res) => {
 
   // Background: pull image + start container, then update session to 'running'
   ;(async () => {
+    let containerId = null;
     try {
       await pullImage(lab.docker_image);
-      const { containerId, assignedPort } = await startContainer({
+
+      // Check if the student cancelled while the image was pulling
+      const { data: current } = await admin
+        .from('lab_sessions').select('status').eq('id', session.id).maybeSingle();
+      if (current?.status !== 'provisioning') {
+        console.log('[LabStart] Session was cancelled during pull — aborting container start');
+        return;
+      }
+
+      const result = await startContainer({
         dockerImage: lab.docker_image,
         cpuLimit: lab.cpu_limit,
         memoryLimitMb: lab.memory_limit_mb,
@@ -145,9 +155,18 @@ export const startLab = asyncHandler(async (req, res) => {
         containerName,
         flag: sessionFlag,
       });
+      containerId = result.containerId;
 
-      const accessUrl = `http://${env.LAB_HOST}:${assignedPort}`;
+      // Final check: don't override a stop/cancel that happened during container start
+      const { data: latest } = await admin
+        .from('lab_sessions').select('status').eq('id', session.id).maybeSingle();
+      if (latest?.status !== 'provisioning') {
+        console.log('[LabStart] Session was cancelled during container start — cleaning up');
+        await stopContainer(containerId).catch(() => {});
+        return;
+      }
 
+      const accessUrl = `http://${env.LAB_HOST}:${result.assignedPort}`;
       await admin
         .from('lab_sessions')
         .update({

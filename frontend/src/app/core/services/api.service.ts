@@ -28,6 +28,14 @@ export class ApiService {
     return this.http.delete<void>(`${environment.apiUrl}/courses/${id}`);
   }
 
+  uploadCourseThumbnail(courseId: string, file: File): Observable<{ course: any; thumbnail_url: string }> {
+    const fd = new FormData();
+    fd.append('image', file);
+    return this.http.post<{ course: any; thumbnail_url: string }>(
+      `${environment.apiUrl}/courses/${courseId}/thumbnail`, fd
+    );
+  }
+
   // Modules
   createModule(courseId: string, data: any): Observable<{ module: any }> {
     return this.http.post<{ module: any }>(`${environment.apiUrl}/courses/${courseId}/modules`, data);
@@ -225,5 +233,18 @@ export class ApiService {
   // Streaks
   getStreak(): Observable<{ current_streak: number; longest_streak: number; last_activity_date: string | null; active_today: boolean }> {
     return this.http.get<any>(`${environment.apiUrl}/streaks`);
+  }
+
+  // Notifications
+  getNotifications(): Observable<{ notifications: any[] }> {
+    return this.http.get<{ notifications: any[] }>(`${environment.apiUrl}/notifications`);
+  }
+
+  markNotificationRead(id: string): Observable<{ success: boolean }> {
+    return this.http.patch<{ success: boolean }>(`${environment.apiUrl}/notifications/${id}/read`, {});
+  }
+
+  markAllNotificationsRead(): Observable<{ success: boolean }> {
+    return this.http.patch<{ success: boolean }>(`${environment.apiUrl}/notifications/read-all`, {});
   }
 }

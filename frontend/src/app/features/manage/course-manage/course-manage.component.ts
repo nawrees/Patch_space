@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
 import { ApiService } from '../../../core/services/api.service';
 
 const DIFFICULTIES = ['beginner', 'intermediate', 'advanced'];
@@ -23,6 +24,9 @@ export class CourseManageComponent implements OnInit {
   deletingCourse: any = null;
   deleting = false;
 
+  pendingImageFile: File | null = null;
+  thumbnailPreview: string | null = null;
+
   difficulties = DIFFICULTIES;
   categories = CATEGORIES;
 
@@ -44,6 +48,8 @@ export class CourseManageComponent implements OnInit {
     this.form = this.emptyForm();
     this.editingId = null;
     this.formError = '';
+    this.pendingImageFile = null;
+    this.thumbnailPreview = null;
     this.showForm = true;
   }
 
@@ -58,11 +64,35 @@ export class CourseManageComponent implements OnInit {
     };
     this.editingId = course.id;
     this.formError = '';
+    this.pendingImageFile = null;
+    this.thumbnailPreview = course.thumbnail_url || null;
     this.showForm = true;
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  closeForm() { this.showForm = false; this.editingId = null; }
+  closeForm() {
+    this.showForm = false;
+    this.editingId = null;
+    this.pendingImageFile = null;
+    this.thumbnailPreview = null;
+  }
+
+  onImageSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+    this.pendingImageFile = file;
+    const reader = new FileReader();
+    reader.onload = (e) => { this.thumbnailPreview = e.target?.result as string; };
+    reader.readAsDataURL(file);
+    input.value = '';
+  }
+
+  removeThumbnail() {
+    this.pendingImageFile = null;
+    this.thumbnailPreview = null;
+    this.form.thumbnail_url = '';
+  }
 
   private toSlug(title: string): string {
     return title.toLowerCase()
@@ -72,31 +102,56 @@ export class CourseManageComponent implements OnInit {
       .replace(/-+/g, '-');
   }
 
-  saveCourse() {
+  async saveCourse() {
     if (!this.form.title.trim()) return;
     this.saving = true;
     this.formError = '';
-    const payload = { ...this.form, slug: this.toSlug(this.form.title) };
-    const req = this.editingId
-      ? this.api.updateCourse(this.editingId, payload)
-      : this.api.createCourse(payload);
 
-    req.subscribe({
-      next: (data) => {
-        if (this.editingId) {
-          const idx = this.courses.findIndex(c => c.id === this.editingId);
-          if (idx >= 0) this.courses[idx] = data.course;
-        } else {
-          this.courses.unshift(data.course);
+    try {
+      const slug = this.toSlug(this.form.title);
+
+      if (!this.editingId) {
+        // ── CREATE ──────────────────────────────────────────────
+        const created = await firstValueFrom(this.api.createCourse({
+          title: this.form.title,
+          description: this.form.description,
+          category: this.form.category,
+          difficulty: this.form.difficulty,
+          is_published: this.form.is_published,
+          slug,
+        }));
+        let finalCourse = created.course;
+
+        if (this.pendingImageFile) {
+          const uploaded = await firstValueFrom(
+            this.api.uploadCourseThumbnail(finalCourse.id, this.pendingImageFile)
+          );
+          finalCourse = uploaded.course;
         }
-        this.saving = false;
-        this.closeForm();
-      },
-      error: (err) => {
-        this.formError = err?.error?.message || 'Failed to save course.';
-        this.saving = false;
-      },
-    });
+
+        this.courses.unshift(finalCourse);
+      } else {
+        // ── EDIT ────────────────────────────────────────────────
+        const payload: any = { ...this.form, slug };
+
+        if (this.pendingImageFile) {
+          const uploaded = await firstValueFrom(
+            this.api.uploadCourseThumbnail(this.editingId, this.pendingImageFile)
+          );
+          payload.thumbnail_url = uploaded.thumbnail_url;
+        }
+
+        const updated = await firstValueFrom(this.api.updateCourse(this.editingId, payload));
+        const idx = this.courses.findIndex(c => c.id === this.editingId);
+        if (idx >= 0) this.courses[idx] = updated.course;
+      }
+
+      this.saving = false;
+      this.closeForm();
+    } catch (err: any) {
+      this.formError = err?.error?.message || err?.message || 'Failed to save course.';
+      this.saving = false;
+    }
   }
 
   deleteCourse(course: any) { this.deletingCourse = course; }

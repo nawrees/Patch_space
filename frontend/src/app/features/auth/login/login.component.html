@@ -3,7 +3,27 @@
         <h1>E-Learning Platform</h1>
         <h2>Sign In</h2>
 
-        <form (ngSubmit)="onLogin()">
+        <!-- ── Locked out ───────────────────────────────────── -->
+        <div *ngIf="isLocked" class="auth-lockout">
+          <div class="lockout-icon"><app-icon name="lock" [size]="36"></app-icon></div>
+          <h3>Account temporarily locked</h3>
+          <ng-container *ngIf="resetEmailSent; else noReset">
+            <p>
+              Too many failed attempts. A password reset link has been sent to
+              <strong>{{ email }}</strong>. Check your inbox and follow the link.
+            </p>
+          </ng-container>
+          <ng-template #noReset>
+            <p>Too many failed attempts. Please reset your password.</p>
+          </ng-template>
+          <button class="btn-secondary" (click)="onForgotPassword()" *ngIf="!resetEmailSent" [disabled]="loading">
+            {{ loading ? 'Sending…' : 'Send reset link' }}
+          </button>
+          <a class="auth-retry-link" (click)="unlockAndRetry()">Try again with different credentials</a>
+        </div>
+
+        <!-- ── Normal form ──────────────────────────────────── -->
+        <form *ngIf="!isLocked" (ngSubmit)="onLogin()">
           <div class="form-group">
             <label>Email</label>
             <input
@@ -12,6 +32,7 @@
               name="email"
               placeholder="your@email.com"
               required
+              autocomplete="email"
             />
           </div>
 
@@ -23,14 +44,27 @@
               name="password"
               placeholder="••••••••"
               required
+              autocomplete="current-password"
             />
           </div>
 
+          <!-- Attempt warning -->
+          <div *ngIf="failedAttempts > 0" class="attempts-warn">
+            <app-icon name="alert-triangle" [size]="14"></app-icon> {{ attemptsLeft }} attempt{{ attemptsLeft === 1 ? '' : 's' }} remaining before lockout
+          </div>
+
           <button type="submit" [disabled]="loading">
-            {{ loading ? 'Signing in...' : 'Sign In' }}
+            {{ loading ? 'Signing in…' : 'Sign In' }}
           </button>
+
+          <p class="forgot-link">
+            <a (click)="onForgotPassword()" [class.disabled]="loading">Forgot password?</a>
+          </p>
         </form>
 
+        <p class="auth-success" *ngIf="resetEmailSent && !isLocked">
+          <app-icon name="check-circle" [size]="15"></app-icon> Reset link sent — check your inbox.
+        </p>
         <p class="error" *ngIf="error">{{ error }}</p>
         <p class="signup-link">Don't have an account? <a routerLink="/signup">Sign up</a></p>
       </div>

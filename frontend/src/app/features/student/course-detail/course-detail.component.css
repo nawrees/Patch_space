@@ -7,13 +7,13 @@
     .loading, .error-state, .empty-state {
       text-align: center;
       padding: 3rem;
-      color: #666;
+      color: var(--text-2);
     }
 
-    .error-state { color: #dc3545; }
+    .error-state { color: var(--sig-critical-fg); }
 
     .back-link {
-      color: #667eea;
+      color: var(--accent);
       text-decoration: none;
       font-size: 0.9rem;
       display: inline-block;
@@ -21,11 +21,13 @@
     }
 
     .course-header {
-      background: white;
-      border-radius: 8px;
+      position: relative;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
       padding: 2rem;
       margin-bottom: 2rem;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      box-shadow: var(--shadow);
     }
 
     .header-content {
@@ -39,42 +41,48 @@
     .header-info { flex: 1; }
 
     .category-tag {
-      font-size: 0.8rem;
-      color: #667eea;
+      font-family: var(--font-mono);
+      font-size: 0.75rem;
+      color: var(--accent);
       font-weight: 600;
       text-transform: uppercase;
-      letter-spacing: 0.05em;
+      letter-spacing: 0.06em;
     }
 
     h1 {
       margin: 0.5rem 0;
-      color: #1a1a2e;
+      color: var(--text-1);
+      font-family: var(--font-display);
       font-size: 1.6rem;
+      font-weight: 600;
     }
 
     .description {
-      color: #666;
+      color: var(--text-2);
       margin: 0.5rem 0 1rem;
       line-height: 1.6;
     }
 
     .badge {
       display: inline-block;
+      font-family: var(--font-mono);
       padding: 0.25rem 0.75rem;
-      border-radius: 20px;
-      font-size: 0.8rem;
-      font-weight: 500;
+      border-radius: var(--radius-pill);
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .04em;
     }
 
-    .level-beginner { background: #d4edda; color: #155724; }
-    .level-intermediate { background: #fff3cd; color: #856404; }
-    .level-advanced { background: #f8d7da; color: #721c24; }
+    .level-beginner { background: var(--sig-low-bg); color: var(--sig-low-fg); }
+    .level-intermediate { background: var(--sig-medium-bg); color: var(--sig-medium-fg); }
+    .level-advanced { background: var(--sig-high-bg); color: var(--sig-high-fg); }
 
     .header-actions { display: flex; align-items: center; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
 
-    .btn-bookmark { padding: 6px 14px; border-radius: 20px; border: 1px solid #ddd; background: #fff; color: #666; font-size: 13px; font-weight: 600; cursor: pointer; transition: all .2s; }
-    .btn-bookmark:hover { border-color: #4f46e5; color: #4f46e5; }
-    .btn-bookmark.bookmarked { background: #eef2ff; border-color: #4f46e5; color: #4f46e5; }
+    .btn-bookmark { padding: 6px 14px; border-radius: var(--radius-pill); border: 1px solid var(--border); background: var(--bg-card); color: var(--text-2); font-size: 13px; font-weight: 600; cursor: pointer; transition: all .2s; }
+    .btn-bookmark:hover { border-color: var(--accent); color: var(--accent-lt); }
+    .btn-bookmark.bookmarked { background: var(--nav-active-bg); border-color: var(--accent); color: var(--accent-lt); }
 
     .progress-summary {
       text-align: center;
@@ -85,7 +93,7 @@
       width: 80px;
       height: 80px;
       border-radius: 50%;
-      background: conic-gradient(#667eea var(--pct, 0%), #eee 0%);
+      background: conic-gradient(var(--accent) var(--pct, 0%), var(--border) 0%);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -100,49 +108,51 @@
       width: 60px;
       height: 60px;
       border-radius: 50%;
-      background: white;
+      background: var(--bg-card);
     }
 
     .progress-value {
       position: relative;
+      font-family: var(--font-mono);
       font-size: 1rem;
       font-weight: 700;
-      color: #333;
+      color: var(--text-1);
       z-index: 1;
     }
 
     .progress-label {
       position: relative;
       font-size: 0.6rem;
-      color: #666;
+      color: var(--text-2);
       z-index: 1;
     }
 
     .progress-detail {
       font-size: 0.8rem;
-      color: #666;
+      color: var(--text-2);
       margin: 0;
     }
 
     .progress-bar {
       height: 6px;
-      background: #eee;
+      background: var(--border);
       border-radius: 3px;
       overflow: hidden;
     }
 
     .progress-fill {
       height: 100%;
-      background: linear-gradient(90deg, #667eea, #764ba2);
+      background: var(--accent);
       border-radius: 3px;
       transition: width 0.4s ease;
     }
 
     .module {
-      background: white;
-      border-radius: 8px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
       margin-bottom: 1rem;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      box-shadow: var(--shadow);
       overflow: hidden;
     }
 
@@ -156,7 +166,7 @@
       transition: background 0.2s;
     }
 
-    .module-header:hover { background: #f8f9ff; }
+    .module-header:hover { background: var(--bg-hover); }
 
     .module-left {
       display: flex;
@@ -165,30 +175,35 @@
     }
 
     .module-toggle {
-      color: #667eea;
+      color: var(--accent);
       font-size: 0.8rem;
     }
 
     .module-index {
-      font-size: 0.75rem;
-      color: #999;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--text-3);
+      text-transform: uppercase;
+      letter-spacing: .05em;
       display: block;
     }
 
     .module-header h3 {
       margin: 0;
-      color: #333;
+      color: var(--text-1);
+      font-family: var(--font-display);
       font-size: 1rem;
+      font-weight: 600;
     }
 
     .module-count {
       font-size: 0.8rem;
-      color: #999;
+      color: var(--text-3);
       white-space: nowrap;
     }
 
     .lessons-list {
-      border-top: 1px solid #f0f0f0;
+      border-top: 1px solid var(--border-sub);
     }
 
     .lesson-row {
@@ -196,15 +211,15 @@
       justify-content: space-between;
       align-items: center;
       padding: 0.875rem 1.5rem;
-      border-bottom: 1px solid #f8f8f8;
+      border-bottom: 1px solid var(--border-sub);
       cursor: pointer;
       transition: background 0.15s;
       text-decoration: none;
       color: inherit;
     }
 
-    .lesson-row:hover { background: #f8f9ff; }
-    .lesson-row.completed { background: #f0fdf4; }
+    .lesson-row:hover { background: var(--bg-hover); }
+    .lesson-row.completed { background: var(--sig-low-bg); }
     .lesson-row:last-child { border-bottom: none; }
 
     .lesson-left {
@@ -217,7 +232,8 @@
       width: 28px;
       height: 28px;
       border-radius: 50%;
-      background: #f0f0f0;
+      background: var(--bg-hover);
+      color: var(--text-2);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -226,21 +242,24 @@
     }
 
     .lesson-title {
-      color: #333;
+      color: var(--text-1);
       font-size: 0.95rem;
     }
 
     .lab-badge {
-      font-size: 0.7rem;
-      background: #e8f4ff;
-      color: #667eea;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      background: var(--sig-info-bg);
+      color: var(--sig-info-fg);
       padding: 0.15rem 0.5rem;
-      border-radius: 10px;
+      border-radius: var(--radius-pill);
       font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .04em;
     }
 
     .check {
-      color: #28a745;
+      color: var(--sig-low-fg);
       font-weight: bold;
       font-size: 1rem;
     }

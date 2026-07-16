@@ -2,7 +2,7 @@
   <div class="pf-container">
 
     <!-- Left: Avatar card -->
-    <aside class="pf-sidebar">
+    <aside class="pf-sidebar panel-bracket">
       <div class="pf-avatar-wrap">
         <div class="pf-avatar" [ngClass]="'av-' + (profile?.role || 'student')">
           <img *ngIf="profile?.avatar_url" [src]="profile.avatar_url" alt="avatar" class="pf-avatar-img" />
@@ -14,11 +14,11 @@
 
       <div class="pf-meta">
         <div class="pf-meta-row">
-          <span class="pf-meta-icon">✉️</span>
+          <span class="pf-meta-icon"><app-icon name="mail" [size]="15"></app-icon></span>
           <span class="pf-meta-val">{{ profile?.email }}</span>
         </div>
         <div class="pf-meta-row">
-          <span class="pf-meta-icon">📅</span>
+          <span class="pf-meta-icon"><app-icon name="calendar" [size]="15"></app-icon></span>
           <span class="pf-meta-val">Joined {{ profile?.created_at | date:'MMMM yyyy' }}</span>
         </div>
       </div>
@@ -26,7 +26,7 @@
       <p class="pf-bio" *ngIf="profile?.bio">{{ profile.bio }}</p>
       <p class="pf-bio pf-bio-empty" *ngIf="!profile?.bio">No bio yet.</p>
 
-      <a routerLink="/account" class="pf-edit-btn">✏️ Edit Profile</a>
+      <a routerLink="/account" class="pf-edit-btn"><app-icon name="edit" [size]="15"></app-icon> Edit Profile</a>
     </aside>
 
     <!-- Right: Stats -->

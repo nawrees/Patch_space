@@ -8,6 +8,7 @@ export class AuthService {
   private supabase: SupabaseClient;
   private sessionSubject = new BehaviorSubject<AuthSession | null>(null);
   public session$ = this.sessionSubject.asObservable();
+  private recoveryMode = false;
 
   constructor() {
     this.supabase = createClient(environment.supabaseUrl, environment.supabaseAnonKey);
@@ -15,13 +16,28 @@ export class AuthService {
   }
 
   private async initializeSession() {
+    // Detect recovery link before getSession() emits, so AppComponent routes correctly.
+    if (window.location.hash.includes('type=recovery')) {
+      this.recoveryMode = true;
+    }
+
     const { data } = await this.supabase.auth.getSession();
     this.sessionSubject.next(data?.session || null);
 
-    // Listen for auth changes (login/logout from other tabs, token refresh, etc.)
     this.supabase.auth.onAuthStateChange((event, session) => {
+      this.recoveryMode = event === 'PASSWORD_RECOVERY';
       this.sessionSubject.next(session || null);
     });
+  }
+
+  isRecoveryMode(): boolean {
+    return this.recoveryMode;
+  }
+
+  async updatePassword(newPassword: string): Promise<void> {
+    const { error } = await this.supabase.auth.updateUser({ password: newPassword });
+    if (error) throw error;
+    this.recoveryMode = false;
   }
 
   async signUp(email: string, password: string, fullName: string) {
@@ -47,6 +63,13 @@ export class AuthService {
     this.sessionSubject.next(null);
   }
 
+  async resetPassword(email: string): Promise<void> {
+    const { error } = await this.supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    if (error) throw error;
+  }
+
   getSession(): AuthSession | null {
     return this.sessionSubject.value;
   }
@@ -57,5 +80,9 @@ export class AuthService {
 
   isAuthenticated(): boolean {
     return !!this.getSession();
+  }
+
+  get client(): SupabaseClient {
+    return this.supabase;
   }
 }

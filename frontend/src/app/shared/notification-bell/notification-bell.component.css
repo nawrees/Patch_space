@@ -1,0 +1,158 @@
+.nb-wrap {
+  position: relative;
+}
+
+/* ── Bell button ──────────────────────────────────────── */
+.nb-btn {
+  position: relative;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--nav-link);
+  padding: 6px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color .2s, background .2s;
+}
+
+.nb-btn:hover,
+.nb-active { color: var(--nav-hover); background: var(--bg-hover); }
+
+.nb-badge {
+  position: absolute;
+  top: 0; right: 0;
+  background: #e5484d;
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  min-width: 17px;
+  height: 17px;
+  border-radius: var(--radius-pill);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  line-height: 1;
+  pointer-events: none;
+}
+
+/* ── Dropdown ─────────────────────────────────────────── */
+.nb-dropdown {
+  display: none;
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: 340px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  z-index: 1000;
+  overflow: hidden;
+}
+
+.nb-open { display: block; }
+
+/* ── Header ───────────────────────────────────────────── */
+.nb-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.nb-title {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-1);
+}
+
+.nb-mark-all {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 11px;
+  color: var(--accent);
+  padding: 0;
+  transition: color .2s;
+}
+.nb-mark-all:hover { color: var(--accent-lt); }
+
+/* ── Empty state ──────────────────────────────────────── */
+.nb-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px 16px;
+  color: var(--text-3);
+  gap: 10px;
+}
+.nb-empty p { font-size: 13px; }
+
+/* ── List ─────────────────────────────────────────────── */
+.nb-list {
+  max-height: 360px;
+  overflow-y: auto;
+}
+
+.nb-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 16px;
+  cursor: pointer;
+  border-bottom: 1px solid var(--border-sub);
+  transition: background .15s;
+  position: relative;
+}
+
+.nb-item:hover { background: var(--bg-hover); }
+
+.nb-unread { background: rgba(var(--accent-rgb),.08); }
+.nb-unread:hover { background: rgba(var(--accent-rgb),.14); }
+
+.nb-icon-col { flex-shrink: 0; padding-top: 2px; }
+
+.nb-type-icon {
+  font-size: 18px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nb-icon-asked    { background: var(--sig-medium-bg); color: var(--sig-medium-fg); }
+.nb-icon-answered { background: var(--sig-low-bg); color: var(--sig-low-fg); }
+
+.nb-body { flex: 1; min-width: 0; }
+
+.nb-msg {
+  font-size: 12.5px;
+  color: var(--text-1);
+  line-height: 1.5;
+  margin: 0 0 4px;
+  white-space: normal;
+  word-break: break-word;
+}
+
+.nb-time {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-3);
+}
+
+.nb-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
+  margin-top: 6px;
+}

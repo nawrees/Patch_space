@@ -5,7 +5,7 @@
           <p class="catalog-sub">{{ courses.length }} courses available</p>
         </div>
         <div class="search-wrap">
-          <span class="search-icon">🔍</span>
+          <span class="search-icon"><app-icon name="search" [size]="16"></app-icon></span>
           <input
             class="search-input"
             type="text"
@@ -13,7 +13,7 @@
             (ngModelChange)="applyFilters()"
             placeholder="Search courses…"
           />
-          <button *ngIf="searchQuery" class="search-clear" (click)="clearSearch()">✕</button>
+          <button *ngIf="searchQuery" class="search-clear" (click)="clearSearch()"><app-icon name="x" [size]="14"></app-icon></button>
         </div>
       </div>
 
@@ -44,7 +44,7 @@
       </div>
 
       <div *ngIf="!loading && filteredCourses.length === 0" class="empty-state">
-        <span style="font-size:32px">🔍</span>
+        <span><app-icon name="search" [size]="32"></app-icon></span>
         <p *ngIf="searchQuery">No courses match <strong>"{{ searchQuery }}"</strong>.</p>
         <p *ngIf="!searchQuery">No courses match this filter.</p>
         <button *ngIf="searchQuery || selectedDifficulty" class="empty-reset" (click)="resetFilters()">Reset filters</button>

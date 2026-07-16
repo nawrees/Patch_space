@@ -33,11 +33,11 @@
 
           <!-- Resources / PDF Attachments -->
           <div *ngIf="resources.length > 0" class="resources-section">
-            <h3 class="res-heading">📎 Attachments</h3>
+            <h3 class="res-heading"><app-icon name="paperclip" [size]="16"></app-icon> Attachments</h3>
 
             <div *ngFor="let res of resources" class="resource-item">
               <div class="resource-info">
-                <span class="resource-type-icon">📄</span>
+                <span class="resource-type-icon"><app-icon name="file-text" [size]="18"></app-icon></span>
                 <div>
                   <span class="resource-title">{{ res.title }}</span>
                   <span class="resource-size">{{ fmtBytes(res.file_size_bytes) }}</span>
@@ -48,14 +48,15 @@
                         (click)="togglePdfView(res)"
                         [disabled]="loadingViewId === res.id">
                   <span *ngIf="loadingViewId !== res.id">
-                    {{ viewingResourceId === res.id ? '▲ Close' : '👁 View' }}
+                    <app-icon [name]="viewingResourceId === res.id ? 'chevron-up' : 'eye'" [size]="14"></app-icon>
+                    {{ viewingResourceId === res.id ? 'Close' : 'View' }}
                   </span>
                   <span *ngIf="loadingViewId === res.id">Loading…</span>
                 </button>
                 <button class="btn-res btn-res-dl"
                         (click)="downloadPdf(res)"
                         [disabled]="loadingDlId === res.id">
-                  {{ loadingDlId === res.id ? '…' : '⬇ Download' }}
+                  <app-icon name="download" [size]="14" *ngIf="loadingDlId !== res.id"></app-icon> {{ loadingDlId === res.id ? '…' : 'Download' }}
                 </button>
               </div>
             </div>
@@ -64,7 +65,7 @@
             <div *ngIf="viewingUrl" class="pdf-viewer-wrap">
               <div class="pdf-viewer-bar">
                 <span class="pdf-viewer-title">{{ viewingTitle }}</span>
-                <button class="pdf-viewer-close" (click)="closePdfViewer()">✕ Close</button>
+                <button class="pdf-viewer-close" (click)="closePdfViewer()"><app-icon name="x" [size]="14"></app-icon> Close</button>
               </div>
               <iframe class="pdf-viewer-frame" [src]="viewingUrl" title="PDF viewer"></iframe>
             </div>
@@ -85,7 +86,7 @@
 
           <!-- Q&A section -->
           <div class="qa-section">
-            <h3 class="qa-heading">💬 Questions & Answers</h3>
+            <h3 class="qa-heading"><app-icon name="message-circle" [size]="16"></app-icon> Questions & Answers</h3>
 
             <!-- Ask form -->
             <div class="qa-ask">
@@ -98,12 +99,12 @@
             <!-- Questions list -->
             <div *ngIf="questions.length === 0 && !loadingQ" class="qa-empty-msg">No questions yet — be the first to ask!</div>
             <div *ngFor="let q of questions" class="qa-item">
-              <div class="qa-q-text">❓ {{ q.question }}</div>
+              <div class="qa-q-text"><app-icon name="help-circle" [size]="15"></app-icon> {{ q.question }}</div>
               <div class="qa-meta-row">
                 <span class="qa-by">You</span>
                 <span class="qa-time">{{ timeAgo(q.created_at) }}</span>
                 <span class="qa-status" [class.qa-status-answered]="q.answer" [class.qa-status-pending]="!q.answer">
-                  {{ q.answer ? '✅ Answered' : '⏳ Awaiting answer' }}
+                  <app-icon [name]="q.answer ? 'check-circle' : 'hourglass'" [size]="13"></app-icon> {{ q.answer ? 'Answered' : 'Awaiting answer' }}
                 </span>
               </div>
               <div *ngIf="q.answer" class="qa-answer">

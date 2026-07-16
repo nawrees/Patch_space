@@ -1,6 +1,6 @@
 <div class="sv-page">
   <div class="sv-header">
-    <h1 class="sv-title">🔖 Saved Courses</h1>
+    <h1 class="sv-title"><app-icon name="bookmark" [size]="22"></app-icon> Saved Courses</h1>
     <p class="sv-sub">{{ saved.length }} course{{ saved.length === 1 ? '' : 's' }} saved</p>
   </div>
 
@@ -18,7 +18,7 @@
 
   <!-- Empty -->
   <div *ngIf="!loading && saved.length === 0" class="sv-empty">
-    <span class="sv-empty-icon">🔖</span>
+    <span class="sv-empty-icon"><app-icon name="bookmark" [size]="40"></app-icon></span>
     <h3>No saved courses yet</h3>
     <p>Tap the bookmark icon on any course to save it here.</p>
     <a routerLink="/student/courses" class="sv-browse-btn">Browse Courses</a>
@@ -31,7 +31,7 @@
            [style.backgroundImage]="item.course?.thumbnail_url ? 'url('+item.course.thumbnail_url+')' : 'none'">
         <span *ngIf="!item.course?.thumbnail_url" class="sv-thumb-ph">{{ item.course?.title?.charAt(0) }}</span>
         <span class="sv-diff-badge" [ngClass]="'diff-' + item.course?.difficulty">{{ item.course?.difficulty }}</span>
-        <button class="sv-unsave" (click)="unsave(item)" title="Remove from saved">✕</button>
+        <button class="sv-unsave" (click)="unsave(item)" title="Remove from saved"><app-icon name="x" [size]="14"></app-icon></button>
       </div>
       <div class="sv-body">
         <p class="sv-cat">{{ item.course?.category }}</p>

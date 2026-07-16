@@ -1,6 +1,6 @@
 <div class="td-page">
   <!-- Hero -->
-  <div class="td-hero">
+  <div class="td-hero panel-bracket">
     <div>
       <p class="td-greeting">Tutor Portal</p>
       <h1 class="td-name">Welcome, {{ currentUser?.profile?.full_name || 'Tutor' }}!</h1>
@@ -15,13 +15,13 @@
   <!-- Tab nav -->
   <nav class="td-tabs">
     <button class="td-tab" [class.td-tab-active]="activeTab === 'students'" (click)="activeTab = 'students'">
-      👥 Students
+      <app-icon name="users" [size]="16"></app-icon> Students
     </button>
     <button class="td-tab" [class.td-tab-active]="activeTab === 'analytics'" (click)="activeTab = 'analytics'">
-      📊 Drop-off Analytics
+      <app-icon name="bar-chart" [size]="16"></app-icon> Drop-off Analytics
     </button>
     <button class="td-tab" [class.td-tab-active]="activeTab === 'qa'" (click)="activeTab = 'qa'">
-      💬 Q&A Moderation
+      <app-icon name="message-circle" [size]="16"></app-icon> Q&A Moderation
       <span class="td-badge" *ngIf="urgentQaCount > 0">{{ urgentQaCount }}</span>
     </button>
   </nav>

@@ -1,7 +1,7 @@
 <div class="do-page">
   <div class="do-header">
     <div>
-      <h2 class="do-title">📊 Completion Funnel</h2>
+      <h2 class="do-title"><app-icon name="bar-chart" [size]="20"></app-icon> Completion Funnel</h2>
       <p class="do-sub">See where students drop off in each lesson</p>
     </div>
   </div>
@@ -47,12 +47,12 @@
     </div>
 
     <div class="do-module" *ngFor="let group of grouped">
-      <div class="do-module-title">📁 {{ group.moduleTitle }}</div>
+      <div class="do-module-title"><app-icon name="folder" [size]="16"></app-icon> {{ group.moduleTitle }}</div>
       <div class="do-row" *ngFor="let row of group.lessons">
         <div class="do-row-label">
-          <span class="do-type-icon">{{ typeIcon(row.lessonType) }}</span>
+          <span class="do-type-icon"><app-icon [name]="typeIcon(row.lessonType)" [size]="14"></app-icon></span>
           <span class="do-lesson-name">{{ row.lessonTitle }}</span>
-          <span class="do-alarm" *ngIf="row.dropOffRate > 60" title="High drop-off">⚠️</span>
+          <span class="do-alarm" *ngIf="row.dropOffRate > 60" title="High drop-off"><app-icon name="alert-triangle" [size]="14"></app-icon></span>
         </div>
         <div class="do-bars">
           <div class="do-bar-track">

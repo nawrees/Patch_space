@@ -11,7 +11,7 @@
   <div class="form-panel" *ngIf="showForm">
     <div class="form-panel-header">
       <h2>{{ editingId ? 'Edit Course' : 'New Course' }}</h2>
-      <button class="btn-close" (click)="closeForm()">✕</button>
+      <button class="btn-close" (click)="closeForm()" aria-label="Close"><app-icon name="x" [size]="18"></app-icon></button>
     </div>
 
     <div class="form-grid">
@@ -41,8 +41,19 @@
       </div>
 
       <div class="form-group full">
-        <label>Thumbnail URL</label>
-        <input [(ngModel)]="form.thumbnail_url" placeholder="https://..." />
+        <label>Course Photo</label>
+        <div class="thumb-picker" (click)="imageInput.click()">
+          <img *ngIf="thumbnailPreview" [src]="thumbnailPreview" class="thumb-preview-img" alt="Course thumbnail"/>
+          <div *ngIf="!thumbnailPreview" class="thumb-placeholder">
+            <span class="thumb-ph-icon"><app-icon name="camera" [size]="30"></app-icon></span>
+            <span>Click to upload a photo</span>
+            <span class="thumb-ph-hint">JPEG, PNG or WebP · max 5 MB</span>
+          </div>
+          <button *ngIf="thumbnailPreview" class="thumb-remove" type="button"
+            (click)="$event.stopPropagation(); removeThumbnail()" title="Remove photo"><app-icon name="x" [size]="14"></app-icon></button>
+        </div>
+        <input #imageInput type="file" accept="image/jpeg,image/png,image/webp,image/gif"
+          style="display:none" (change)="onImageSelected($event)"/>
       </div>
 
       <div class="form-group">

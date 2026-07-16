@@ -1,6 +1,6 @@
     <div class="rec-wrap">
       <div class="rec-header">
-        <span class="rec-title">✨ Recommended for You</span>
+        <span class="rec-title"><app-icon name="sparkles" [size]="18"></app-icon> Recommended for You</span>
         <button class="rec-refresh" (click)="load()" title="Refresh">⟳</button>
       </div>
 
@@ -23,12 +23,12 @@
         <div *ngFor="let item of items" class="rec-card" (click)="go(item)">
           <div class="rec-thumb"
                [style.backgroundImage]="item.courseThumbnail ? 'url('+item.courseThumbnail+')' : 'none'">
-            <span *ngIf="!item.courseThumbnail" class="rec-thumb-ph">📚</span>
+            <span *ngIf="!item.courseThumbnail" class="rec-thumb-ph"><app-icon name="library" [size]="24"></app-icon></span>
             <span class="rec-priority"
                   [class.rec-p-high]="item.priority === 'high'"
                   [class.rec-p-med]="item.priority === 'medium'"
                   [class.rec-p-low]="item.priority === 'low'">
-              {{ item.priority === 'high' ? '🔥' : item.priority === 'medium' ? '⚡' : '🌱' }}
+              <app-icon [name]="item.priority === 'high' ? 'flame' : item.priority === 'medium' ? 'zap' : 'sprout'" [size]="14"></app-icon>
             </span>
           </div>
           <div class="rec-body">

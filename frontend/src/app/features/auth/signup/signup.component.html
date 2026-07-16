@@ -23,23 +23,50 @@
               name="email"
               placeholder="your@email.com"
               required
+              autocomplete="email"
             />
           </div>
 
           <div class="form-group">
-            <label>Password (min 6 characters)</label>
+            <label>Password</label>
             <input
               type="password"
               [(ngModel)]="password"
               name="password"
               placeholder="••••••••"
-              minlength="6"
               required
+              autocomplete="new-password"
+              (blur)="passwordTouched = true"
             />
+
+            <!-- Strength bar -->
+            <div class="pw-strength-bar" *ngIf="password">
+              <div class="pw-strength-fill" [ngClass]="strengthClass" [style.width.%]="strengthLevel * 25"></div>
+            </div>
+            <span class="pw-strength-label" *ngIf="password" [ngClass]="strengthClass">{{ strengthLabel }}</span>
+
+            <!-- Requirements checklist -->
+            <ul class="pw-requirements" *ngIf="password || passwordTouched">
+              <li [class.met]="pwChecks.length">
+                <span>{{ pwChecks.length ? '✓' : '○' }}</span> At least 8 characters
+              </li>
+              <li [class.met]="pwChecks.upper">
+                <span>{{ pwChecks.upper ? '✓' : '○' }}</span> At least 1 uppercase letter (A–Z)
+              </li>
+              <li [class.met]="pwChecks.lower">
+                <span>{{ pwChecks.lower ? '✓' : '○' }}</span> At least 1 lowercase letter (a–z)
+              </li>
+              <li [class.met]="pwChecks.number">
+                <span>{{ pwChecks.number ? '✓' : '○' }}</span> At least 1 number (0–9)
+              </li>
+              <li [class.met]="pwChecks.special">
+                <span>{{ pwChecks.special ? '✓' : '○' }}</span> At least 1 special character (!&#64;#$…)
+              </li>
+            </ul>
           </div>
 
-          <button type="submit" [disabled]="loading">
-            {{ loading ? 'Creating account...' : 'Sign Up' }}
+          <button type="submit" [disabled]="loading || !passwordValid">
+            {{ loading ? 'Creating account…' : 'Sign Up' }}
           </button>
         </form>
 

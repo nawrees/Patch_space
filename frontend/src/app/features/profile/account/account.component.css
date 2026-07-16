@@ -1,21 +1,21 @@
 .ac-page { padding: 32px; max-width: 680px; margin: 0 auto; background: var(--bg-page); min-height: 100vh; }
 
 .ac-header { margin-bottom: 24px; }
-.ac-back { font-size: 13px; color: var(--accent-lt); text-decoration: none; display: inline-block; margin-bottom: 12px; }
+.ac-back { font-size: 13px; color: var(--accent); text-decoration: none; display: inline-block; margin-bottom: 12px; }
 .ac-back:hover { text-decoration: underline; }
-.ac-title { color: var(--text-1); font-size: 24px; font-weight: 800; margin: 0 0 4px; }
+.ac-title { color: var(--text-1); font-size: 24px; font-weight: 700; margin: 0 0 4px; }
 .ac-sub { color: var(--text-3); font-size: 14px; margin: 0; }
 
-.ac-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; }
+.ac-card { position: relative; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
 
 /* Avatar row */
 .ac-avatar-row { display: flex; align-items: center; gap: 18px; padding: 24px 28px; border-bottom: 1px solid var(--border); }
 .ac-avatar { width: 72px; height: 72px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; }
 .ac-avatar-img { width: 100%; height: 100%; object-fit: cover; }
-.ac-avatar-init { font-size: 28px; font-weight: 800; color: #fff; }
-.av-student { background: linear-gradient(135deg, #4f46e5, #818cf8); }
-.av-tutor   { background: linear-gradient(135deg, #d97706, #fbbf24); }
-.av-admin   { background: linear-gradient(135deg, #dc2626, #f87171); }
+.ac-avatar-init { font-family: var(--font-mono); font-size: 28px; font-weight: 700; color: #fff; }
+.av-student { background: var(--role-student); }
+.av-tutor   { background: var(--role-tutor); }
+.av-admin   { background: var(--role-admin); }
 .ac-avatar-hint { color: var(--text-2); font-size: 13px; margin: 0 0 4px; }
 .ac-avatar-or { color: var(--text-3); font-size: 12px; margin: 0; }
 
@@ -32,36 +32,36 @@ input, textarea {
   padding: 10px 12px;
   background: var(--bg-input);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   color: var(--text-1);
   font-size: 14px;
   font-family: inherit;
   transition: border-color .2s;
   width: 100%;
 }
-input:focus, textarea:focus { outline: none; border-color: #4f46e5; box-shadow: 0 0 0 3px rgba(79,70,229,.12); }
+input:focus, textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(var(--accent-rgb),.15); }
 textarea { resize: vertical; }
 
-.ac-char-count { font-size: 11px; color: var(--text-3); text-align: right; }
+.ac-char-count { font-family: var(--font-mono); font-size: 11px; color: var(--text-3); text-align: right; }
 
 /* Read-only section */
 .ac-section-readonly { background: var(--bg-hover); }
 .ac-readonly-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
 .ac-ro-label { font-size: 13px; color: var(--text-3); width: 110px; flex-shrink: 0; }
 .ac-ro-val { font-size: 13px; color: var(--text-1); }
-.ac-ro-badge { font-size: 11px; font-weight: 700; padding: 2px 10px; border-radius: 20px; text-transform: uppercase; }
-.role-student { background: #064e3b; color: #6ee7b7; }
-.role-tutor   { background: #78350f; color: #fcd34d; }
-.role-admin   { background: #7f1d1d; color: #fca5a5; }
+.ac-ro-badge { font-family: var(--font-mono); font-size: 10.5px; font-weight: 600; letter-spacing: .04em; padding: 2px 10px; border-radius: var(--radius-pill); text-transform: uppercase; }
+.role-student { background: var(--sig-info-bg); color: var(--sig-info-fg); }
+.role-tutor   { background: var(--sig-medium-bg); color: var(--sig-medium-fg); }
+.role-admin   { background: var(--sig-critical-bg); color: var(--sig-critical-fg); }
 .ac-ro-note { font-size: 12px; color: var(--text-3); margin: 4px 0 0; font-style: italic; }
 
 /* Actions */
 .ac-actions { padding: 20px 28px; }
-.ac-success { color: #22c55e; font-size: 13px; margin: 0 0 10px; font-weight: 600; }
-.ac-error   { color: #f87171; font-size: 13px; margin: 0 0 10px; }
+.ac-success { color: var(--sig-low-fg); font-size: 13px; margin: 0 0 10px; font-weight: 600; }
+.ac-error   { color: var(--sig-critical-fg); font-size: 13px; margin: 0 0 10px; }
 .ac-btn-row { display: flex; justify-content: flex-end; gap: 12px; }
-.ac-btn-cancel { padding: 10px 20px; background: var(--bg-hover); border: 1px solid var(--border); border-radius: 8px; color: var(--text-2); font-size: 14px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; transition: border-color .2s; }
-.ac-btn-cancel:hover { border-color: var(--accent-lt); }
-.ac-btn-save { padding: 10px 24px; background: #4f46e5; color: #fff; border: none; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; transition: background .2s; }
-.ac-btn-save:hover:not(:disabled) { background: #4338ca; }
-.ac-btn-save:disabled { background: #6366f1; opacity: .6; cursor: not-allowed; }
+.ac-btn-cancel { padding: 10px 20px; background: var(--bg-hover); border: 1px solid var(--border); border-radius: var(--radius-md); color: var(--text-2); font-size: 14px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; transition: border-color .2s; }
+.ac-btn-cancel:hover { border-color: var(--accent); }
+.ac-btn-save { padding: 10px 24px; background: var(--accent); color: #06181a; border: none; border-radius: var(--radius-md); font-size: 14px; font-weight: 700; cursor: pointer; transition: background .2s; }
+.ac-btn-save:hover:not(:disabled) { background: var(--accent-lt); }
+.ac-btn-save:disabled { background: var(--bg-hover); color: var(--text-3); opacity: .6; cursor: not-allowed; }

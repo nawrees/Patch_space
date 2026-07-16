@@ -1,0 +1,77 @@
+<div class="bg-page">
+
+  <!-- Header -->
+  <div class="bg-header">
+    <h1 class="bg-title"><app-icon name="award" [size]="24"></app-icon> Badges</h1>
+    <p class="bg-sub">Earn badges by keeping your daily learning streak alive.</p>
+  </div>
+
+  <!-- Skeleton -->
+  <ng-container *ngIf="loading">
+    <div class="bg-streak-card bg-sk-card">
+      <div class="bg-sk-line"></div>
+      <div class="bg-sk-line bg-sk-s"></div>
+    </div>
+    <div class="bg-grid">
+      <div *ngFor="let i of [1,2,3,4,5,6,7]" class="bg-sk-badge"></div>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf="!loading">
+
+    <!-- Streak summary card -->
+    <div class="bg-streak-card panel-bracket">
+      <div class="bg-streak-stats">
+        <div class="bg-stat">
+          <span class="bg-stat-val">{{ currentStreak }}</span>
+          <span class="bg-stat-lbl">Current streak</span>
+          <span class="bg-streak-flame" [class.dim]="!activeToday"><app-icon [name]="currentStreak === 0 ? 'heart-crack' : 'flame'" [size]="22"></app-icon></span>
+        </div>
+        <div class="bg-stat-divider"></div>
+        <div class="bg-stat">
+          <span class="bg-stat-val">{{ longestStreak }}</span>
+          <span class="bg-stat-lbl">Longest streak</span>
+          <span class="bg-streak-flame"><app-icon name="trophy" [size]="22"></app-icon></span>
+        </div>
+        <div class="bg-stat-divider"></div>
+        <div class="bg-stat">
+          <span class="bg-stat-val">{{ earnedCount() }}</span>
+          <span class="bg-stat-lbl">Badges earned</span>
+          <span class="bg-streak-flame"><app-icon name="award" [size]="22"></app-icon></span>
+        </div>
+      </div>
+
+      <!-- Progress to next badge -->
+      <ng-container *ngIf="nextBadge() as next">
+        <div class="bg-progress-wrap">
+          <div class="bg-progress-labels">
+            <span>Progress to <strong>{{ next.title }}</strong></span>
+            <span class="bg-progress-count">{{ longestStreak }} / {{ next.required }} days</span>
+          </div>
+          <div class="bg-progress-bar">
+            <div class="bg-progress-fill" [style.width.%]="progressToNext()"></div>
+          </div>
+        </div>
+      </ng-container>
+      <p *ngIf="!nextBadge()" class="bg-all-earned"><app-icon name="party-popper" [size]="18"></app-icon> You've earned all badges!</p>
+    </div>
+
+    <!-- Badge grid -->
+    <div class="bg-grid">
+      <div
+        *ngFor="let badge of badges"
+        class="bg-badge-card"
+        [class.earned]="isEarned(badge)"
+        [class.locked]="!isEarned(badge)"
+      >
+        <div class="bg-badge-icon"><app-icon [name]="badge.icon" [size]="34"></app-icon></div>
+        <div class="bg-badge-title">{{ badge.title }}</div>
+        <div class="bg-badge-desc">{{ badge.description }}</div>
+        <div class="bg-badge-days">{{ badge.required }}&nbsp;days</div>
+        <div *ngIf="isEarned(badge)" class="bg-badge-check">✓</div>
+        <div *ngIf="!isEarned(badge)" class="bg-badge-lock"><app-icon name="lock" [size]="14"></app-icon></div>
+      </div>
+    </div>
+
+  </ng-container>
+</div>

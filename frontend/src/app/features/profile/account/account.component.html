@@ -7,7 +7,7 @@
       <p class="ac-sub">Update your personal information</p>
     </div>
 
-    <div class="ac-card">
+    <div class="ac-card panel-bracket">
 
       <!-- Avatar preview -->
       <div class="ac-avatar-row">
@@ -34,7 +34,7 @@
         <div class="ac-form-group">
           <label>Bio</label>
           <textarea [(ngModel)]="form.bio" placeholder="A short bio about yourself…" rows="4" maxlength="400"></textarea>
-          <span class="ac-char-count">{{ form.bio?.length ?? 0 }} / 400</span>
+          <span class="ac-char-count">{{ (form.bio || '').length }} / 400</span>
         </div>
 
         <div class="ac-form-group">
