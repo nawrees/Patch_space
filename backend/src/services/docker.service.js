@@ -21,7 +21,7 @@ docker.ping().then(() => {
  * Local-only images (e.g. custom-built images never pushed to a registry)
  * are used as-is without attempting a pull, which would always fail.
  */
-export async function pullImage(image) {
+export async function pullImage(image, timeoutMs = 120_000) {
   // Check if image exists locally first
   const existsLocally = await imageExistsLocally(image);
   if (existsLocally) {
@@ -30,12 +30,19 @@ export async function pullImage(image) {
   }
 
   console.log(`[Docker] Pulling image "${image}" from registry…`);
-  const stream = await new Promise((resolve, reject) => {
-    docker.pull(image, (err, s) => (err ? reject(err) : resolve(s)));
+
+  const pullPromise = new Promise((resolve, reject) => {
+    docker.pull(image, (err, stream) => {
+      if (err) return reject(err);
+      docker.modem.followProgress(stream, (err2) => (err2 ? reject(err2) : resolve()));
+    });
   });
-  await new Promise((resolve, reject) => {
-    docker.modem.followProgress(stream, (err) => (err ? reject(err) : resolve()));
-  });
+
+  const timeoutPromise = new Promise((_, reject) =>
+    setTimeout(() => reject(new Error(`Image pull timed out after ${timeoutMs / 1000}s — is "${image}" a local-only image that hasn't been built yet?`)), timeoutMs)
+  );
+
+  await Promise.race([pullPromise, timeoutPromise]);
   console.log(`[Docker] Pull complete: "${image}"`);
 }
 
@@ -56,7 +63,7 @@ export async function startContainer({ dockerImage, cpuLimit, memoryLimitMb, ser
   const container = await docker.createContainer({
     Image: dockerImage,
     name: containerName,
-    Env: flag ? [`LAB_FLAG=${flag}`] : [],
+    Env: flag ? [`SESSION_FLAG=${flag}`] : [],
     ExposedPorts: { [`${servicePort}/tcp`]: {} },
     HostConfig: {
       PortBindings: { [`${servicePort}/tcp`]: [{ HostPort: '' }] }, // '' = auto-assign
