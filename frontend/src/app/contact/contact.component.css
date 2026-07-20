@@ -1,0 +1,19 @@
+.contact-card-wrap { max-width: 480px; margin: 0 auto 10vh; padding: 0 6vw; }
+.contact-card { text-align: center; padding: 44px 32px; }
+.contact-icon {
+  width: 48px; height: 48px;
+  margin: 0 auto 16px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: var(--radius-md);
+  background: var(--sig-info-bg);
+  color: var(--accent);
+}
+.contact-card h2 { font-size: 1.3rem; color: var(--text-1); margin-bottom: 14px; }
+.contact-email {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  color: var(--accent);
+  margin-bottom: 14px;
+}
+.contact-card p { color: var(--text-2); font-size: 13.5px; }

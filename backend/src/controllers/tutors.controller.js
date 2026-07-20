@@ -11,9 +11,14 @@ export const listMyStudents = asyncHandler(async (req, res) => {
 
   // A student can have multiple assignment rows (one per course they're
   // mentored in) — collapse those into a single entry per student so the
-  // same person doesn't show up as multiple "students".
+  // same person doesn't show up as multiple "students". Also track whether
+  // any row for that student had a null course_id (= unrestricted access to
+  // all their courses), since that signal is needed below and isn't
+  // otherwise recoverable once collapsed.
   const byStudent = new Map();
+  const unrestricted = new Set();
   for (const row of data) {
+    if (row.course_id === null) unrestricted.add(row.student_id);
     const existing = byStudent.get(row.student_id);
     if (existing) {
       if (row.course_id) existing.course_ids.push(row.course_id);
@@ -28,8 +33,74 @@ export const listMyStudents = asyncHandler(async (req, res) => {
     }
   }
 
-  res.json({ students: Array.from(byStudent.values()) });
+  const avgProgressPercent = await computeAvgProgressPercent(req.supabase, byStudent, unrestricted);
+
+  res.json({ students: Array.from(byStudent.values()), avgProgressPercent });
 });
+
+// Average lesson-completion percentage across all of a tutor's assigned
+// students, respecting the same "unrestricted vs specific courses" scoping
+// rule as getStudentOverview below — a tutor's dashboard stat shouldn't leak
+// progress on courses they aren't actually assigned to mentor.
+async function computeAvgProgressPercent(supabase, byStudent, unrestricted) {
+  const studentIds = Array.from(byStudent.keys());
+  if (studentIds.length === 0) return null;
+
+  const [enrollmentsRes, progressRes] = await Promise.all([
+    supabase.from('enrollments').select('student_id, course_id').in('student_id', studentIds),
+    supabase
+      .from('progress')
+      .select('student_id, status, lessons ( id, module_id, modules ( course_id ) )')
+      .in('student_id', studentIds)
+      .eq('status', 'completed'),
+  ]);
+
+  if (enrollmentsRes.error) throw new ApiError(403, enrollmentsRes.error.message);
+  if (progressRes.error) throw new ApiError(403, progressRes.error.message);
+
+  const isAllowed = (studentId, courseId) =>
+    unrestricted.has(studentId) || byStudent.get(studentId).course_ids.includes(courseId);
+
+  const enrollments = enrollmentsRes.data.filter((e) => isAllowed(e.student_id, e.course_id));
+  const courseIds = Array.from(new Set(enrollments.map((e) => e.course_id)));
+  if (courseIds.length === 0) return null;
+
+  const { data: lessonRows, error: lessonsError } = await supabase
+    .from('lessons')
+    .select('id, modules!inner ( course_id )')
+    .in('modules.course_id', courseIds);
+  if (lessonsError) throw new ApiError(403, lessonsError.message);
+
+  const lessonCountByCourse = new Map();
+  for (const l of lessonRows) {
+    const cid = l.modules.course_id;
+    lessonCountByCourse.set(cid, (lessonCountByCourse.get(cid) ?? 0) + 1);
+  }
+
+  const completedByStudentCourse = new Map(); // `${studentId}:${courseId}` -> count
+  for (const p of progressRes.data) {
+    const courseId = p.lessons?.modules?.course_id;
+    if (!courseId || !isAllowed(p.student_id, courseId)) continue;
+    const key = `${p.student_id}:${courseId}`;
+    completedByStudentCourse.set(key, (completedByStudentCourse.get(key) ?? 0) + 1);
+  }
+
+  const percentByStudent = new Map();
+  for (const e of enrollments) {
+    const totalLessons = lessonCountByCourse.get(e.course_id) ?? 0;
+    if (totalLessons === 0) continue;
+    const completed = completedByStudentCourse.get(`${e.student_id}:${e.course_id}`) ?? 0;
+    const prev = percentByStudent.get(e.student_id) ?? { completed: 0, total: 0 };
+    percentByStudent.set(e.student_id, { completed: prev.completed + completed, total: prev.total + totalLessons });
+  }
+
+  const percents = Array.from(percentByStudent.values())
+    .filter((s) => s.total > 0)
+    .map((s) => (s.completed / s.total) * 100);
+
+  if (percents.length === 0) return null;
+  return Math.round(percents.reduce((sum, p) => sum + p, 0) / percents.length);
+}
 
 export const getStudentOverview = asyncHandler(async (req, res) => {
   // RLS (is_tutor_of) ensures this only returns data for students actually

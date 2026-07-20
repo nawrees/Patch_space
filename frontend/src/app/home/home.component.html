@@ -1,0 +1,71 @@
+<div class="public-page">
+
+  <nav class="home-nav">
+    <a routerLink="/" class="home-brand"><h2>Patch Space</h2></a>
+    <div class="home-nav-links">
+      <a routerLink="/about">About</a>
+      <a routerLink="/contact">Contact</a>
+    </div>
+    <div class="home-nav-actions">
+      <a routerLink="/login" class="btn-secondary">Log in</a>
+      <a routerLink="/signup" class="btn-primary">Sign up</a>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="hero-copy">
+      <span class="eyebrow">Cybersecurity training</span>
+      <h1>Learn to break things<br>— safely.</h1>
+      <p class="hero-sub">
+        Hands-on courses and real Docker-backed labs for people who'd rather
+        exploit a vulnerability than just read about one.
+      </p>
+      <div class="hero-actions">
+        <a routerLink="/signup" class="btn-primary">Get started — it's free</a>
+        <a routerLink="/login" class="btn-secondary">I have an account</a>
+      </div>
+    </div>
+
+    <div class="hero-panel panel-bracket card">
+      <div class="term-bar">
+        <span class="term-dot"></span><span class="term-dot"></span><span class="term-dot"></span>
+      </div>
+      <pre class="term-body"><span class="term-prompt">$</span> docker start lab-cmd-injection-01
+<span class="term-ok">✓ container running — access granted</span>
+<span class="term-prompt">$</span> curl target/api?cmd=whoami
+<span class="term-ok">www-data</span>
+<span class="term-prompt">$</span> submit flag
+<span class="pill pill-low" style="margin-top:2px">FLAG CAPTURED</span></pre>
+    </div>
+  </section>
+
+  <section class="features">
+    <span class="eyebrow" style="display:block; text-align:center; margin-bottom:8px;">What you get</span>
+    <h2 class="features-heading">Everything you need to actually learn security</h2>
+
+    <div class="feature-grid">
+      <div class="feature-card card" *ngFor="let f of features">
+        <div class="feature-icon"><app-icon [name]="f.icon" [size]="20"></app-icon></div>
+        <h3>{{ f.title }}</h3>
+        <p>{{ f.body }}</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta">
+    <div class="cta-box card panel-bracket">
+      <h2>Ready to start your first lab?</h2>
+      <p>Create a free account — no credit card, just a terminal.</p>
+      <a routerLink="/signup" class="btn-primary">Create your account</a>
+    </div>
+  </section>
+
+  <footer class="home-footer">
+    <span>Patch Space — Cybersecurity Training, by Data do it</span>
+    <div class="home-footer-links">
+      <a routerLink="/about">About us</a>
+      <a routerLink="/contact">Contact us</a>
+    </div>
+  </footer>
+
+</div>

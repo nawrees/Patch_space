@@ -2,9 +2,22 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>E-Learning Platform - Cybersecurity Training</title>
+    <title>Patch Space - Cybersecurity Training</title>
     <base href="/" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!--
+      Basic CSP: script-src/object-src lock down code execution; frame-src is
+      the directive that actually backstops the lesson-video embed (see
+      lesson-detail.component) — the browser will refuse to load an iframe
+      pointed anywhere outside YouTube/Vimeo even if a bad video_url ever got
+      past backend validation. connect-src covers Supabase + the local dev
+      API; update it (and frame-src if you add other providers) once a real
+      production API domain exists. frame-ancestors is deliberately omitted
+      here — it's ignored when set via <meta> (browsers require it as a real
+      HTTP header), so add it at the hosting/reverse-proxy layer once one
+      exists.
+    -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co wss://*.supabase.co http://localhost:4000; frame-src https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com; object-src 'none'; base-uri 'self';" />
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />

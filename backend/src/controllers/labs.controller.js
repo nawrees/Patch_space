@@ -10,7 +10,102 @@ import {
   stopContainer,
   getContainerLogs,
   isContainerRunning,
+  listLabContainerIds,
 } from '../services/docker.service.js';
+
+// Builds a per-session flag like "FLAG{COMMAND_INJECTION_193847...}": a
+// readable attack-name prefix (from the lab title) followed by a large
+// random decimal number carrying the same 128 bits of entropy as a raw
+// random hex string — readability without weakening how guessable the
+// flag is (a short/small random number here would make it brute-forceable
+// since submitFlag has no attempt rate limit).
+function buildSessionFlag(labTitle) {
+  const attackSlug = (labTitle || 'LAB')
+    .toUpperCase()
+    .replace(/[^A-Z0-9]+/g, '_')
+    .replace(/^_+|_+$/g, '')
+    .slice(0, 24) || 'LAB';
+  const randomNumber = BigInt(`0x${crypto.randomBytes(16).toString('hex')}`).toString();
+  return `FLAG{${attackSlug}_${randomNumber}}`;
+}
+
+// Stops the container (if any) and marks a session expired. Shared by the
+// on-demand check in getSession and the periodic sweep below, so an
+// abandoned session's container gets cleaned up whether or not anyone
+// ever polls it again.
+async function expireSession(session) {
+  if (session.container_id) {
+    await stopContainer(session.container_id).catch(() => {});
+  }
+  await getAdminClient()
+    .from('lab_sessions')
+    .update({ status: 'expired', stopped_at: new Date().toISOString() })
+    .eq('id', session.id);
+}
+
+// ─── Periodic sweep: catches sessions nobody ever polled again ──────────────
+// getSession() only expires a session when its status is checked; a student
+// who closes the tab and never returns would otherwise leave their container
+// running forever. Called on an interval from server.js.
+export async function sweepExpiredSessions() {
+  const admin = getAdminClient();
+  const { data: expired } = await admin
+    .from('lab_sessions')
+    .select('id, container_id')
+    .in('status', ['provisioning', 'running'])
+    .lt('expires_at', new Date().toISOString());
+
+  for (const session of expired ?? []) {
+    await expireSession(session).catch((err) =>
+      console.error('[LabSweep] Failed to expire session', session.id, err.message)
+    );
+  }
+  return expired?.length ?? 0;
+}
+
+// ─── Boot-time reconciliation: one-time sweep, not a recurring poll ─────────
+// If the backend crashes or restarts, any in-memory tracking of "provisioning"
+// sessions is lost, and containers can be left running with nothing to stop
+// them. On startup, reconcile DB state against actual Docker state:
+//   - Docker containers with no matching active session → orphaned, remove.
+//   - DB sessions still 'provisioning' → no process survives a restart to
+//     finish them, so they're definitionally stale.
+//   - DB sessions 'running' whose container no longer exists → mark error.
+export async function reconcileOnBoot() {
+  const admin = getAdminClient();
+
+  const { data: activeSessions } = await admin
+    .from('lab_sessions')
+    .select('id, status, container_id')
+    .in('status', ['provisioning', 'running']);
+
+  const activeContainerIds = new Set(
+    (activeSessions ?? []).filter((s) => s.container_id).map((s) => s.container_id)
+  );
+
+  const allLabContainerIds = await listLabContainerIds();
+  const orphanIds = allLabContainerIds.filter((id) => !activeContainerIds.has(id));
+  for (const id of orphanIds) {
+    await stopContainer(id).catch((err) =>
+      console.warn('[Reconcile] Failed to remove orphan container', id, err.message)
+    );
+  }
+
+  for (const session of activeSessions ?? []) {
+    if (session.status === 'provisioning') {
+      if (session.container_id) await stopContainer(session.container_id).catch(() => {});
+      await admin.from('lab_sessions').update({ status: 'error' }).eq('id', session.id);
+      continue;
+    }
+    if (session.container_id && !(await isContainerRunning(session.container_id))) {
+      await admin.from('lab_sessions').update({ status: 'error' }).eq('id', session.id);
+    }
+  }
+
+  if (orphanIds.length) {
+    console.log(`[Reconcile] Removed ${orphanIds.length} orphaned lab container(s) on boot`);
+  }
+}
 
 // ─── GET /api/labs/:labId/session ────────────────────────────────────────────
 // Returns the student's current active session (provisioning or running),
@@ -33,13 +128,7 @@ export const getSession = asyncHandler(async (req, res) => {
 
   // Auto-expire: if expires_at has passed, transition to expired
   if (session.expires_at && new Date(session.expires_at) < new Date()) {
-    if (session.container_id) {
-      stopContainer(session.container_id).catch(() => {});
-    }
-    await admin
-      .from('lab_sessions')
-      .update({ status: 'expired', stopped_at: new Date().toISOString() })
-      .eq('id', session.id);
+    await expireSession(session);
     return res.json({ session: { ...session, status: 'expired' }, submissions: [] });
   }
 
@@ -108,8 +197,31 @@ export const startLab = asyncHandler(async (req, res) => {
 
   if (existing) throw new ApiError(409, 'A lab session is already active — stop it first');
 
+  // Per-student cap: stops one student from spinning up containers across
+  // every lab in the catalog at once.
+  const { count: studentActiveCount } = await admin
+    .from('lab_sessions')
+    .select('id', { count: 'exact', head: true })
+    .eq('student_id', req.user.id)
+    .in('status', ['provisioning', 'running']);
+
+  if ((studentActiveCount ?? 0) >= env.LAB_MAX_CONCURRENT_PER_STUDENT) {
+    throw new ApiError(429, `You have reached the limit of ${env.LAB_MAX_CONCURRENT_PER_STUDENT} simultaneous labs — stop one before starting another`);
+  }
+
+  // Platform-wide cap: protects the Docker host from being overwhelmed
+  // regardless of which students are asking.
+  const { count: totalActiveCount } = await admin
+    .from('lab_sessions')
+    .select('id', { count: 'exact', head: true })
+    .in('status', ['provisioning', 'running']);
+
+  if ((totalActiveCount ?? 0) >= env.LAB_MAX_CONCURRENT_TOTAL) {
+    throw new ApiError(503, 'Lab capacity is full right now — try again shortly');
+  }
+
   // Per-session random flag: prevents students from sharing flags
-  const sessionFlag = `FLAG{${crypto.randomBytes(16).toString('hex')}}`;
+  const sessionFlag = buildSessionFlag(lab.title);
   const sessionFlagHash = crypto.createHash('sha256').update(sessionFlag).digest('hex');
 
   const expiresAt = new Date(Date.now() + lab.max_duration_minutes * 60 * 1000).toISOString();

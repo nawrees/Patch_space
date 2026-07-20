@@ -22,4 +22,6 @@ export const env = {
   // Docker lab orchestration
   LAB_HOST: process.env.LAB_HOST || 'localhost',
   DOCKER_SOCKET: process.env.DOCKER_SOCKET || null,
+  LAB_MAX_CONCURRENT_PER_STUDENT: Number(process.env.LAB_MAX_CONCURRENT_PER_STUDENT) || 2,
+  LAB_MAX_CONCURRENT_TOTAL: Number(process.env.LAB_MAX_CONCURRENT_TOTAL) || 15,
 };

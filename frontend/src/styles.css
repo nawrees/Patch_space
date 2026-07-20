@@ -215,3 +215,95 @@ textarea:focus-visible, select:focus-visible, [tabindex]:focus-visible {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
 }
+
+/* =========================================================================
+   PUBLIC SITE — shared shell for the marketing pages (home / about / contact)
+   Kept global (not per-component) since all three pages reuse it as-is.
+   ========================================================================= */
+
+.public-page {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 85% 0%, rgba(var(--accent-rgb),.10), transparent 45%),
+    var(--bg-page);
+}
+
+.home-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 6vw;
+}
+.home-brand { text-decoration: none; }
+.home-brand h2 {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  color: var(--text-1);
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.home-brand h2::before { content: '>'; color: var(--accent); font-family: var(--font-mono); font-weight: 600; }
+
+.home-nav-links { display: flex; gap: 28px; }
+.home-nav-links a { color: var(--nav-link); font-size: 14.5px; font-weight: 500; }
+.home-nav-links a:hover, .home-nav-links a.active { color: var(--accent); text-decoration: none; }
+.home-nav-actions { display: flex; gap: 10px; }
+@media (max-width: 640px) { .home-nav-links { display: none; } }
+
+/* Simple centered header used by About / Contact (Home has its own two-column hero) */
+.page-hero {
+  max-width: 720px;
+  margin: 6vh auto 6vh;
+  padding: 0 6vw;
+  text-align: center;
+}
+.page-hero h1 {
+  font-size: clamp(1.8rem, 3.6vw, 2.6rem);
+  color: var(--text-1);
+  margin: 12px 0 16px;
+  text-wrap: balance;
+}
+.page-sub { font-size: 1.05rem; color: var(--text-2); line-height: 1.6; max-width: 56ch; margin: 0 auto; }
+
+.features { max-width: 1080px; margin: 0 auto; padding: 2vh 6vw 8vh; }
+.features-heading {
+  text-align: center;
+  font-size: clamp(1.4rem, 2.6vw, 2rem);
+  color: var(--text-1);
+  max-width: 30ch;
+  margin: 0 auto 40px;
+  text-wrap: balance;
+}
+.feature-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+@media (max-width: 900px) { .feature-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .feature-grid { grid-template-columns: 1fr; } }
+.feature-card { padding: 22px 20px; }
+.feature-icon {
+  width: 40px; height: 40px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: var(--radius-md);
+  background: var(--sig-info-bg);
+  color: var(--accent);
+  margin-bottom: 14px;
+}
+.feature-card h3 { font-size: 1rem; color: var(--text-1); margin-bottom: 6px; }
+.feature-card p { font-size: 13.5px; color: var(--text-2); line-height: 1.55; }
+
+.cta { max-width: 720px; margin: 0 auto; padding: 0 6vw 10vh; }
+.cta-box { text-align: center; padding: 44px 32px; }
+.cta-box h2 { font-size: 1.5rem; color: var(--text-1); margin-bottom: 8px; }
+.cta-box p { color: var(--text-2); margin-bottom: 22px; }
+.cta-box .btn-primary { padding: 12px 26px; font-size: 15px; }
+
+.home-footer {
+  text-align: center;
+  padding: 24px 6vw 40px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  letter-spacing: .04em;
+  color: var(--text-3);
+}
+.home-footer-links { display: flex; justify-content: center; gap: 20px; margin-top: 10px; }
+.home-footer-links a { color: var(--text-3); }
+.home-footer-links a:hover { color: var(--accent); text-decoration: none; }

@@ -11,6 +11,7 @@ type Tab = 'students' | 'analytics' | 'qa';
 })
 export class TutorDashboardComponent implements OnInit {
   students: any[] = [];
+  avgProgress: number | null = null;
   loading = true;
   activeTab: Tab = 'students';
   urgentQaCount = 0;
@@ -22,7 +23,7 @@ export class TutorDashboardComponent implements OnInit {
 
   ngOnInit() {
     this.api.getMyStudents().subscribe({
-      next: d => { this.students = d.students; this.loading = false; },
+      next: d => { this.students = d.students; this.avgProgress = d.avgProgressPercent; this.loading = false; },
       error: () => { this.loading = false; },
     });
 

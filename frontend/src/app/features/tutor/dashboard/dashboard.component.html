@@ -8,7 +8,7 @@
     </div>
     <div class="td-hero-stats">
       <div class="td-hs"><span class="td-hs-val">{{ students.length }}</span><span class="td-hs-lbl">Students</span></div>
-      <div class="td-hs"><span class="td-hs-val">—</span><span class="td-hs-lbl">Avg Progress</span></div>
+      <div class="td-hs"><span class="td-hs-val">{{ avgProgress !== null ? avgProgress + '%' : '—' }}</span><span class="td-hs-lbl">Avg Progress</span></div>
     </div>
   </div>
 

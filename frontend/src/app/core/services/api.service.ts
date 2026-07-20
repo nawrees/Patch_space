@@ -132,8 +132,8 @@ export class ApiService {
   }
 
   // Tutors
-  getMyStudents(): Observable<{ students: any[] }> {
-    return this.http.get<{ students: any[] }>(`${environment.apiUrl}/tutors/me/students`);
+  getMyStudents(): Observable<{ students: any[]; avgProgressPercent: number | null }> {
+    return this.http.get<{ students: any[]; avgProgressPercent: number | null }>(`${environment.apiUrl}/tutors/me/students`);
   }
 
   getStudentOverview(studentId: string): Observable<{ enrollments: any[]; progress: any[] }> {

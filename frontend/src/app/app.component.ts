@@ -26,6 +26,13 @@ export class AppComponent implements OnInit {
   profileLoadFailed = false;
   profileLoadRetrying = false;
 
+  // Pages a signed-out visitor is allowed to browse without being bounced to /login.
+  private readonly publicPaths = ['/', '/login', '/signup', '/reset-password', '/about', '/contact'];
+  // Of those, the ones an already-logged-in visitor should be sent away from
+  // (straight to their dashboard) rather than shown again — About/Contact
+  // stay viewable regardless of auth state, so they're deliberately excluded.
+  private readonly authEntryPaths = ['/', '/login', '/signup'];
+
   constructor(
     private auth: AuthService,
     private user: UserService,
@@ -48,7 +55,12 @@ export class AppComponent implements OnInit {
         this.isStudent = false;
         this.isTutor = false;
         this.isAdmin = false;
-        this.router.navigate(['/login']);
+        // Only bounce to /login when leaving a page that actually needs a
+        // session — the home page and the other auth pages should stay
+        // browsable for signed-out visitors.
+        if (!this.publicPaths.includes(this.currentPath())) {
+          this.router.navigate(['/login']);
+        }
       } else if (!sessionActive) {
         sessionActive = true;
         if (this.auth.isRecoveryMode()) {
@@ -68,6 +80,13 @@ export class AppComponent implements OnInit {
       this.isTutor = this.user.isTutor();
       this.isAdmin = this.user.isAdmin();
       this.profileLoadFailed = false;
+      // A returning, already-authenticated visitor landing on the public
+      // marketing/auth pages should go straight to their own dashboard.
+      if (this.authEntryPaths.includes(this.currentPath())) {
+        if (this.isAdmin) this.router.navigate(['/admin']);
+        else if (this.isTutor) this.router.navigate(['/tutor']);
+        else this.router.navigate(['/student']);
+      }
       if (this.isStudent) {
         this.api.getStreak().subscribe({
           next: s => {
@@ -93,6 +112,10 @@ export class AppComponent implements OnInit {
   async retryLoadProfile() {
     this.profileLoadRetrying = true;
     await this.loadUserProfile();
+  }
+
+  private currentPath(): string {
+    return this.router.url.split('?')[0].split('#')[0];
   }
 
   @HostListener('document:click')

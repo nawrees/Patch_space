@@ -1,0 +1,11 @@
+/* Shared public-site shell lives in the global stylesheet. Only the
+   "who's behind it" company panel is specific to this page. */
+
+.company {
+  max-width: 720px;
+  margin: 4vh auto 6vh;
+  padding: 36px 32px;
+}
+.company h2 { font-size: 1.4rem; color: var(--text-1); margin: 10px 0 14px; }
+.company p { color: var(--text-2); line-height: 1.65; font-size: 15px; }
+.company strong { color: var(--text-1); }

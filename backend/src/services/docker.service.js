@@ -55,11 +55,39 @@ async function imageExistsLocally(image) {
   }
 }
 
+// ─── Lab network isolation ───────────────────────────────────────────────────
+// All lab containers join this one dedicated bridge network instead of
+// Docker's default bridge. Inter-container communication is disabled on it,
+// so one student's container cannot reach another student's concurrently
+// running container — the default bridge allows exactly that by default.
+const LAB_NETWORK_NAME = 'elearning-labs-net';
+let labNetworkReady = null;
+
+async function ensureLabNetwork() {
+  if (!labNetworkReady) {
+    labNetworkReady = (async () => {
+      try {
+        await docker.getNetwork(LAB_NETWORK_NAME).inspect();
+      } catch {
+        await docker.createNetwork({
+          Name: LAB_NETWORK_NAME,
+          Driver: 'bridge',
+          Options: { 'com.docker.network.bridge.enable_icc': 'false' },
+        });
+        console.log(`[Docker] Created isolated lab network "${LAB_NETWORK_NAME}" (ICC disabled)`);
+      }
+    })();
+  }
+  return labNetworkReady;
+}
+
 /**
  * Create and start a container for a lab session.
  * Returns { containerId, containerName, assignedPort }.
  */
 export async function startContainer({ dockerImage, cpuLimit, memoryLimitMb, servicePort, containerName, flag }) {
+  await ensureLabNetwork();
+
   const container = await docker.createContainer({
     Image: dockerImage,
     name: containerName,
@@ -69,21 +97,47 @@ export async function startContainer({ dockerImage, cpuLimit, memoryLimitMb, ser
       PortBindings: { [`${servicePort}/tcp`]: [{ HostPort: '' }] }, // '' = auto-assign
       Memory: memoryLimitMb * 1024 * 1024,
       NanoCpus: Math.round(cpuLimit * 1e9),
-      NetworkMode: 'bridge',
-      AutoRemove: false, // we manage removal on stop
+      NetworkMode: LAB_NETWORK_NAME,
+      // Belt-and-suspenders: even if our own stop/cleanup paths are missed
+      // (crash, missed sweep, etc.), Docker itself removes the container
+      // the moment it stops for any reason.
+      AutoRemove: true,
+      // NOTE: tried CapDrop: ['ALL'] here for defense-in-depth, but it broke
+      // nginx-based images in testing — nginx's entrypoint needs CAP_CHOWN
+      // to chown its cache dir even when running as root. Docker's default
+      // capability set (already excludes SYS_ADMIN, SYS_MODULE, SYS_PTRACE,
+      // NET_ADMIN, etc.) is the safer baseline here given lab images vary
+      // and can't all be individually vetted. Revisit with a per-lab
+      // capability allowlist if tighter isolation is needed later.
+      // Fork-bomb / resource-exhaustion guard, independent of CPU/memory limits.
+      PidsLimit: 256,
     },
   });
 
   await container.start();
 
-  const info = await container.inspect();
+  let info;
+  try {
+    info = await container.inspect();
+  } catch (err) {
+    // AutoRemove means a container that exits immediately (crashed
+    // entrypoint, missing required env var, etc.) can vanish before we get
+    // to inspect it — surface that plainly instead of a raw Docker 404.
+    if (err.statusCode === 404) {
+      throw new Error(`Container for image "${dockerImage}" exited immediately after start and was auto-removed — check the image's entrypoint requirements`);
+    }
+    throw err;
+  }
   const assignedPort = info.NetworkSettings.Ports[`${servicePort}/tcp`]?.[0]?.HostPort;
 
   return { containerId: container.id, containerName, assignedPort };
 }
 
 /**
- * Stop and remove a container. Tolerates already-stopped or already-removed containers.
+ * Stop and remove a container. Tolerates already-stopped or already-removed
+ * containers, and — since containers run with AutoRemove: true — also
+ * tolerates 409 "removal already in progress", which Docker returns when
+ * our explicit remove() races against the automatic one triggered by stop().
  */
 export async function stopContainer(containerId) {
   try {
@@ -92,10 +146,10 @@ export async function stopContainer(containerId) {
       if (err.statusCode !== 304 && err.statusCode !== 404) throw err;
     });
     await c.remove({ force: true }).catch((err) => {
-      if (err.statusCode !== 404) throw err;
+      if (err.statusCode !== 404 && err.statusCode !== 409) throw err;
     });
   } catch (err) {
-    if (err.statusCode !== 404) throw err;
+    if (err.statusCode !== 404 && err.statusCode !== 409) throw err;
   }
 }
 
@@ -120,6 +174,18 @@ export async function isContainerRunning(containerId) {
   } catch {
     return false;
   }
+}
+
+/**
+ * IDs of all containers (running or stopped) whose name matches this
+ * platform's lab naming scheme ("lab-..."), regardless of what the DB
+ * thinks is active. Used for boot-time orphan reconciliation.
+ */
+export async function listLabContainerIds() {
+  const containers = await docker.listContainers({ all: true });
+  return containers
+    .filter((c) => c.Names.some((n) => n.replace(/^\//, '').startsWith('lab-')))
+    .map((c) => c.Id);
 }
 
 // Strip the 8-byte Docker multiplexed stream headers from a log buffer.

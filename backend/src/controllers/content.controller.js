@@ -3,6 +3,25 @@ import { asyncHandler } from '../middleware/asyncHandler.js';
 import { ApiError } from '../utils/ApiError.js';
 import { getAdminClient } from '../config/supabaseClient.js';
 
+// Lesson video_url is rendered client-side via bypassSecurityTrustResourceUrl
+// (Angular's URL sanitizer is deliberately disabled for it, so it can go into
+// an <iframe src>) — restrict it server-side to known embeddable video hosts
+// so a lesson can't be pointed at an arbitrary attacker-controlled page.
+const ALLOWED_VIDEO_HOSTS = new Set([
+  'www.youtube.com', 'youtube.com', 'youtube-nocookie.com', 'www.youtube-nocookie.com',
+  'player.vimeo.com', 'vimeo.com', 'www.vimeo.com',
+]);
+
+function isValidVideoUrl(url) {
+  if (!url) return true; // no video is fine
+  try {
+    const parsed = new URL(url);
+    return parsed.protocol === 'https:' && ALLOWED_VIDEO_HOSTS.has(parsed.hostname);
+  } catch {
+    return false;
+  }
+}
+
 // ---------- Modules ----------
 
 export const createModule = asyncHandler(async (req, res) => {
@@ -46,6 +65,9 @@ export const createLesson = asyncHandler(async (req, res) => {
   const { moduleId } = req.params;
   const { title, lesson_type, content, video_url, order_index } = req.body;
   if (!title) throw new ApiError(400, 'title is required');
+  if (!isValidVideoUrl(video_url)) {
+    throw new ApiError(400, 'video_url must be an https YouTube or Vimeo link');
+  }
 
   const { data, error } = await getAdminClient()
     .from('lessons')
@@ -105,6 +127,9 @@ export const getLesson = asyncHandler(async (req, res) => {
 
 export const updateLesson = asyncHandler(async (req, res) => {
   const { id } = req.params;
+  if ('video_url' in req.body && !isValidVideoUrl(req.body.video_url)) {
+    throw new ApiError(400, 'video_url must be an https YouTube or Vimeo link');
+  }
   const { data, error } = await getAdminClient()
     .from('lessons')
     .update(req.body)
