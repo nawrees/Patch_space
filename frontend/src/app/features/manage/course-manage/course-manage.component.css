@@ -176,7 +176,7 @@ textarea { resize: vertical; }
   text-decoration: none;
 }
 
-.btn-content { background: var(--accent); color: #06181a; }
+.btn-content { background: var(--accent); color: #ffffff; }
 .btn-content:hover { background: var(--accent-lt); }
 .btn-edit { background: var(--bg-hover); color: var(--text-1); border-left: 1px solid var(--border-sub); }
 .btn-edit:hover { background: var(--border); }
@@ -187,7 +187,7 @@ textarea { resize: vertical; }
 .btn-primary {
   padding: 0.6rem 1.25rem;
   background: var(--accent);
-  color: #06181a;
+  color: #ffffff;
   border: none;
   border-radius: var(--radius-md);
   cursor: pointer;

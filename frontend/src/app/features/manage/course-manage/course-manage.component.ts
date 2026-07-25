@@ -38,7 +38,7 @@ export class CourseManageComponent implements OnInit {
 
   loadCourses() {
     this.loading = true;
-    this.api.getCourses().subscribe({
+    this.api.getCourses({ mine: true }).subscribe({
       next: (data) => { this.courses = data.courses; this.loading = false; },
       error: () => { this.loading = false; },
     });

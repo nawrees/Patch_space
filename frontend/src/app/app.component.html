@@ -9,9 +9,9 @@
   </div>
 
   <nav class="navbar" *ngIf="isAuthenticated">
-    <div class="navbar-brand">
+    <a routerLink="/" class="navbar-brand">
       <h2>Patch Space</h2>
-    </div>
+    </a>
 
     <div class="navbar-menu">
       <div class="navbar-start">
@@ -40,7 +40,7 @@
 
       <div class="navbar-end">
         <!-- Streak badge (students only) -->
-        <div *ngIf="isStudent" class="streak-wrap" (click)="streakPopupOpen = !streakPopupOpen; $event.stopPropagation()">
+        <div *ngIf="isStudent" class="streak-wrap" (click)="toggleStreakPopup($event)">
           <div class="streak-badge" [class.active-today]="streakActiveToday" [class.streak-broken]="streak === 0">
             <app-icon [name]="streak === 0 ? 'heart-crack' : 'flame'" [size]="15"></app-icon> {{ streak }}
           </div>
@@ -67,11 +67,11 @@
         </div>
 
         <!-- Notification bell -->
-        <app-notification-bell></app-notification-bell>
+        <app-notification-bell (opened)="onNotificationBellOpened()"></app-notification-bell>
 
         <!-- Avatar + dropdown -->
         <div class="nav-profile" (click)="$event.stopPropagation()">
-          <button class="nav-avatar" (click)="dropdownOpen = !dropdownOpen" [ngClass]="'avatar-' + (currentUser?.profile?.role || 'student')">
+          <button class="nav-avatar" (click)="toggleProfileDropdown()" [ngClass]="'avatar-' + (currentUser?.profile?.role || 'student')">
             {{ avatarInitial }}
           </button>
 

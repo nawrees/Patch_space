@@ -16,7 +16,7 @@
       background: rgba(0,0,0,.7); color: #fff; font-family: var(--font-mono); font-size: 10.5px;
       padding: 2px 8px; border-radius: var(--radius-pill); text-transform: uppercase; letter-spacing: .04em;
     }
-    .cl-badge-video { background: rgba(46,196,196,.85); color: #06181a; }
+    .cl-badge-video { background: rgba(154,69,172,.85); color: #ffffff; }
     .cl-badge-lab { background: rgba(232,179,57,.85); color: #1a1400; }
     .cl-info { padding: 16px; flex: 1; display: flex; flex-direction: column; gap: 4px; }
     .cl-category { font-family: var(--font-mono); font-size: 10.5px; color: var(--accent); text-transform: uppercase; letter-spacing: .06em; }
@@ -31,7 +31,7 @@
       background: var(--bg-hover); color: var(--text-1); transition: background .2s;
     }
     .cl-btn:hover { background: var(--border); }
-    .cl-btn-primary { background: var(--accent); color: #06181a; border-color: var(--accent); }
+    .cl-btn-primary { background: var(--accent); color: #ffffff; border-color: var(--accent); }
     .cl-btn-primary:hover { background: var(--accent-lt); }
     /* skeleton */
     .cl-skeleton { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); display: flex; overflow: hidden; }

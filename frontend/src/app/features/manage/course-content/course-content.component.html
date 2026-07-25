@@ -177,6 +177,16 @@
               <span class="lesson-title">{{ lesson.title }}</span>
               <span class="type-badge type-{{ lesson.lesson_type }}">{{ lesson.lesson_type }}</span>
               <span class="lab-tag" *ngIf="lesson.lab"><app-icon name="flask" [size]="13"></app-icon> Lab attached</span>
+
+              <div class="lab-difficulty" *ngIf="lesson.lab">
+                <ng-container *ngIf="lesson.lab.totalRatings > 0; else noRatings">
+                  <app-icon name="bar-chart" [size]="12"></app-icon>
+                  <strong>{{ lesson.lab.difficultyPercent }}% difficulty</strong>
+                  ({{ difficultyLabel(lesson.lab.avgRating) }} · {{ lesson.lab.totalRatings }} rating{{ lesson.lab.totalRatings === 1 ? '' : 's' }})
+                  <span class="lab-difficulty-breakdown">— {{ ratingBreakdown(lesson.lab) }}</span>
+                </ng-container>
+                <ng-template #noRatings><span class="lab-difficulty-none">No difficulty ratings yet</span></ng-template>
+              </div>
             </div>
           </div>
           <div class="lesson-actions">

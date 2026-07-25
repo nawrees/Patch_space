@@ -7,9 +7,20 @@ import { environment } from '../../../environments/environment';
 export class ApiService {
   constructor(private http: HttpClient) {}
 
+  // Site settings (public content: About/Contact page copy, contact email)
+  getSiteSettings(): Observable<{ settings: any }> {
+    return this.http.get<{ settings: any }>(`${environment.apiUrl}/site-settings`);
+  }
+
+  updateSiteSettings(data: any): Observable<{ settings: any }> {
+    return this.http.patch<{ settings: any }>(`${environment.apiUrl}/site-settings`, data);
+  }
+
   // Courses
-  getCourses(): Observable<{ courses: any[] }> {
-    return this.http.get<{ courses: any[] }>(`${environment.apiUrl}/courses`);
+  getCourses(params?: { mine?: boolean }): Observable<{ courses: any[] }> {
+    let httpParams = new HttpParams();
+    if (params?.mine) httpParams = httpParams.set('mine', 'true');
+    return this.http.get<{ courses: any[] }>(`${environment.apiUrl}/courses`, { params: httpParams });
   }
 
   getCourse(id: string): Observable<{ course: any }> {
@@ -228,6 +239,10 @@ export class ApiService {
 
   answerQuestion(id: string, answer: string): Observable<{ question: any }> {
     return this.http.put<{ question: any }>(`${environment.apiUrl}/questions/${id}/answer`, { answer });
+  }
+
+  dismissQuestion(id: string): Observable<{ question: any }> {
+    return this.http.put<{ question: any }>(`${environment.apiUrl}/questions/${id}/dismiss`, {});
   }
 
   // Streaks

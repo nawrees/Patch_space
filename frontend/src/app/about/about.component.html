@@ -1,29 +1,16 @@
 <div class="public-page">
 
-  <nav class="home-nav">
-    <a routerLink="/" class="home-brand"><h2>Patch Space</h2></a>
-    <div class="home-nav-links">
-      <a routerLink="/about" class="active">About</a>
-      <a routerLink="/contact">Contact</a>
-    </div>
-    <div class="home-nav-actions">
-      <a routerLink="/login" class="btn-secondary">Log in</a>
-      <a routerLink="/signup" class="btn-primary">Sign up</a>
-    </div>
-  </nav>
+  <app-public-nav active="about"></app-public-nav>
 
   <section class="page-hero">
     <span class="eyebrow">About us</span>
-    <h1>Practicing security should feel like doing security.</h1>
-    <p class="page-sub">
-      Patch Space is built on one idea: you don't learn to find and fix vulnerabilities by
-      reading about them — you learn by getting your hands on a real, breakable system.
-    </p>
+    <h1>{{ settings.about_hero_title }}</h1>
+    <p class="page-sub">{{ settings.about_hero_subtitle }}</p>
   </section>
 
   <section class="features">
     <div class="feature-grid">
-      <div class="feature-card card" *ngFor="let v of values">
+      <div class="feature-card card" *ngFor="let v of settings.about_values">
         <div class="feature-icon"><app-icon [name]="v.icon" [size]="20"></app-icon></div>
         <h3>{{ v.title }}</h3>
         <p>{{ v.body }}</p>
@@ -33,19 +20,14 @@
 
   <section class="company card panel-bracket">
     <span class="eyebrow">Who's behind it</span>
-    <h2>Built by Data do it</h2>
-    <p>
-      Patch Space is developed and operated by <strong>Data do it</strong>, a team focused on
-      building practical, hands-on tools for learning technical skills — starting with
-      cybersecurity. We built the platform we wished existed when we were learning: fewer
-      slides, more shells.
-    </p>
+    <h2>{{ settings.about_company_title }}</h2>
+    <p>{{ settings.about_company_body }}</p>
   </section>
 
   <section class="cta">
     <div class="cta-box card panel-bracket">
-      <h2>Questions before you sign up?</h2>
-      <p>We're happy to talk through what Patch Space does and doesn't cover.</p>
+      <h2>{{ settings.about_cta_title }}</h2>
+      <p>{{ settings.about_cta_body }}</p>
       <a routerLink="/contact" class="btn-primary">Contact us</a>
     </div>
   </section>

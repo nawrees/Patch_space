@@ -9,7 +9,7 @@
     /* Header */
     .lab-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; background: #10151d; border-bottom: 1px solid #232b38; }
     .lab-header-left { display: flex; align-items: center; gap: 12px; }
-    .lab-icon { font-size: 22px; color: #2ec4c4; }
+    .lab-icon { font-size: 22px; color: #9a45ac; }
     .lab-title { color: #e8ecf1; font-family: var(--font-display); font-size: 15px; font-weight: 600; margin: 0 0 2px; }
     .lab-image { font-size: 11px; color: #5c6779; }
     .lab-header-right { display: flex; align-items: center; gap: 12px; }
@@ -21,7 +21,7 @@
     .lsb-stopped { background: #1a212c; color: #96a1b3; border: 1px solid #232b38; }
     .lsb-expired { background: rgba(232,179,57,.14); color: #e8b339; border: 1px solid #e8b339; }
     .lsb-error { background: rgba(229,72,77,.16); color: #f0787c; border: 1px solid #f0787c; }
-    .lsb-idle { background: rgba(46,196,196,.14); color: #5fd8d8; border: 1px solid #2ec4c4; }
+    .lsb-idle { background: rgba(154,69,172,.14); color: #b872c4; border: 1px solid #9a45ac; }
 
     .lab-pulse { width: 8px; height: 8px; border-radius: 50%; background: #3ddc97; animation: blink 1.5s infinite; flex-shrink: 0; }
     @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
@@ -31,7 +31,7 @@
 
     /* Spinner */
     .lab-spinner-row { display: flex; align-items: center; gap: 12px; padding: 24px 20px; color: #96a1b3; font-size: 13px; }
-    .lab-spinner { width: 18px; height: 18px; border: 2px solid #232b38; border-top-color: #2ec4c4; border-radius: 50%; animation: spin .8s linear infinite; flex-shrink: 0; }
+    .lab-spinner { width: 18px; height: 18px; border: 2px solid #232b38; border-top-color: #9a45ac; border-radius: 50%; animation: spin .8s linear infinite; flex-shrink: 0; }
     .lab-spinner-lg { width: 36px; height: 36px; border-width: 3px; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
@@ -70,7 +70,7 @@
     .lab-flag-sub { color: #96a1b3; font-size: 12px; margin: 0 0 14px; }
     .lab-flag-form { display: flex; gap: 8px; }
     .lab-flag-input { flex: 1; background: #0a0e14; border: 1px solid #232b38; color: #e8ecf1; padding: 8px 12px; border-radius: var(--radius-sm); font-size: 13px; font-family: var(--font-mono); }
-    .lab-flag-input:focus { outline: none; border-color: #2ec4c4; }
+    .lab-flag-input:focus { outline: none; border-color: #9a45ac; }
     .lab-flag-result { margin-top: 12px; padding: 8px 12px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 600; }
     .lab-result-correct { background: rgba(61,220,151,.14); color: #3ddc97; border: 1px solid #3ddc97; }
     .lab-result-wrong { background: rgba(229,72,77,.16); color: #f0787c; border: 1px solid #f0787c; }
@@ -116,7 +116,7 @@
     .lab-diff-btn:disabled { cursor: not-allowed; }
     .lab-diff-btn.lab-diff-selected { opacity: 1; transform: scale(1.05); box-shadow: 0 0 0 2px rgba(255,255,255,.2); }
     /* 5-step difficulty gradient reuses the signal scale end-to-end */
-    .diff-1 { background: rgba(46,196,196,.14); color: #5fd8d8; border-color: #2ec4c4; }
+    .diff-1 { background: rgba(154,69,172,.14); color: #b872c4; border-color: #9a45ac; }
     .diff-2 { background: rgba(61,220,151,.14); color: #3ddc97; border-color: #3ddc97; }
     .diff-3 { background: rgba(232,179,57,.14); color: #e8b339; border-color: #e8b339; }
     .diff-4 { background: rgba(232,130,60,.14); color: #e8823c; border-color: #e8823c; }
@@ -126,10 +126,10 @@
 
     /* Buttons */
     .lab-btn { padding: 8px 18px; border-radius: var(--radius-sm); border: none; cursor: pointer; font-size: 13px; font-weight: 600; transition: all .2s; font-family: inherit; }
-    .lab-btn-start { background: #2ec4c4; color: #06181a; }
-    .lab-btn-start:hover { background: #5fd8d8; }
-    .lab-btn-open { background: #2ec4c4; color: #06181a; text-decoration: none; display: inline-block; }
-    .lab-btn-open:hover { background: #5fd8d8; }
+    .lab-btn-start { background: #9a45ac; color: #ffffff; }
+    .lab-btn-start:hover { background: #b872c4; }
+    .lab-btn-open { background: #9a45ac; color: #ffffff; text-decoration: none; display: inline-block; }
+    .lab-btn-open:hover { background: #b872c4; }
     .lab-btn-submit { background: #e8b339; color: #1a1400; }
     .lab-btn-submit:hover:not(:disabled) { background: #f0c15c; }
     .lab-btn-submit:disabled { opacity: .5; cursor: not-allowed; }

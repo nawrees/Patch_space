@@ -1,10 +1,11 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, HostListener, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from './core/services/auth.service';
 import { UserService } from './core/services/user.service';
 import { ThemeService } from './core/services/theme.service';
 import { ApiService } from './core/services/api.service';
 import { NotificationService } from './core/services/notification.service';
+import { NotificationBellComponent } from './shared/notification-bell/notification-bell.component';
 
 @Component({
   selector: 'app-root',
@@ -26,12 +27,17 @@ export class AppComponent implements OnInit {
   profileLoadFailed = false;
   profileLoadRetrying = false;
 
+  @ViewChild(NotificationBellComponent) notifBell?: NotificationBellComponent;
+
   // Pages a signed-out visitor is allowed to browse without being bounced to /login.
   private readonly publicPaths = ['/', '/login', '/signup', '/reset-password', '/about', '/contact'];
   // Of those, the ones an already-logged-in visitor should be sent away from
-  // (straight to their dashboard) rather than shown again — About/Contact
-  // stay viewable regardless of auth state, so they're deliberately excluded.
-  private readonly authEntryPaths = ['/', '/login', '/signup'];
+  // (straight to their dashboard) rather than shown again. "/" is deliberately
+  // excluded — clicking the "Patch Space" brand should always show the real
+  // Home page, logged in or not. The app's own nav stays visible there too
+  // (see app.component.html) — only About/Contact collapse to a slim sub-nav
+  // in that case, handled by PublicNavComponent.
+  private readonly authEntryPaths = ['/login', '/signup'];
 
   constructor(
     private auth: AuthService,
@@ -120,6 +126,34 @@ export class AppComponent implements OnInit {
 
   @HostListener('document:click')
   onDocumentClick() {
+    this.closeOverlays();
+  }
+
+  // Streak popup, notification bell, and profile dropdown each stop click
+  // propagation on their own trigger (so clicking them doesn't instantly
+  // self-close via the document listener above) — which also means none of
+  // them can find out about each other through that listener. So opening any
+  // one of them explicitly closes the other two here instead.
+  private closeOverlays() {
+    this.dropdownOpen = false;
+    this.streakPopupOpen = false;
+    this.notifBell?.close();
+  }
+
+  toggleStreakPopup(event: MouseEvent) {
+    event.stopPropagation();
+    const opening = !this.streakPopupOpen;
+    this.closeOverlays();
+    this.streakPopupOpen = opening;
+  }
+
+  toggleProfileDropdown() {
+    const opening = !this.dropdownOpen;
+    this.closeOverlays();
+    this.dropdownOpen = opening;
+  }
+
+  onNotificationBellOpened() {
     this.dropdownOpen = false;
     this.streakPopupOpen = false;
   }

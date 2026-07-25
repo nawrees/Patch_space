@@ -62,6 +62,6 @@ textarea { resize: vertical; }
 .ac-btn-row { display: flex; justify-content: flex-end; gap: 12px; }
 .ac-btn-cancel { padding: 10px 20px; background: var(--bg-hover); border: 1px solid var(--border); border-radius: var(--radius-md); color: var(--text-2); font-size: 14px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; transition: border-color .2s; }
 .ac-btn-cancel:hover { border-color: var(--accent); }
-.ac-btn-save { padding: 10px 24px; background: var(--accent); color: #06181a; border: none; border-radius: var(--radius-md); font-size: 14px; font-weight: 700; cursor: pointer; transition: background .2s; }
+.ac-btn-save { padding: 10px 24px; background: var(--accent); color: #ffffff; border: none; border-radius: var(--radius-md); font-size: 14px; font-weight: 700; cursor: pointer; transition: background .2s; }
 .ac-btn-save:hover:not(:disabled) { background: var(--accent-lt); }
 .ac-btn-save:disabled { background: var(--bg-hover); color: var(--text-3); opacity: .6; cursor: not-allowed; }

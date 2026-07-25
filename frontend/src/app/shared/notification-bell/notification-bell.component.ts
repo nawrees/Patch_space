@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, HostListener, Output, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
 import { NotificationService } from '../../core/services/notification.service';
 
@@ -12,6 +12,13 @@ export class NotificationBellComponent implements OnInit {
   notifications: any[] = [];
   unreadCount = 0;
 
+  // Fires when this dropdown opens, so sibling overlays (profile menu, streak
+  // popup) can close themselves — their own click handlers stop propagation
+  // to avoid instantly self-closing, which also stops the shared
+  // document-click listener from ever seeing the click, so they can't find
+  // out about each other any other way.
+  @Output() opened = new EventEmitter<void>();
+
   constructor(public notifSvc: NotificationService, private router: Router) {}
 
   ngOnInit() {
@@ -22,6 +29,7 @@ export class NotificationBellComponent implements OnInit {
   toggle(event: MouseEvent) {
     event.stopPropagation();
     this.open = !this.open;
+    if (this.open) this.opened.emit();
   }
 
   @HostListener('document:click')

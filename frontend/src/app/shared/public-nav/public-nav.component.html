@@ -1,0 +1,21 @@
+<!-- Logged-out visitor: the full public nav (brand + links + auth actions) —
+     this is the only nav on the page in that case. -->
+<nav class="home-nav" *ngIf="!isAuthenticated">
+  <a routerLink="/" class="home-brand"><h2>Patch Space</h2></a>
+  <div class="home-nav-links">
+    <a routerLink="/about" [class.active]="active === 'about'">About</a>
+    <a routerLink="/contact" [class.active]="active === 'contact'">Contact</a>
+  </div>
+  <div class="home-nav-actions">
+    <a routerLink="/login" class="btn-secondary">Log in</a>
+    <a routerLink="/signup" class="btn-primary">Sign up</a>
+  </div>
+</nav>
+
+<!-- Logged-in visitor: their real app nav (brand + dashboard links) is
+     already showing above this — no need to repeat the brand or offer a
+     dashboard button here, just a slim way to get to About/Contact. -->
+<nav class="public-subnav" *ngIf="isAuthenticated">
+  <a routerLink="/about" [class.active]="active === 'about'">About</a>
+  <a routerLink="/contact" [class.active]="active === 'contact'">Contact</a>
+</nav>

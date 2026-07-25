@@ -2,6 +2,7 @@ import crypto from 'node:crypto';
 import { asyncHandler } from '../middleware/asyncHandler.js';
 import { ApiError } from '../utils/ApiError.js';
 import { getAdminClient } from '../config/supabaseClient.js';
+import { getLabRatingStats } from '../utils/ratingStats.js';
 
 // Lesson video_url is rendered client-side via bypassSecurityTrustResourceUrl
 // (Angular's URL sanitizer is deliberately disabled for it, so it can go into
@@ -29,33 +30,36 @@ export const createModule = asyncHandler(async (req, res) => {
   const { title, description, order_index } = req.body;
   if (!title) throw new ApiError(400, 'title is required');
 
-  const { data, error } = await getAdminClient()
+  // req.supabase (not the admin client) so the modules_write RLS policy
+  // enforces that the caller owns (or admins) the parent course — otherwise
+  // any tutor could write into any other tutor's course.
+  const { data, error } = await req.supabase
     .from('modules')
     .insert({ course_id: courseId, title, description, order_index: order_index ?? 0 })
     .select()
     .single();
 
-  if (error) throw new ApiError(400, error.message);
+  if (error || !data) throw new ApiError(403, error?.message || 'Not allowed');
   res.status(201).json({ module: data });
 });
 
 export const updateModule = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const { data, error } = await getAdminClient()
+  const { data, error } = await req.supabase
     .from('modules')
     .update(req.body)
     .eq('id', id)
     .select()
     .single();
 
-  if (error || !data) throw new ApiError(400, error?.message || 'Update not allowed');
+  if (error || !data) throw new ApiError(403, error?.message || 'Update not allowed');
   res.json({ module: data });
 });
 
 export const deleteModule = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const { error } = await getAdminClient().from('modules').delete().eq('id', id);
-  if (error) throw new ApiError(400, error.message);
+  const { error } = await req.supabase.from('modules').delete().eq('id', id);
+  if (error) throw new ApiError(403, error.message);
   res.status(204).send();
 });
 
@@ -69,7 +73,7 @@ export const createLesson = asyncHandler(async (req, res) => {
     throw new ApiError(400, 'video_url must be an https YouTube or Vimeo link');
   }
 
-  const { data, error } = await getAdminClient()
+  const { data, error } = await req.supabase
     .from('lessons')
     .insert({
       module_id: moduleId,
@@ -82,9 +86,9 @@ export const createLesson = asyncHandler(async (req, res) => {
     .select()
     .single();
 
-  if (error) {
-    console.error('[createLesson] Supabase error:', error.code, error.message);
-    throw new ApiError(400, error.message);
+  if (error || !data) {
+    console.error('[createLesson] Supabase error:', error?.code, error?.message);
+    throw new ApiError(403, error?.message || 'Not allowed');
   }
   res.status(201).json({ lesson: data });
 });
@@ -111,15 +115,7 @@ export const getLesson = asyncHandler(async (req, res) => {
 
   // Attach community difficulty rating to the lab object
   if (data.lab?.id) {
-    const { data: ratings } = await getAdminClient()
-      .from('lab_ratings')
-      .select('rating')
-      .eq('lab_id', data.lab.id);
-
-    data.lab.avgRating = ratings?.length
-      ? Math.round((ratings.reduce((s, r) => s + r.rating, 0) / ratings.length) * 10) / 10
-      : null;
-    data.lab.totalRatings = ratings?.length ?? 0;
+    Object.assign(data.lab, await getLabRatingStats(getAdminClient(), data.lab.id));
   }
 
   res.json({ lesson: data });
@@ -130,21 +126,21 @@ export const updateLesson = asyncHandler(async (req, res) => {
   if ('video_url' in req.body && !isValidVideoUrl(req.body.video_url)) {
     throw new ApiError(400, 'video_url must be an https YouTube or Vimeo link');
   }
-  const { data, error } = await getAdminClient()
+  const { data, error } = await req.supabase
     .from('lessons')
     .update(req.body)
     .eq('id', id)
     .select()
     .single();
 
-  if (error || !data) throw new ApiError(400, error?.message || 'Update not allowed');
+  if (error || !data) throw new ApiError(403, error?.message || 'Update not allowed');
   res.json({ lesson: data });
 });
 
 export const deleteLesson = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const { error } = await getAdminClient().from('lessons').delete().eq('id', id);
-  if (error) throw new ApiError(400, error.message);
+  const { error } = await req.supabase.from('lessons').delete().eq('id', id);
+  if (error) throw new ApiError(403, error.message);
   res.status(204).send();
 });
 
@@ -182,19 +178,19 @@ export const upsertLab = asyncHandler(async (req, res) => {
     payload.flag_hash = crypto.createHash('sha256').update(flag).digest('hex');
   }
 
-  const { data, error } = await getAdminClient()
+  const { data, error } = await req.supabase
     .from('labs')
     .upsert(payload, { onConflict: 'lesson_id' })
     .select('id, lesson_id, title, description, instructions, docker_image, max_duration_minutes, cpu_limit, memory_limit_mb, created_at')
     .single();
 
-  if (error) throw new ApiError(400, error.message);
+  if (error || !data) throw new ApiError(403, error?.message || 'Not allowed');
   res.status(201).json({ lab: data });
 });
 
 export const deleteLab = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const { error } = await getAdminClient().from('labs').delete().eq('id', id);
-  if (error) throw new ApiError(400, error.message);
+  const { error } = await req.supabase.from('labs').delete().eq('id', id);
+  if (error) throw new ApiError(403, error.message);
   res.status(204).send();
 });

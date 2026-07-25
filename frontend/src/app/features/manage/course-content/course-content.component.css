@@ -141,7 +141,7 @@ textarea { resize: vertical; }
   height: 28px;
   border-radius: 50%;
   background: var(--accent);
-  color: #06181a;
+  color: #ffffff;
   font-family: var(--font-mono);
   font-size: 0.8rem;
   font-weight: 700;
@@ -212,6 +212,19 @@ textarea { resize: vertical; }
 
 .lab-tag { font-size: 0.75rem; color: var(--sig-high-fg); }
 
+.lab-difficulty {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-top: 0.3rem;
+  font-size: 0.78rem;
+  color: var(--text-2);
+}
+.lab-difficulty strong { color: var(--text-1); }
+.lab-difficulty-breakdown { color: var(--text-3); }
+.lab-difficulty-none { font-size: 0.78rem; color: var(--text-3); font-style: italic; }
+
 .lesson-actions { display: flex; gap: 0.5rem; }
 
 .no-lessons { padding: 1rem 1.5rem; color: var(--text-3); font-size: 0.875rem; }
@@ -220,7 +233,7 @@ textarea { resize: vertical; }
 .btn-add {
   padding: 0.6rem 1.1rem;
   background: var(--accent);
-  color: #06181a;
+  color: #ffffff;
   border: none;
   border-radius: var(--radius-md);
   cursor: pointer;
@@ -242,13 +255,13 @@ textarea { resize: vertical; }
 .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
 .btn-outline-danger { background: var(--bg-card); border: 1px solid var(--border); color: var(--sig-critical-fg); }
 .btn-outline-danger:hover { border-color: var(--sig-critical-fg); background: var(--sig-critical-bg); }
-.btn-primary-sm { background: var(--accent); color: #06181a; border: none; }
+.btn-primary-sm { background: var(--accent); color: #ffffff; border: none; }
 .btn-primary-sm:hover { background: var(--accent-lt); }
 
 .btn-primary {
   padding: 0.6rem 1.25rem;
   background: var(--accent);
-  color: #06181a;
+  color: #ffffff;
   border: none;
   border-radius: var(--radius-md);
   cursor: pointer;

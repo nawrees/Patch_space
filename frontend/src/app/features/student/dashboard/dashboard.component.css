@@ -49,7 +49,7 @@
 
     /* Empty / skeleton */
     .sd-empty { text-align: center; padding: 32px; color: var(--text-3); }
-    .sd-btn-primary { display: inline-block; margin-top: 12px; padding: 10px 20px; background: var(--accent); color: #06181a; border-radius: var(--radius-md); text-decoration: none; font-size: 14px; font-weight: 600; }
+    .sd-btn-primary { display: inline-block; margin-top: 12px; padding: 10px 20px; background: var(--accent); color: #ffffff; border-radius: var(--radius-md); text-decoration: none; font-size: 14px; font-weight: 600; }
     .sd-sk-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; }
     .sd-sk-card { background: var(--bg-card); border-radius: 12px; overflow: hidden; }
     .sd-sk-thumb { height: 120px; background: var(--bg-skeleton); animation: pulse 1.5s infinite; }

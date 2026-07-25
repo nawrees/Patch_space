@@ -234,6 +234,25 @@ export class CourseContentComponent implements OnInit {
     }
   }
 
+  // Same 1-5 scale/thresholds students see on the lab page, kept in sync so
+  // "62% difficulty" and the "Medium" wording always agree with each other.
+  difficultyLabel(avgRating: number | null): string {
+    if (avgRating == null) return '';
+    if (avgRating <= 1.5) return 'Very Easy';
+    if (avgRating <= 2.5) return 'Easy';
+    if (avgRating <= 3.5) return 'Medium';
+    if (avgRating <= 4.5) return 'Hard';
+    return 'Very Hard';
+  }
+
+  // "Tutors should see each rate" — a breakdown of how many students picked
+  // each level, not which specific student picked it (ratings stay anonymous).
+  ratingBreakdown(lab: any): string {
+    if (!lab?.distribution) return '';
+    const labels = ['Very Easy', 'Easy', 'Medium', 'Hard', 'Very Hard'];
+    return labels.map((label, i) => `${label} ${lab.distribution[i + 1] ?? 0}`).join(' · ');
+  }
+
   fmtBytes(bytes: number): string {
     if (!bytes) return '';
     if (bytes < 1024) return bytes + ' B';

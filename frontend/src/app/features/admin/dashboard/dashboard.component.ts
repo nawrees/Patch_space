@@ -22,6 +22,11 @@ export class AdminDashboardComponent implements OnInit {
   assigning = false;
   assignFeedback = '';
 
+  siteSettings: any = null;
+  loadingSiteSettings = false;
+  savingSiteSettings = false;
+  siteSettingsFeedback = '';
+
   constructor(private api: ApiService) {}
 
   ngOnInit() {
@@ -32,6 +37,52 @@ export class AdminDashboardComponent implements OnInit {
     this.activeTab = tab;
     if (tab === 'courses' && this.courses.length === 0) this.loadCourses();
     if (tab === 'assign' && this.courses.length === 0) this.loadCourses();
+    if (tab === 'site' && !this.siteSettings) this.loadSiteSettings();
+  }
+
+  // ── Site Content ───────────────────────────────────────
+
+  loadSiteSettings() {
+    this.loadingSiteSettings = true;
+    this.api.getSiteSettings().subscribe({
+      next: (data) => { this.siteSettings = data.settings; this.loadingSiteSettings = false; },
+      error: () => { this.loadingSiteSettings = false; },
+    });
+  }
+
+  addAboutValue() {
+    this.siteSettings.about_values.push({ icon: 'box', title: '', body: '' });
+  }
+
+  removeAboutValue(index: number) {
+    this.siteSettings.about_values.splice(index, 1);
+  }
+
+  addHomeFeature() {
+    this.siteSettings.home_features.push({ icon: 'box', title: '', body: '' });
+  }
+
+  removeHomeFeature(index: number) {
+    this.siteSettings.home_features.splice(index, 1);
+  }
+
+  saveSiteSettings() {
+    if (this.savingSiteSettings) return;
+    this.savingSiteSettings = true;
+    this.siteSettingsFeedback = '';
+    this.api.updateSiteSettings(this.siteSettings).subscribe({
+      next: (data) => {
+        this.siteSettings = data.settings;
+        this.savingSiteSettings = false;
+        this.siteSettingsFeedback = 'ok';
+        setTimeout(() => { this.siteSettingsFeedback = ''; }, 2500);
+      },
+      error: () => {
+        this.savingSiteSettings = false;
+        this.siteSettingsFeedback = 'err';
+        setTimeout(() => { this.siteSettingsFeedback = ''; }, 3000);
+      },
+    });
   }
 
   // ── Users ──────────────────────────────────────────────

@@ -63,21 +63,48 @@
         </div>
 
         <div *ngIf="expanded.has(m.id)" class="scd-lessons">
-          <div *ngFor="let l of m.lessons; let li = index" class="scd-lesson-row">
-            <div class="scd-lr-left">
-              <span class="scd-lr-num">{{ li + 1 }}</span>
-              <span class="scd-type-badge" [ngClass]="'type-' + l.lesson_type">{{ l.lesson_type }}</span>
-              <span class="scd-lr-title">{{ l.title }}</span>
-              <span *ngIf="l.lab" class="scd-lab-chip"><app-icon name="flask" [size]="14"></app-icon> Lab: {{ l.lab.title }}</span>
+          <ng-container *ngFor="let l of m.lessons; let li = index">
+            <div class="scd-lesson-row scd-lesson-row-clickable" (click)="toggleLessonDetail(l.id)">
+              <div class="scd-lr-left">
+                <span class="scd-lr-num">{{ li + 1 }}</span>
+                <span class="scd-type-badge" [ngClass]="'type-' + l.lesson_type">{{ l.lesson_type }}</span>
+                <span class="scd-lr-title">{{ l.title }}</span>
+                <span *ngIf="l.lab" class="scd-lab-chip"><app-icon name="flask" [size]="14"></app-icon> Lab: {{ l.lab.title }}</span>
+              </div>
+              <div class="scd-lr-right">
+                <span *ngIf="l.lab" class="scd-lab-meta">
+                  <app-icon name="box" [size]="13"></app-icon> {{ l.lab.docker_image }}
+                  · <app-icon name="timer" [size]="13"></app-icon> {{ l.lab.max_duration_minutes }}m
+                  · <app-icon name="hard-drive" [size]="13"></app-icon> {{ l.lab.memory_limit_mb }}MB
+                </span>
+                <span class="scd-lr-toggle">{{ expandedLessonId === l.id ? '▾' : '▸' }}</span>
+              </div>
             </div>
-            <div class="scd-lr-right">
-              <span *ngIf="l.lab" class="scd-lab-meta">
-                <app-icon name="box" [size]="13"></app-icon> {{ l.lab.docker_image }}
-                · <app-icon name="timer" [size]="13"></app-icon> {{ l.lab.max_duration_minutes }}m
-                · <app-icon name="hard-drive" [size]="13"></app-icon> {{ l.lab.memory_limit_mb }}MB
-              </span>
+
+            <!-- Read-only lesson preview: theory content / video / lab instructions -->
+            <div *ngIf="expandedLessonId === l.id" class="scd-lesson-detail">
+              <div *ngIf="detailLoadingId === l.id" class="scd-detail-loading">Loading…</div>
+              <div *ngIf="detailError && detailLoadingId !== l.id && !lessonDetails[l.id]" class="scd-detail-error">{{ detailError }}</div>
+
+              <ng-container *ngIf="lessonDetails[l.id] as detail">
+                <div *ngIf="detail.video_url" class="scd-detail-video">
+                  <iframe [src]="safeVideoUrls[l.id]" frameborder="0" allowfullscreen></iframe>
+                </div>
+
+                <div *ngIf="detail.content" class="scd-detail-content" [innerHTML]="detail.content"></div>
+
+                <div *ngIf="detail.lab" class="scd-detail-lab">
+                  <h4><app-icon name="flask" [size]="14"></app-icon> Lab instructions</h4>
+                  <p class="scd-detail-lab-desc">{{ detail.lab.description }}</p>
+                  <div class="scd-detail-lab-instructions">{{ detail.lab.instructions }}</div>
+                </div>
+
+                <p *ngIf="!detail.content && !detail.video_url && !detail.lab" class="scd-detail-empty">
+                  No content added to this lesson yet.
+                </p>
+              </ng-container>
             </div>
-          </div>
+          </ng-container>
           <div *ngIf="!m.lessons?.length" class="scd-no-lessons">No lessons yet.</div>
         </div>
       </div>

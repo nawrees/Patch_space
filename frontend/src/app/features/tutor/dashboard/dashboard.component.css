@@ -20,7 +20,7 @@
 .td-tab { background: none; border: none; color: var(--text-3); font-size: 14px; font-weight: 600; padding: 12px 20px; cursor: pointer; border-bottom: 2px solid transparent; transition: all .2s; position: relative; }
 .td-tab:hover { color: var(--text-1); }
 .td-tab-active { color: var(--accent); border-bottom-color: var(--accent); }
-.td-badge { display: inline-flex; align-items: center; justify-content: center; background: var(--sig-medium-fg); color: #06181a; font-family: var(--font-mono); font-size: 10px; font-weight: 700; border-radius: var(--radius-pill); width: 18px; height: 18px; margin-left: 6px; }
+.td-badge { display: inline-flex; align-items: center; justify-content: center; background: var(--sig-medium-fg); color: #ffffff; font-family: var(--font-mono); font-size: 10px; font-weight: 700; border-radius: var(--radius-pill); width: 18px; height: 18px; margin-left: 6px; }
 
 /* Panels */
 .td-panel { padding: 24px 0; }

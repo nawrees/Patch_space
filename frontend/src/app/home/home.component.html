@@ -1,29 +1,21 @@
 <div class="public-page">
 
-  <nav class="home-nav">
-    <a routerLink="/" class="home-brand"><h2>Patch Space</h2></a>
-    <div class="home-nav-links">
-      <a routerLink="/about">About</a>
-      <a routerLink="/contact">Contact</a>
-    </div>
-    <div class="home-nav-actions">
-      <a routerLink="/login" class="btn-secondary">Log in</a>
-      <a routerLink="/signup" class="btn-primary">Sign up</a>
-    </div>
-  </nav>
+  <app-public-nav active="home"></app-public-nav>
 
   <section class="hero">
     <div class="hero-copy">
-      <span class="eyebrow">Cybersecurity training</span>
-      <h1>Learn to break things<br>— safely.</h1>
-      <p class="hero-sub">
-        Hands-on courses and real Docker-backed labs for people who'd rather
-        exploit a vulnerability than just read about one.
-      </p>
-      <div class="hero-actions">
+      <span class="eyebrow">{{ heroEyebrow }}</span>
+      <h1>{{ heroTitle }}</h1>
+      <p class="hero-sub">{{ heroSubtitle }}</p>
+      <div class="hero-actions" *ngIf="!isAuthenticated; else authedHero">
         <a routerLink="/signup" class="btn-primary">Get started — it's free</a>
         <a routerLink="/login" class="btn-secondary">I have an account</a>
       </div>
+      <ng-template #authedHero>
+        <div class="hero-actions">
+          <a [routerLink]="dashboardLink" class="btn-primary">Go to Dashboard</a>
+        </div>
+      </ng-template>
     </div>
 
     <div class="hero-panel panel-bracket card">
@@ -53,11 +45,18 @@
   </section>
 
   <section class="cta">
-    <div class="cta-box card panel-bracket">
-      <h2>Ready to start your first lab?</h2>
-      <p>Create a free account — no credit card, just a terminal.</p>
+    <div class="cta-box card panel-bracket" *ngIf="!isAuthenticated; else authedCta">
+      <h2>{{ ctaTitle }}</h2>
+      <p>{{ ctaBody }}</p>
       <a routerLink="/signup" class="btn-primary">Create your account</a>
     </div>
+    <ng-template #authedCta>
+      <div class="cta-box card panel-bracket">
+        <h2>Ready to jump back in?</h2>
+        <p>Head to your dashboard to pick up where you left off.</p>
+        <a [routerLink]="dashboardLink" class="btn-primary">Go to Dashboard</a>
+      </div>
+    </ng-template>
   </section>
 
   <footer class="home-footer">

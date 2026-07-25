@@ -1,4 +1,5 @@
 import multer from 'multer';
+import { fileTypeFromBuffer } from 'file-type';
 import { getAdminClient } from '../config/supabaseClient.js';
 import { asyncHandler } from '../middleware/asyncHandler.js';
 import { ApiError } from '../utils/ApiError.js';
@@ -37,6 +38,14 @@ export const uploadResource = asyncHandler(async (req, res) => {
   if (!req.file) throw new ApiError(400, 'No file uploaded (expected multipart field "file")');
   const { lessonId } = req.params;
   const title = req.body.title || req.file.originalname;
+
+  // multer's fileFilter only checked the client-declared Content-Type, which
+  // is trivially spoofable — verify the actual file bytes are really a PDF
+  // before it gets stored and re-served under that content-type.
+  const detected = await fileTypeFromBuffer(req.file.buffer);
+  if (detected?.mime !== 'application/pdf') {
+    throw new ApiError(400, 'File content does not match a PDF (failed signature check)');
+  }
 
   // Resolve the lesson's course. Doing this through req.supabase also
   // confirms (via the lessons_select RLS policy) that the caller can

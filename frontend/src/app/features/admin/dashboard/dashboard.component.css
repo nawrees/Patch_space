@@ -35,7 +35,7 @@ h1 { font-family: var(--font-display); color: var(--text-1); font-weight: 700; m
 
 .tab-count {
   background: var(--accent);
-  color: #06181a;
+  color: #ffffff;
   font-family: var(--font-mono);
   border-radius: var(--radius-pill);
   padding: 0.1rem 0.45rem;
@@ -91,7 +91,7 @@ h1 { font-family: var(--font-display); color: var(--text-1); font-weight: 700; m
   transition: all 0.15s;
 }
 
-.filter-btn.active { background: var(--accent); color: #06181a; border-color: var(--accent); }
+.filter-btn.active { background: var(--accent); color: #ffffff; border-color: var(--accent); }
 .filter-btn:hover:not(.active) { border-color: var(--accent); color: var(--accent); }
 
 /* Table */
@@ -130,7 +130,7 @@ h1 { font-family: var(--font-display); color: var(--text-1); font-weight: 700; m
   height: 32px;
   border-radius: 50%;
   background: linear-gradient(135deg, var(--accent), var(--accent-lt));
-  color: #06181a;
+  color: #ffffff;
   font-size: 0.75rem;
   font-weight: 700;
   display: flex;
@@ -178,7 +178,7 @@ h1 { font-family: var(--font-display); color: var(--text-1); font-weight: 700; m
 .btn-apply {
   padding: 0.35rem 0.7rem;
   background: var(--accent);
-  color: #06181a;
+  color: #ffffff;
   border: none;
   border-radius: var(--radius-sm);
   font-size: 0.82rem;
@@ -275,6 +275,27 @@ h1 { font-family: var(--font-display); color: var(--text-1); font-weight: 700; m
 
 .form-select:focus { outline: none; border-color: var(--accent); }
 
+textarea.form-select { resize: vertical; font-family: inherit; }
+
+/* Site Content tab */
+.site-settings-form { max-width: 640px; }
+.site-settings-form h3 {
+  margin: 2rem 0 1rem;
+  color: var(--text-1);
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+.site-settings-form h3:first-child { margin-top: 0; }
+.site-value-card {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  margin-bottom: 1rem;
+  background: var(--bg-hover);
+}
+.site-settings-form .feedback { margin-left: 0.75rem; }
+
 .assign-info {
   background: var(--bg-hover);
   border: 1px solid var(--border);
@@ -297,7 +318,7 @@ h1 { font-family: var(--font-display); color: var(--text-1); font-weight: 700; m
 .btn-primary {
   padding: 0.6rem 1.25rem;
   background: var(--accent);
-  color: #06181a;
+  color: #ffffff;
   border: none;
   border-radius: var(--radius-md);
   cursor: pointer;

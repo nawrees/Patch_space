@@ -12,6 +12,9 @@
     <button [ngClass]="{ active: activeTab === 'assign' }" (click)="switchTab('assign')">
       Assign Tutors
     </button>
+    <button [ngClass]="{ active: activeTab === 'site' }" (click)="switchTab('site')">
+      Site Content
+    </button>
   </div>
 
   <!-- ── USER MANAGEMENT ────────────────────────────────── -->
@@ -190,5 +193,114 @@
         </ul>
       </div>
     </div>
+  </div>
+
+  <!-- ── SITE CONTENT ────────────────────────────────────── -->
+  <div *ngIf="activeTab === 'site'" class="tab-content">
+    <div *ngIf="loadingSiteSettings" class="loading">Loading site content...</div>
+
+    <form *ngIf="!loadingSiteSettings && siteSettings" class="site-settings-form" (ngSubmit)="saveSiteSettings()">
+      <h3>Contact</h3>
+      <div class="form-group">
+        <label>Contact email <span class="optional">(shown on the public Contact Us page)</span></label>
+        <input type="email" [(ngModel)]="siteSettings.contact_email" name="contact_email" class="form-select" required />
+      </div>
+
+      <h3>Home page — hero</h3>
+      <div class="form-group">
+        <label>Eyebrow <span class="optional">(small label above the heading)</span></label>
+        <input [(ngModel)]="siteSettings.home_hero_eyebrow" name="home_hero_eyebrow" class="form-select" />
+      </div>
+      <div class="form-group">
+        <label>Heading</label>
+        <input [(ngModel)]="siteSettings.home_hero_title" name="home_hero_title" class="form-select" />
+      </div>
+      <div class="form-group">
+        <label>Subtitle</label>
+        <textarea [(ngModel)]="siteSettings.home_hero_subtitle" name="home_hero_subtitle" rows="3" class="form-select"></textarea>
+      </div>
+
+      <h3>Home page — feature cards</h3>
+      <div class="site-value-card" *ngFor="let f of siteSettings.home_features; let i = index">
+        <div class="form-group">
+          <label>Icon name <span class="optional">(from the shared icon set, e.g. box, flame, users)</span></label>
+          <input [(ngModel)]="f.icon" [name]="'home_feature_icon_' + i" class="form-select" />
+        </div>
+        <div class="form-group">
+          <label>Title</label>
+          <input [(ngModel)]="f.title" [name]="'home_feature_title_' + i" class="form-select" />
+        </div>
+        <div class="form-group">
+          <label>Body</label>
+          <textarea [(ngModel)]="f.body" [name]="'home_feature_body_' + i" rows="2" class="form-select"></textarea>
+        </div>
+        <button type="button" class="btn-sm-link" (click)="removeHomeFeature(i)">Remove card</button>
+      </div>
+      <button type="button" class="btn-secondary" (click)="addHomeFeature()">+ Add feature card</button>
+
+      <h3>Home page — closing call to action</h3>
+      <div class="form-group">
+        <label>Heading</label>
+        <input [(ngModel)]="siteSettings.home_cta_title" name="home_cta_title" class="form-select" />
+      </div>
+      <div class="form-group">
+        <label>Body</label>
+        <textarea [(ngModel)]="siteSettings.home_cta_body" name="home_cta_body" rows="2" class="form-select"></textarea>
+      </div>
+
+      <h3>About page — hero</h3>
+      <div class="form-group">
+        <label>Heading</label>
+        <input [(ngModel)]="siteSettings.about_hero_title" name="about_hero_title" class="form-select" />
+      </div>
+      <div class="form-group">
+        <label>Subtitle</label>
+        <textarea [(ngModel)]="siteSettings.about_hero_subtitle" name="about_hero_subtitle" rows="3" class="form-select"></textarea>
+      </div>
+
+      <h3>About page — value cards</h3>
+      <div class="site-value-card" *ngFor="let v of siteSettings.about_values; let i = index">
+        <div class="form-group">
+          <label>Icon name <span class="optional">(from the shared icon set, e.g. box, flame, users)</span></label>
+          <input [(ngModel)]="v.icon" [name]="'value_icon_' + i" class="form-select" />
+        </div>
+        <div class="form-group">
+          <label>Title</label>
+          <input [(ngModel)]="v.title" [name]="'value_title_' + i" class="form-select" />
+        </div>
+        <div class="form-group">
+          <label>Body</label>
+          <textarea [(ngModel)]="v.body" [name]="'value_body_' + i" rows="2" class="form-select"></textarea>
+        </div>
+        <button type="button" class="btn-sm-link" (click)="removeAboutValue(i)">Remove card</button>
+      </div>
+      <button type="button" class="btn-secondary" (click)="addAboutValue()">+ Add value card</button>
+
+      <h3>About page — company section</h3>
+      <div class="form-group">
+        <label>Heading</label>
+        <input [(ngModel)]="siteSettings.about_company_title" name="about_company_title" class="form-select" />
+      </div>
+      <div class="form-group">
+        <label>Body</label>
+        <textarea [(ngModel)]="siteSettings.about_company_body" name="about_company_body" rows="3" class="form-select"></textarea>
+      </div>
+
+      <h3>About page — closing call to action</h3>
+      <div class="form-group">
+        <label>Heading</label>
+        <input [(ngModel)]="siteSettings.about_cta_title" name="about_cta_title" class="form-select" />
+      </div>
+      <div class="form-group">
+        <label>Body</label>
+        <textarea [(ngModel)]="siteSettings.about_cta_body" name="about_cta_body" rows="2" class="form-select"></textarea>
+      </div>
+
+      <button type="submit" class="btn-primary" [disabled]="savingSiteSettings">
+        {{ savingSiteSettings ? 'Saving...' : 'Save changes' }}
+      </button>
+      <span class="feedback ok"  *ngIf="siteSettingsFeedback === 'ok'">✓ Saved</span>
+      <span class="feedback err" *ngIf="siteSettingsFeedback === 'err'">✗ Failed to save</span>
+    </form>
   </div>
 </div>

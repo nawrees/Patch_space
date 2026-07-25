@@ -10,10 +10,11 @@ export class QaModerationComponent implements OnInit {
   all: any[] = [];
   filtered: any[] = [];
   loading = true;
-  filter: 'all' | 'urgent' | 'pending' | 'answered' = 'all';
+  filter: 'all' | 'urgent' | 'pending' | 'answered' | 'dismissed' = 'all';
   activeReply: string | null = null;
   replyText = '';
   submitting = false;
+  dismissing: string | null = null;
 
   get urgentCount() { return this.all.filter(q => q.urgency === 'urgent').length; }
   get pendingCount() { return this.all.filter(q => q.urgency === 'pending').length; }
@@ -68,6 +69,19 @@ export class QaModerationComponent implements OnInit {
         this.submitting = false;
       },
       error: () => { this.submitting = false; },
+    });
+  }
+
+  dismiss(id: string) {
+    this.dismissing = id;
+    this.api.dismissQuestion(id).subscribe({
+      next: r => {
+        const idx = this.all.findIndex(q => q.id === id);
+        if (idx !== -1) this.all[idx] = { ...r.question, urgency: 'dismissed' };
+        this.applyFilter();
+        this.dismissing = null;
+      },
+      error: () => { this.dismissing = null; },
     });
   }
 

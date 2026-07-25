@@ -186,7 +186,7 @@
       width: 100%;
       padding: 0.875rem;
       background: var(--accent);
-      color: #06181a;
+      color: #ffffff;
       border: none;
       border-radius: var(--radius-md);
       font-size: 1rem;
@@ -247,7 +247,7 @@
     .btn-res:disabled { opacity: .5; cursor: not-allowed; }
     .btn-res-view { background: var(--bg-hover); border-color: var(--border); color: var(--text-2); }
     .btn-res-view:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
-    .btn-res-dl { background: var(--accent); color: #06181a; border-color: var(--accent); }
+    .btn-res-dl { background: var(--accent); color: #ffffff; border-color: var(--accent); }
     .btn-res-dl:hover:not(:disabled) { background: var(--accent-lt); border-color: var(--accent-lt); }
 
     /* Inline PDF viewer */
@@ -280,7 +280,7 @@
     .btn-complete {
       padding: 0.875rem 2.5rem;
       background: var(--accent);
-      color: #06181a;
+      color: #ffffff;
       border: none;
       border-radius: var(--radius-md);
       font-size: 1rem;
@@ -296,7 +296,7 @@
 
     .btn-complete.btn-done {
       background: var(--sig-low-fg);
-      color: #06181a;
+      color: #ffffff;
       cursor: default;
     }
 
@@ -318,7 +318,7 @@
     .qa-ask { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
     .qa-input { background: var(--bg-input); border: 1px solid var(--border); color: var(--text-1); border-radius: var(--radius-md); padding: 10px 14px; font-size: 14px; font-family: inherit; resize: vertical; }
     .qa-input:focus { outline: none; border-color: var(--accent); }
-    .qa-submit { align-self: flex-end; padding: 8px 20px; background: var(--accent); color: #06181a; border: none; border-radius: var(--radius-md); font-size: 13px; font-weight: 600; cursor: pointer; }
+    .qa-submit { align-self: flex-end; padding: 8px 20px; background: var(--accent); color: #ffffff; border: none; border-radius: var(--radius-md); font-size: 13px; font-weight: 600; cursor: pointer; }
     .qa-submit:hover:not(:disabled) { background: var(--accent-lt); }
     .qa-submit:disabled { opacity: .5; cursor: not-allowed; }
     .qa-empty-msg { color: var(--text-3); font-size: 13px; text-align: center; padding: 20px 0; }

@@ -1,10 +1,23 @@
 import multer from 'multer';
+import { fileTypeFromBuffer } from 'file-type';
 import { getAdminClient } from '../config/supabaseClient.js';
 import { asyncHandler } from '../middleware/asyncHandler.js';
 import { ApiError } from '../utils/ApiError.js';
+import { getLabRatingStatsBatch } from '../utils/ratingStats.js';
 import { env } from '../config/env.js';
 
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+
+// Extension is derived from the already-validated mimetype, never from the
+// client-supplied filename — the filename could contain path separators
+// (e.g. "../../other-course/x") that would otherwise land in the storage
+// path unsanitized.
+const EXTENSION_BY_MIME_TYPE = {
+  'image/jpeg': 'jpg',
+  'image/png': 'png',
+  'image/webp': 'webp',
+  'image/gif': 'gif',
+};
 
 export const thumbnailUploadMiddleware = multer({
   storage: multer.memoryStorage(),
@@ -18,10 +31,21 @@ export const thumbnailUploadMiddleware = multer({
 }).single('image');
 
 export const listCourses = asyncHandler(async (req, res) => {
-  const { data, error } = await req.supabase
+  let query = req.supabase
     .from('courses')
     .select('id, title, slug, description, category, difficulty, thumbnail_url, is_published, created_at, created_by')
     .order('created_at', { ascending: false });
+
+  // ?mine=true is what the "Manage Courses" screen uses — a tutor should
+  // only see (and only be offered edit/delete affordances for) courses they
+  // actually created, not every other tutor's published course, which
+  // courses_select RLS otherwise legitimately returns for catalog browsing.
+  // Admins manage everything, so the filter is skipped for them.
+  if (req.query.mine === 'true' && req.profile?.role !== 'admin') {
+    query = query.eq('created_by', req.user.id);
+  }
+
+  const { data, error } = await query;
 
   if (error) throw new ApiError(400, error.message);
   res.json({ courses: data });
@@ -56,6 +80,19 @@ export const getCourse = asyncHandler(async (req, res) => {
   // relying on fragile nested .order() chaining.
   data.modules?.sort((a, b) => a.order_index - b.order_index);
   data.modules?.forEach((m) => m.lessons?.sort((a, b) => a.order_index - b.order_index));
+
+  // Attach each lab's community difficulty rating (avg, %, per-level
+  // breakdown) in one batched query rather than one per lab.
+  const labIds = (data.modules ?? [])
+    .flatMap((m) => m.lessons ?? [])
+    .map((l) => l.lab?.id)
+    .filter(Boolean);
+  const ratingStats = await getLabRatingStatsBatch(getAdminClient(), labIds);
+  for (const m of data.modules ?? []) {
+    for (const l of m.lessons ?? []) {
+      if (l.lab?.id) Object.assign(l.lab, ratingStats[l.lab.id]);
+    }
+  }
 
   res.json({ course: data });
 });
@@ -120,15 +157,23 @@ export const uploadThumbnail = asyncHandler(async (req, res) => {
 
   if (courseError || !course) throw new ApiError(403, 'Course not found or no access');
 
+  // multer's fileFilter only checked the client-declared Content-Type, which
+  // is trivially spoofable — verify the actual file bytes match one of the
+  // allowed image formats before it gets stored and re-served publicly.
+  const detected = await fileTypeFromBuffer(req.file.buffer);
+  if (!detected || !ALLOWED_IMAGE_TYPES.includes(detected.mime)) {
+    throw new ApiError(400, 'File content does not match an accepted image format (failed signature check)');
+  }
+
   const admin = getAdminClient();
   await ensureThumbnailBucket(admin);
 
-  const ext = (req.file.originalname.split('.').pop() || 'jpg').toLowerCase();
+  const ext = EXTENSION_BY_MIME_TYPE[detected.mime] || 'jpg';
   const storagePath = `${id}/${Date.now()}.${ext}`;
 
   const { error: uploadError } = await admin.storage
     .from(env.COURSE_THUMBNAILS_BUCKET)
-    .upload(storagePath, req.file.buffer, { contentType: req.file.mimetype, upsert: true });
+    .upload(storagePath, req.file.buffer, { contentType: detected.mime, upsert: true });
 
   if (uploadError) throw new ApiError(500, `Storage upload failed: ${uploadError.message}`);
 

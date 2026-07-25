@@ -3,6 +3,7 @@ import { asyncHandler } from '../middleware/asyncHandler.js';
 import { ApiError } from '../utils/ApiError.js';
 import { getAdminClient } from '../config/supabaseClient.js';
 import { recordActivity } from './streaks.controller.js';
+import { getLabRatingStats } from '../utils/ratingStats.js';
 import { env } from '../config/env.js';
 import {
   pullImage,
@@ -17,8 +18,8 @@ import {
 // readable attack-name prefix (from the lab title) followed by a large
 // random decimal number carrying the same 128 bits of entropy as a raw
 // random hex string — readability without weakening how guessable the
-// flag is (a short/small random number here would make it brute-forceable
-// since submitFlag has no attempt rate limit).
+// flag is (submitFlag is also rate-limited — see flagSubmitLimiter — but the
+// entropy is kept high regardless, as defense in depth).
 function buildSessionFlag(labTitle) {
   const attackSlug = (labTitle || 'LAB')
     .toUpperCase()
@@ -186,40 +187,6 @@ export const startLab = asyncHandler(async (req, res) => {
 
   if (labErr || !lab) throw new ApiError(404, 'Lab not found or access denied');
 
-  // Prevent duplicate sessions
-  const { data: existing } = await admin
-    .from('lab_sessions')
-    .select('id')
-    .eq('lab_id', labId)
-    .eq('student_id', req.user.id)
-    .in('status', ['provisioning', 'running'])
-    .maybeSingle();
-
-  if (existing) throw new ApiError(409, 'A lab session is already active — stop it first');
-
-  // Per-student cap: stops one student from spinning up containers across
-  // every lab in the catalog at once.
-  const { count: studentActiveCount } = await admin
-    .from('lab_sessions')
-    .select('id', { count: 'exact', head: true })
-    .eq('student_id', req.user.id)
-    .in('status', ['provisioning', 'running']);
-
-  if ((studentActiveCount ?? 0) >= env.LAB_MAX_CONCURRENT_PER_STUDENT) {
-    throw new ApiError(429, `You have reached the limit of ${env.LAB_MAX_CONCURRENT_PER_STUDENT} simultaneous labs — stop one before starting another`);
-  }
-
-  // Platform-wide cap: protects the Docker host from being overwhelmed
-  // regardless of which students are asking.
-  const { count: totalActiveCount } = await admin
-    .from('lab_sessions')
-    .select('id', { count: 'exact', head: true })
-    .in('status', ['provisioning', 'running']);
-
-  if ((totalActiveCount ?? 0) >= env.LAB_MAX_CONCURRENT_TOTAL) {
-    throw new ApiError(503, 'Lab capacity is full right now — try again shortly');
-  }
-
   // Per-session random flag: prevents students from sharing flags
   const sessionFlag = buildSessionFlag(lab.title);
   const sessionFlagHash = crypto.createHash('sha256').update(sessionFlag).digest('hex');
@@ -227,21 +194,32 @@ export const startLab = asyncHandler(async (req, res) => {
   const expiresAt = new Date(Date.now() + lab.max_duration_minutes * 60 * 1000).toISOString();
   const containerName = `lab-${labId.slice(0, 8)}-${req.user.id.slice(0, 8)}-${Date.now()}`;
 
-  // Persist session immediately so the frontend can start polling
-  const { data: session, error: sessErr } = await admin
-    .from('lab_sessions')
-    .insert({
-      student_id: req.user.id,
-      lab_id: labId,
-      container_name: containerName,
-      status: 'provisioning',
-      session_flag_hash: sessionFlagHash,
-      expires_at: expiresAt,
-    })
-    .select()
-    .single();
+  // The duplicate-session check, per-student cap, platform-wide cap, and
+  // insert all happen atomically inside this one DB function (advisory-lock
+  // guarded) — doing them as separate JS-side queries + a later insert would
+  // let concurrent requests all pass the checks before any row existed.
+  const { data: session, error: sessErr } = await admin.rpc('start_lab_session', {
+    p_student_id: req.user.id,
+    p_lab_id: labId,
+    p_container_name: containerName,
+    p_session_flag_hash: sessionFlagHash,
+    p_expires_at: expiresAt,
+    p_max_per_student: env.LAB_MAX_CONCURRENT_PER_STUDENT,
+    p_max_total: env.LAB_MAX_CONCURRENT_TOTAL,
+  }).single();
 
-  if (sessErr) throw new ApiError(500, 'Failed to create lab session');
+  if (sessErr) {
+    if (sessErr.message?.includes('ACTIVE_SESSION_EXISTS')) {
+      throw new ApiError(409, 'A lab session is already active — stop it first');
+    }
+    if (sessErr.message?.includes('STUDENT_CAP_REACHED')) {
+      throw new ApiError(429, `You have reached the limit of ${env.LAB_MAX_CONCURRENT_PER_STUDENT} simultaneous labs — stop one before starting another`);
+    }
+    if (sessErr.message?.includes('PLATFORM_CAP_REACHED')) {
+      throw new ApiError(503, 'Lab capacity is full right now — try again shortly');
+    }
+    throw new ApiError(500, 'Failed to create lab session');
+  }
 
   res.status(201).json({ session });
 
@@ -424,16 +402,9 @@ export const rateLab = asyncHandler(async (req, res) => {
     { onConflict: 'lab_id,student_id' }
   );
 
-  const { data: all } = await admin
-    .from('lab_ratings')
-    .select('rating')
-    .eq('lab_id', labId);
+  const stats = await getLabRatingStats(admin, labId);
 
-  const avgRating = all?.length
-    ? Math.round((all.reduce((s, r) => s + r.rating, 0) / all.length) * 10) / 10
-    : null;
-
-  res.json({ avgRating, totalRatings: all?.length ?? 0, userRating: rating });
+  res.json({ ...stats, userRating: rating });
 });
 
 // ─── GET /api/labs/:labId/logs ───────────────────────────────────────────────

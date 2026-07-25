@@ -13,6 +13,7 @@
         Pending ({{ pendingCount }})
       </button>
       <button class="qa-filter-btn" [class.qa-filter-active]="filter === 'answered'" (click)="setFilter('answered')">Answered</button>
+      <button class="qa-filter-btn" [class.qa-filter-active]="filter === 'dismissed'" (click)="setFilter('dismissed')">Dismissed</button>
     </div>
   </div>
 
@@ -33,7 +34,7 @@
   <!-- Question cards -->
   <div *ngIf="!loading" class="qa-list">
     <div *ngFor="let q of filtered" class="qa-card" [class.qa-card-urgent]="q.urgency === 'urgent'"
-         [class.qa-card-answered]="q.urgency === 'answered'">
+         [class.qa-card-answered]="q.urgency === 'answered'" [class.qa-card-dismissed]="q.urgency === 'dismissed'">
       <!-- Card header -->
       <div class="qa-card-head">
         <div class="qa-meta">
@@ -47,6 +48,7 @@
           <span class="qa-badge qa-badge-urgent" *ngIf="q.urgency === 'urgent'"><app-icon name="alert-triangle" [size]="12"></app-icon> Urgent</span>
           <span class="qa-badge qa-badge-pending" *ngIf="q.urgency === 'pending'"><app-icon name="clock" [size]="12"></app-icon> Pending</span>
           <span class="qa-badge qa-badge-done" *ngIf="q.urgency === 'answered'"><app-icon name="check-circle" [size]="12"></app-icon> Answered</span>
+          <span class="qa-badge qa-badge-dismissed" *ngIf="q.urgency === 'dismissed'"><app-icon name="check" [size]="12"></app-icon> Dismissed</span>
           <span class="qa-age">{{ timeAgo(q.created_at) }}</span>
         </div>
       </div>
@@ -77,6 +79,10 @@
       <div class="qa-actions" *ngIf="activeReply !== q.id">
         <button class="qa-btn qa-btn-reply" (click)="startReply(q.id, q.answer)">
           <app-icon [name]="q.answer ? 'edit' : 'message-circle'" [size]="14"></app-icon> {{ q.answer ? 'Edit Answer' : 'Quick Reply' }}
+        </button>
+        <button class="qa-btn qa-btn-dismiss" *ngIf="!q.answer && !q.dismissed_at"
+                [disabled]="dismissing === q.id" (click)="dismiss(q.id)">
+          <app-icon name="check" [size]="14"></app-icon> {{ dismissing === q.id ? 'Dismissing…' : 'Mark as Read' }}
         </button>
       </div>
     </div>

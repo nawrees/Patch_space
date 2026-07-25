@@ -13,6 +13,7 @@
 .qa-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 18px; transition: border-color .2s; }
 .qa-card-urgent { border-color: var(--sig-high-fg); background: var(--sig-high-bg); }
 .qa-card-answered { opacity: .75; }
+.qa-card-dismissed { opacity: .6; }
 .qa-card-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; flex-wrap: wrap; gap: 8px; }
 .qa-meta { display: flex; align-items: center; gap: 10px; }
 .qa-avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--role-student); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; flex-shrink: 0; }
@@ -24,6 +25,7 @@
 .qa-badge-urgent { background: var(--sig-high-bg); color: var(--sig-high-fg); }
 .qa-badge-pending { background: var(--sig-info-bg); color: var(--sig-info-fg); }
 .qa-badge-done { background: var(--sig-low-bg); color: var(--sig-low-fg); }
+.qa-badge-dismissed { background: var(--bg-hover); color: var(--text-3); }
 .qa-age { font-family: var(--font-mono); font-size: 11px; color: var(--text-3); }
 .qa-question { color: var(--text-1); font-size: 14px; line-height: 1.6; margin-bottom: 12px; white-space: pre-wrap; }
 .qa-answer-block { background: var(--bg-hover); border-left: 3px solid var(--sig-low-fg); padding: 10px 14px; border-radius: 0 var(--radius-md) var(--radius-md) 0; margin-bottom: 12px; }
@@ -36,11 +38,14 @@
 .qa-actions { }
 .qa-btn { padding: 7px 16px; border-radius: var(--radius-md); border: none; cursor: pointer; font-size: 12px; font-weight: 600; background: var(--bg-hover); color: var(--text-2); transition: background .2s; }
 .qa-btn:hover { background: var(--border); color: var(--text-1); }
-.qa-btn-primary { background: var(--accent); color: #06181a; }
+.qa-btn-primary { background: var(--accent); color: #ffffff; }
 .qa-btn-primary:hover:not(:disabled) { background: var(--accent-lt); }
 .qa-btn-primary:disabled { opacity: .5; cursor: not-allowed; }
 .qa-btn-reply { background: none; border: 1px solid var(--border); color: var(--accent); }
 .qa-btn-reply:hover { background: var(--nav-active-bg); border-color: var(--accent); }
+.qa-btn-dismiss { background: none; border: 1px solid var(--border); color: var(--text-3); }
+.qa-btn-dismiss:hover:not(:disabled) { background: var(--bg-hover); color: var(--text-2); }
+.qa-btn-dismiss:disabled { opacity: .5; cursor: not-allowed; }
 
 /* Skeleton */
 .qa-sk-list { display: flex; flex-direction: column; gap: 14px; }

@@ -78,27 +78,51 @@ export const getAllQuestions = asyncHandler(async (req, res) => {
     .order('created_at', { ascending: true }); // oldest first = highest urgency
 
   if (courseId) query = query.eq('course_id', courseId);
-  if (unansweredOnly === 'true') query = query.is('answered_at', null);
+  // Dismissed questions ("no reply needed") don't need a real answer, so they
+  // shouldn't keep counting as unanswered/urgent alongside genuine open ones.
+  if (unansweredOnly === 'true') query = query.is('answered_at', null).is('dismissed_at', null);
 
   const { data, error } = await query;
   if (error) throw new ApiError(400, error.message);
 
-  // Tag urgency: unanswered > 24h is "urgent", 1-24h is "pending", answered is "done"
+  // Tag urgency: unanswered > 24h is "urgent", 1-24h is "pending", answered
+  // is "done", dismissed (marked read without a real answer) is "dismissed".
   const now = Date.now();
   const tagged = (data ?? []).map(q => {
-    let urgency = 'answered';
-    if (!q.answered_at) {
+    let urgency;
+    if (q.answered_at) urgency = 'answered';
+    else if (q.dismissed_at) urgency = 'dismissed';
+    else {
       const age = now - new Date(q.created_at).getTime();
       urgency = age > 24 * 60 * 60 * 1000 ? 'urgent' : 'pending';
     }
     return { ...q, urgency };
   });
 
-  // Sort: urgent first, then pending, then answered
-  const order = { urgent: 0, pending: 1, answered: 2 };
+  // Sort: urgent first, then pending, then answered/dismissed
+  const order = { urgent: 0, pending: 1, answered: 2, dismissed: 3 };
   tagged.sort((a, b) => order[a.urgency] - order[b.urgency]);
 
   res.json({ questions: tagged });
+});
+
+// Tutor/Admin: mark a question as read/resolved without writing a real
+// answer — e.g. a student's follow-up "thank u" that doesn't need a reply.
+export const dismissQuestion = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const { data, error } = await req.supabase
+    .from('questions')
+    .update({
+      dismissed_by: req.user.id,
+      dismissed_at: new Date().toISOString(),
+    })
+    .eq('id', id)
+    .select('*, student:student_id(full_name, email), answerer:answered_by(full_name)')
+    .single();
+
+  if (error || !data) throw new ApiError(403, error?.message || 'Not allowed');
+  res.json({ question: data });
 });
 
 // Tutor/Admin: answer a question

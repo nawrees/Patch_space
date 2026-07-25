@@ -1,0 +1,22 @@
+/* Styling for the logged-out full nav (.home-nav, .home-nav-links,
+   .home-nav-actions, .home-brand) lives in the global stylesheet — shared
+   as-is across Home/About/Contact. Only the logged-in sub-nav is styled
+   here, since it's unique to this component. */
+
+.public-subnav {
+  display: flex;
+  justify-content: center;
+  gap: 28px;
+  padding: 14px 6vw;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border);
+}
+.public-subnav a {
+  color: var(--nav-link);
+  font-size: 14.5px;
+  font-weight: 500;
+}
+.public-subnav a:hover, .public-subnav a.active {
+  color: var(--accent);
+  text-decoration: none;
+}

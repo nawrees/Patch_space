@@ -1,7 +1,7 @@
 /* =========================================================================
    SIGNAL & LEDGER — design tokens
    A console/instrument-panel language for a security-training product.
-   One interactive accent (trace teal). A separate 5-step signal scale
+   One interactive accent (luxury purple). A separate 5-step signal scale
    (info/low/medium/high/critical) carries status meaning only — difficulty,
    role, streak state, lockouts — never used decoratively.
    ========================================================================= */
@@ -34,21 +34,21 @@
   --text-3:       #5c6779;
   --nav-link:     #96a1b3;
   --nav-hover:    #e8ecf1;
-  --nav-active-bg: rgba(46,196,196,.12);
-  --accent:       #2ec4c4;
-  --accent-lt:    #5fd8d8;
-  --accent-rgb:   46,196,196;
+  --nav-active-bg: rgba(154,69,172,.12);
+  --accent:       #9a45ac;
+  --accent-lt:    #b872c4;
+  --accent-rgb:   154,69,172;
   --shadow:       0 2px 20px rgba(0,0,0,.45);
 
   /* Signal scale — status/severity only */
-  --sig-info-bg:     rgba(46,196,196,.14);  --sig-info-fg:     #5fd8d8;
+  --sig-info-bg:     rgba(154,69,172,.14);  --sig-info-fg:     #b872c4;
   --sig-low-bg:      rgba(61,220,151,.14);  --sig-low-fg:      #3ddc97;
   --sig-medium-bg:   rgba(232,179,57,.14);  --sig-medium-fg:   #e8b339;
   --sig-high-bg:     rgba(232,130,60,.14);  --sig-high-fg:     #e8823c;
   --sig-critical-bg: rgba(229,72,77,.16);   --sig-critical-fg: #f0787c;
 
   /* Role identity (avatar/badge gradients) */
-  --role-student: linear-gradient(135deg, #157d7d, #2ec4c4);
+  --role-student: linear-gradient(135deg, #5c2670, #9a45ac);
   --role-tutor:   linear-gradient(135deg, #a3720a, #e8b339);
   --role-admin:   linear-gradient(135deg, #a3272c, #e5484d);
 }
@@ -67,13 +67,13 @@
   --text-3:       #8793a3;
   --nav-link:     #4b5768;
   --nav-hover:    #16202b;
-  --nav-active-bg: #e2f6f6;
-  --accent:       #147a7a;
-  --accent-lt:    #0f6363;
-  --accent-rgb:   20,122,122;
+  --nav-active-bg: #f3e6f5;
+  --accent:       #743089;
+  --accent-lt:    #5c2670;
+  --accent-rgb:   116,48,137;
   --shadow:       0 2px 16px rgba(15,30,40,.08);
 
-  --sig-info-bg:     #e2f6f6;  --sig-info-fg:     #147a7a;
+  --sig-info-bg:     #f3e6f5;  --sig-info-fg:     #743089;
   --sig-low-bg:      #e3f9ee;  --sig-low-fg:      #0f7a4f;
   --sig-medium-bg:   #fdf3df;  --sig-medium-fg:   #8a6108;
   --sig-high-bg:     #fdece1;  --sig-high-fg:     #a34a12;
@@ -175,7 +175,7 @@ textarea:focus-visible, select:focus-visible, [tabindex]:focus-visible {
 }
 .btn-primary {
   background: var(--accent);
-  color: #06181a;
+  color: #ffffff;
   border: 1px solid var(--accent);
 }
 .btn-primary:hover:not(:disabled) { background: var(--accent-lt); border-color: var(--accent-lt); }
@@ -275,10 +275,26 @@ textarea:focus-visible, select:focus-visible, [tabindex]:focus-visible {
   margin: 0 auto 40px;
   text-wrap: balance;
 }
-.feature-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
-@media (max-width: 900px) { .feature-grid { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 560px) { .feature-grid { grid-template-columns: 1fr; } }
-.feature-card { padding: 22px 20px; }
+/* Flex (not grid) on purpose: this class is shared by pages with different
+   card counts (Home has 4, About has 3) — a fixed column-count grid leaves
+   an empty trailing column and pushes fewer-than-max cards to one side.
+   Flex + justify-content: center keeps cards their natural size and centers
+   the group regardless of how many there are. */
+.feature-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; }
+.feature-card {
+  /* The flex-wrap line-break decision is based on each item's flex-basis
+     (not its shrunk/grown size) — so basis has to be small enough that 4
+     cards (Home) still fit one row at typical widths; grow:1 then lets
+     fewer cards (About's 3) expand to fill the freed-up space, capped by
+     max-width, and justify-content:center on the row centers any remainder.
+     min-width:0 overrides the flex default (min-width:auto), which
+     otherwise refuses to shrink a card below its text content's width. */
+  flex: 1 1 216px;
+  min-width: 0;
+  max-width: 280px;
+  padding: 22px 20px;
+}
+@media (max-width: 560px) { .feature-card { flex-basis: 100%; max-width: 360px; } }
 .feature-icon {
   width: 40px; height: 40px;
   display: flex; align-items: center; justify-content: center;

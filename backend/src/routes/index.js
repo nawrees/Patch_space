@@ -14,6 +14,7 @@ import labsRoutes from './labs.routes.js';
 import savedRoutes from './saved.routes.js';
 import streaksRoutes from './streaks.routes.js';
 import notificationsRoutes from './notifications.routes.js';
+import settingsRoutes from './settings.routes.js';
 
 const router = Router();
 
@@ -32,5 +33,6 @@ router.use('/', labsRoutes);            // /labs/:id/session, /labs/:id/start, /
 router.use('/', savedRoutes);           // /saved, /saved/:courseId
 router.use('/', streaksRoutes);         // /streaks
 router.use('/', notificationsRoutes);   // /notifications
+router.use('/', settingsRoutes);        // /site-settings
 
 export default router;

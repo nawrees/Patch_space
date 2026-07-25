@@ -16,7 +16,7 @@
 .sc-filter-group { display: flex; gap: 6px; }
 .sc-filter-group button { padding: 5px 14px; border: 1px solid var(--border); background: var(--bg-card); color: var(--text-2); border-radius: var(--radius-pill); cursor: pointer; font-size: 13px; font-weight: 500; transition: all .2s; }
 .sc-filter-group button:hover { border-color: var(--accent); color: var(--accent); }
-.sc-filter-group button.active { background: var(--accent); color: #06181a; border-color: var(--accent); }
+.sc-filter-group button.active { background: var(--accent); color: #ffffff; border-color: var(--accent); }
 
 .sc-results-lbl { color: var(--text-2); font-size: 13px; margin: 0 0 16px; }
 .sc-results-lbl strong { color: var(--text-1); }
