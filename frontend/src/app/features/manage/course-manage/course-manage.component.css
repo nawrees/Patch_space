@@ -154,6 +154,7 @@ textarea { resize: vertical; }
 .level-advanced { background: var(--sig-high-bg); color: var(--sig-high-fg); }
 .published { background: var(--sig-low-bg); color: var(--sig-low-fg); }
 .draft { background: var(--sig-info-bg); color: var(--sig-info-fg); }
+.collab { background: var(--nav-active-bg); color: var(--accent); }
 
 .card-top h3 { margin: 0 0 0.25rem; color: var(--text-1); font-size: 1rem; }
 .category { margin: 0 0 0.5rem; color: var(--accent); font-family: var(--font-mono); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
@@ -164,6 +165,8 @@ textarea { resize: vertical; }
   grid-template-columns: 2fr 1fr 1fr;
   border-top: 1px solid var(--border-sub);
 }
+
+.card-actions.two-col { grid-template-columns: 1fr 1fr; }
 
 .btn-action {
   padding: 0.7rem 0.5rem;

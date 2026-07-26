@@ -8,7 +8,10 @@
           {{ course.is_published ? 'Published' : 'Draft' }}
         </span>
       </div>
-      <button class="btn-add" (click)="openAddModule()">+ Add Module</button>
+      <div class="header-actions">
+        <button class="btn-secondary" (click)="openCollaborators()">Manage Access</button>
+        <button class="btn-add" (click)="openAddModule()">+ Add Module</button>
+      </div>
     </div>
   </div>
 
@@ -146,6 +149,53 @@
         </button>
       </div>
       <p *ngIf="panelError" class="panel-error">{{ panelError }}</p>
+    </ng-container>
+
+    <ng-container *ngIf="activePanel === 'collaborators'">
+      <h3>Manage Access</h3>
+      <p class="panel-hint">Grant another tutor edit access to this course. They can add/edit modules, lessons, and labs — you can revoke access anytime.</p>
+
+      <div class="form-group">
+        <label>Tutor's email</label>
+        <div class="collab-add-row collab-autocomplete">
+          <input [(ngModel)]="addCollaboratorEmail" placeholder="tutor@example.com"
+                 (keyup.enter)="addCollaborator()"
+                 (focus)="showTutorSuggestions = true"
+                 (blur)="showTutorSuggestions = false" />
+          <button class="btn-collab-add" (click)="addCollaborator()" [disabled]="addingCollaborator || !addCollaboratorEmail.trim()">
+            <app-icon *ngIf="!addingCollaborator" name="user" [size]="15"></app-icon>
+            {{ addingCollaborator ? 'Adding…' : 'Grant access' }}
+          </button>
+
+          <div class="tutor-suggestions" *ngIf="showTutorSuggestions && filteredTutorSuggestions.length > 0">
+            <div class="tutor-suggestion" *ngFor="let t of filteredTutorSuggestions"
+                 (mousedown)="pickTutorSuggestion(t)">
+              <span class="collab-name">{{ t.full_name || t.email }}</span>
+              <span class="collab-email" *ngIf="t.full_name">{{ t.email }}</span>
+            </div>
+          </div>
+          <div class="tutor-suggestions" *ngIf="showTutorSuggestions && eligibleTutors.length > 0 && filteredTutorSuggestions.length === 0">
+            <div class="tutor-suggestion tutor-suggestion-empty">No matching tutors</div>
+          </div>
+        </div>
+        <p *ngIf="collaboratorError" class="panel-error">{{ collaboratorError }}</p>
+      </div>
+
+      <div *ngIf="loadingCollaborators" class="collab-loading">Loading...</div>
+
+      <div *ngIf="!loadingCollaborators && collaborators.length === 0" class="collab-empty">
+        No one else has access to this course yet.
+      </div>
+
+      <div class="collab-list" *ngIf="!loadingCollaborators && collaborators.length > 0">
+        <div class="collab-row" *ngFor="let c of collaborators">
+          <div>
+            <span class="collab-name">{{ c.tutor?.full_name || c.tutor?.email }}</span>
+            <span class="collab-email" *ngIf="c.tutor?.full_name">{{ c.tutor?.email }}</span>
+          </div>
+          <button class="btn-sm btn-outline-danger" (click)="removeCollaborator(c)">Revoke</button>
+        </div>
+      </div>
     </ng-container>
   </div>
 

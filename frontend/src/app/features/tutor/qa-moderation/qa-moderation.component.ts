@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../../../core/services/api.service';
+import { UserService } from '../../../core/services/user.service';
 
 @Component({
   selector: 'app-qa-moderation',
@@ -19,9 +20,17 @@ export class QaModerationComponent implements OnInit {
   get urgentCount() { return this.all.filter(q => q.urgency === 'urgent').length; }
   get pendingCount() { return this.all.filter(q => q.urgency === 'pending').length; }
 
-  constructor(private api: ApiService) {}
+  constructor(private api: ApiService, private user: UserService) {}
 
   ngOnInit() { this.loadQuestions(); }
+
+  // Editing an existing answer is restricted server-side (RLS) to whoever
+  // wrote it, or an admin — mirror that here so the button doesn't invite a
+  // click that's just going to fail.
+  canEditAnswer(q: any): boolean {
+    if (!q.answer) return true; // not answered yet — anyone assigned can reply
+    return this.user.isAdmin() || q.answered_by === this.user.getCurrentUser()?.user.id;
+  }
 
   loadQuestions() {
     this.loading = true;

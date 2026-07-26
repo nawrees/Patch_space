@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ApiService } from '../../../core/services/api.service';
 
-type Panel = 'module' | 'lesson' | null;
+type Panel = 'module' | 'lesson' | 'collaborators' | null;
 
 @Component({
   selector: 'app-course-content',
@@ -30,6 +30,14 @@ export class CourseContentComponent implements OnInit {
   pendingFiles: File[] = [];
   existingResources: any[] = [];
 
+  collaborators: any[] = [];
+  loadingCollaborators = false;
+  addCollaboratorEmail = '';
+  addingCollaborator = false;
+  collaboratorError = '';
+  eligibleTutors: any[] = [];
+  showTutorSuggestions = false;
+
   constructor(private route: ActivatedRoute, private api: ApiService) {}
 
   ngOnInit() {
@@ -41,6 +49,67 @@ export class CourseContentComponent implements OnInit {
   }
 
   closePanel() { this.activePanel = null; this.panelError = ''; }
+
+  // ── Collaborators ────────────────────────────────────────
+
+  openCollaborators() {
+    this.activePanel = 'collaborators';
+    this.addCollaboratorEmail = '';
+    this.collaboratorError = '';
+    this.showTutorSuggestions = false;
+    this.loadingCollaborators = true;
+    this.api.getCourseCollaborators(this.course.id).subscribe({
+      next: (d) => { this.collaborators = d.collaborators; this.loadingCollaborators = false; },
+      error: () => { this.loadingCollaborators = false; },
+    });
+    this.api.getEligibleCollaborators(this.course.id).subscribe({
+      next: (d) => { this.eligibleTutors = d.tutors; },
+      error: () => { this.eligibleTutors = []; },
+    });
+  }
+
+  get filteredTutorSuggestions(): any[] {
+    const q = this.addCollaboratorEmail.trim().toLowerCase();
+    if (!q) return this.eligibleTutors;
+    return this.eligibleTutors.filter((t) =>
+      t.email?.toLowerCase().includes(q) || t.full_name?.toLowerCase().includes(q)
+    );
+  }
+
+  pickTutorSuggestion(t: any) {
+    this.addCollaboratorEmail = t.email;
+    this.showTutorSuggestions = false;
+  }
+
+  addCollaborator() {
+    if (!this.addCollaboratorEmail.trim() || this.addingCollaborator) return;
+    this.addingCollaborator = true;
+    this.collaboratorError = '';
+    this.showTutorSuggestions = false;
+    this.api.addCourseCollaborator(this.course.id, this.addCollaboratorEmail.trim()).subscribe({
+      next: (d) => {
+        this.collaborators.unshift(d.collaborator);
+        this.eligibleTutors = this.eligibleTutors.filter((t) => t.id !== d.collaborator.tutor_id);
+        this.addCollaboratorEmail = '';
+        this.addingCollaborator = false;
+      },
+      error: (err) => {
+        this.collaboratorError = err?.error?.message || 'Failed to grant access.';
+        this.addingCollaborator = false;
+      },
+    });
+  }
+
+  removeCollaborator(c: any) {
+    if (!confirm(`Remove ${c.tutor?.full_name || c.tutor?.email || 'this tutor'}'s access to this course?`)) return;
+    this.api.removeCourseCollaborator(this.course.id, c.tutor_id).subscribe({
+      next: () => {
+        this.collaborators = this.collaborators.filter((x) => x.tutor_id !== c.tutor_id);
+        if (c.tutor) this.eligibleTutors = [...this.eligibleTutors, c.tutor];
+      },
+      error: () => alert('Failed to remove access.'),
+    });
+  }
 
   // ── Modules ──────────────────────────────────────────────
 

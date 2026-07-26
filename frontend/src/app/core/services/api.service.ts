@@ -39,6 +39,23 @@ export class ApiService {
     return this.http.delete<void>(`${environment.apiUrl}/courses/${id}`);
   }
 
+  // Course collaborators — another tutor granted edit access to a course
+  getCourseCollaborators(courseId: string): Observable<{ collaborators: any[] }> {
+    return this.http.get<{ collaborators: any[] }>(`${environment.apiUrl}/courses/${courseId}/collaborators`);
+  }
+
+  getEligibleCollaborators(courseId: string): Observable<{ tutors: any[] }> {
+    return this.http.get<{ tutors: any[] }>(`${environment.apiUrl}/courses/${courseId}/collaborators/eligible`);
+  }
+
+  addCourseCollaborator(courseId: string, email: string): Observable<{ collaborator: any }> {
+    return this.http.post<{ collaborator: any }>(`${environment.apiUrl}/courses/${courseId}/collaborators`, { email });
+  }
+
+  removeCourseCollaborator(courseId: string, tutorId: string): Observable<void> {
+    return this.http.delete<void>(`${environment.apiUrl}/courses/${courseId}/collaborators/${tutorId}`);
+  }
+
   uploadCourseThumbnail(courseId: string, file: File): Observable<{ course: any; thumbnail_url: string }> {
     const fd = new FormData();
     fd.append('image', file);

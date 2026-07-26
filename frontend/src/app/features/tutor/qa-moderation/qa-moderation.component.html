@@ -77,7 +77,7 @@
 
       <!-- Action buttons -->
       <div class="qa-actions" *ngIf="activeReply !== q.id">
-        <button class="qa-btn qa-btn-reply" (click)="startReply(q.id, q.answer)">
+        <button class="qa-btn qa-btn-reply" *ngIf="canEditAnswer(q)" (click)="startReply(q.id, q.answer)">
           <app-icon [name]="q.answer ? 'edit' : 'message-circle'" [size]="14"></app-icon> {{ q.answer ? 'Edit Answer' : 'Quick Reply' }}
         </button>
         <button class="qa-btn qa-btn-dismiss" *ngIf="!q.answer && !q.dismissed_at"

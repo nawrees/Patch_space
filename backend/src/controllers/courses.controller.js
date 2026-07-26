@@ -37,12 +37,22 @@ export const listCourses = asyncHandler(async (req, res) => {
     .order('created_at', { ascending: false });
 
   // ?mine=true is what the "Manage Courses" screen uses — a tutor should
-  // only see (and only be offered edit/delete affordances for) courses they
-  // actually created, not every other tutor's published course, which
-  // courses_select RLS otherwise legitimately returns for catalog browsing.
-  // Admins manage everything, so the filter is skipped for them.
+  // only see courses they actually created OR have been granted
+  // collaborator access to, not every other tutor's published course,
+  // which courses_select RLS otherwise legitimately returns for catalog
+  // browsing. Admins manage everything, so the filter is skipped for them.
   if (req.query.mine === 'true' && req.profile?.role !== 'admin') {
-    query = query.eq('created_by', req.user.id);
+    const { data: collabRows, error: collabError } = await req.supabase
+      .from('course_collaborators')
+      .select('course_id')
+      .eq('tutor_id', req.user.id);
+
+    if (collabError) throw new ApiError(400, collabError.message);
+
+    const collabIds = (collabRows ?? []).map((r) => r.course_id);
+    query = collabIds.length
+      ? query.or(`created_by.eq.${req.user.id},id.in.(${collabIds.join(',')})`)
+      : query.eq('created_by', req.user.id);
   }
 
   const { data, error } = await query;

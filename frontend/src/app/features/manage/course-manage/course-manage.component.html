@@ -88,17 +88,18 @@
           <span class="badge" [ngClass]="course.is_published ? 'published' : 'draft'">
             {{ course.is_published ? 'Published' : 'Draft' }}
           </span>
+          <span class="badge collab" *ngIf="!isOwner(course)">Shared with you</span>
         </div>
         <h3>{{ course.title }}</h3>
         <p class="category">{{ course.category }}</p>
         <p class="description">{{ course.description }}</p>
       </div>
-      <div class="card-actions">
+      <div class="card-actions" [class.two-col]="!isOwner(course)">
         <a [routerLink]="['/manage/courses', course.id, 'content']" class="btn-action btn-content">
           Manage Content
         </a>
         <button class="btn-action btn-edit" (click)="openEdit(course)">Edit</button>
-        <button class="btn-action btn-delete" (click)="deleteCourse(course)">Delete</button>
+        <button class="btn-action btn-delete" *ngIf="isOwner(course)" (click)="deleteCourse(course)">Delete</button>
       </div>
     </div>
   </div>

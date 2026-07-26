@@ -1,4 +1,4 @@
-import rateLimit from 'express-rate-limit';
+import rateLimit, { ipKeyGenerator } from 'express-rate-limit';
 
 // Baseline abuse protection for every /api route — generous enough not to
 // bother a real user, tight enough to blunt scripted credential-stuffing/
@@ -19,5 +19,8 @@ export const flagSubmitLimiter = rateLimit({
   limit: 20,
   standardHeaders: true,
   legacyHeaders: false,
-  keyGenerator: (req) => req.user?.id || req.ip,
+  // req.ip can be an IPv6 address, which varies in textual representation
+  // for the same underlying address — ipKeyGenerator normalizes that so it
+  // can't be used to dodge the per-IP fallback bucket.
+  keyGenerator: (req) => req.user?.id || ipKeyGenerator(req.ip),
 });

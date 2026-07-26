@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { ApiService } from '../../../core/services/api.service';
+import { UserService } from '../../../core/services/user.service';
 
 const DIFFICULTIES = ['beginner', 'intermediate', 'advanced'];
 const CATEGORIES = [
@@ -32,7 +33,13 @@ export class CourseManageComponent implements OnInit {
 
   form = this.emptyForm();
 
-  constructor(private api: ApiService) {}
+  constructor(private api: ApiService, private user: UserService) {}
+
+  isOwner(course: any): boolean {
+    if (this.user.isAdmin()) return true;
+    const current = this.user.getCurrentUser();
+    return !!current && course.created_by === current.user.id;
+  }
 
   ngOnInit() { this.loadCourses(); }
 
