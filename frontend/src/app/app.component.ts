@@ -5,6 +5,7 @@ import { UserService } from './core/services/user.service';
 import { ThemeService } from './core/services/theme.service';
 import { ApiService } from './core/services/api.service';
 import { NotificationService } from './core/services/notification.service';
+import { SoundService } from './core/services/sound.service';
 import { NotificationBellComponent } from './shared/notification-bell/notification-bell.component';
 
 @Component({
@@ -19,7 +20,6 @@ export class AppComponent implements OnInit {
   isTutor = false;
   isAdmin = false;
   dropdownOpen = false;
-  soundEnabled = localStorage.getItem('sound-enabled') !== 'false';
   streak = 0;
   longestStreak = 0;
   streakActiveToday = false;
@@ -46,7 +46,12 @@ export class AppComponent implements OnInit {
     public theme: ThemeService,
     private api: ApiService,
     private notifSvc: NotificationService,
+    public sound: SoundService,
   ) {}
+
+  get soundEnabled(): boolean {
+    return this.sound.enabled;
+  }
 
   async ngOnInit() {
     // session$ emits twice on startup (getSession + onAuthStateChange INITIAL_SESSION).
@@ -164,8 +169,7 @@ export class AppComponent implements OnInit {
   }
 
   toggleSound() {
-    this.soundEnabled = !this.soundEnabled;
-    localStorage.setItem('sound-enabled', String(this.soundEnabled));
+    this.sound.toggle();
   }
 
   async onLogout() {

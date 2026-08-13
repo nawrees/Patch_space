@@ -3,6 +3,7 @@ import { BehaviorSubject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { AuthService } from './auth.service';
+import { SoundService } from './sound.service';
 
 @Injectable({ providedIn: 'root' })
 export class NotificationService implements OnDestroy {
@@ -12,7 +13,7 @@ export class NotificationService implements OnDestroy {
 
   private channel: any = null;
 
-  constructor(private api: ApiService, private auth: AuthService) {}
+  constructor(private api: ApiService, private auth: AuthService, private sound: SoundService) {}
 
   load() {
     this.api.getNotifications().subscribe({
@@ -28,6 +29,7 @@ export class NotificationService implements OnDestroy {
         { event: 'INSERT', schema: 'public', table: 'notifications', filter: `user_id=eq.${userId}` },
         (payload: any) => {
           this._notifications.next([payload.new, ...this._notifications.value]);
+          this.sound.playNotification();
         }
       )
       .subscribe();

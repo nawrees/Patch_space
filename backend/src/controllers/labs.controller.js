@@ -14,20 +14,15 @@ import {
   listLabContainerIds,
 } from '../services/docker.service.js';
 
-// Builds a per-session flag like "FLAG{COMMAND_INJECTION_193847...}": a
-// readable attack-name prefix (from the lab title) followed by a large
-// random decimal number carrying the same 128 bits of entropy as a raw
-// random hex string — readability without weakening how guessable the
-// flag is (submitFlag is also rate-limited — see flagSubmitLimiter — but the
-// entropy is kept high regardless, as defense in depth).
-function buildSessionFlag(labTitle) {
-  const attackSlug = (labTitle || 'LAB')
-    .toUpperCase()
-    .replace(/[^A-Z0-9]+/g, '_')
-    .replace(/^_+|_+$/g, '')
-    .slice(0, 24) || 'LAB';
-  const randomNumber = BigInt(`0x${crypto.randomBytes(16).toString('hex')}`).toString();
-  return `FLAG{${attackSlug}_${randomNumber}}`;
+// FLAG{<32 lowercase hex chars>} — 128 bits of entropy. Several of the lab
+// Docker images (idor-*, mass-assignment-*) hard-validate the flag against
+// exactly this pattern in their own init_db.py and refuse to start
+// otherwise; a "readable" attack-name-prefixed format was tried here
+// briefly but silently broke every session for those images (container
+// exits immediately, session goes straight to 'error') — confirmed by
+// running the images directly and reading their entrypoint/init scripts.
+function buildSessionFlag() {
+  return `FLAG{${crypto.randomBytes(16).toString('hex')}}`;
 }
 
 // Stops the container (if any) and marks a session expired. Shared by the
@@ -188,7 +183,7 @@ export const startLab = asyncHandler(async (req, res) => {
   if (labErr || !lab) throw new ApiError(404, 'Lab not found or access denied');
 
   // Per-session random flag: prevents students from sharing flags
-  const sessionFlag = buildSessionFlag(lab.title);
+  const sessionFlag = buildSessionFlag();
   const sessionFlagHash = crypto.createHash('sha256').update(sessionFlag).digest('hex');
 
   const expiresAt = new Date(Date.now() + lab.max_duration_minutes * 60 * 1000).toISOString();

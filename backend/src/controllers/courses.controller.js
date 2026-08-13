@@ -137,8 +137,12 @@ export const updateCourse = asyncHandler(async (req, res) => {
 
 export const deleteCourse = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const { error } = await req.supabase.from('courses').delete().eq('id', id);
+  // .select() so a delete silently blocked by RLS (e.g. a collaborator who
+  // only has edit rights, not delete) can be told apart from a real
+  // success — without it this would 204 either way with the row untouched.
+  const { data, error } = await req.supabase.from('courses').delete().eq('id', id).select('id');
   if (error) throw new ApiError(403, error.message);
+  if (!data?.length) throw new ApiError(403, 'Not allowed');
   res.status(204).send();
 });
 

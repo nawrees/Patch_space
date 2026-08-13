@@ -97,12 +97,14 @@ export const grantCollaborator = asyncHandler(async (req, res) => {
 export const revokeCollaborator = asyncHandler(async (req, res) => {
   const { courseId, tutorId } = req.params;
 
-  const { error } = await req.supabase
+  const { data, error } = await req.supabase
     .from('course_collaborators')
     .delete()
     .eq('course_id', courseId)
-    .eq('tutor_id', tutorId);
+    .eq('tutor_id', tutorId)
+    .select('course_id');
 
   if (error) throw new ApiError(403, error.message);
+  if (!data?.length) throw new ApiError(403, 'Not allowed');
   res.status(204).send();
 });

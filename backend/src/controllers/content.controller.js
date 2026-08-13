@@ -58,8 +58,11 @@ export const updateModule = asyncHandler(async (req, res) => {
 
 export const deleteModule = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const { error } = await req.supabase.from('modules').delete().eq('id', id);
+  // .select() so a delete silently blocked by RLS (0 rows, no error) can be
+  // told apart from a real success — without it this would 204 either way.
+  const { data, error } = await req.supabase.from('modules').delete().eq('id', id).select('id');
   if (error) throw new ApiError(403, error.message);
+  if (!data?.length) throw new ApiError(403, 'Not allowed');
   res.status(204).send();
 });
 
@@ -139,8 +142,9 @@ export const updateLesson = asyncHandler(async (req, res) => {
 
 export const deleteLesson = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const { error } = await req.supabase.from('lessons').delete().eq('id', id);
+  const { data, error } = await req.supabase.from('lessons').delete().eq('id', id).select('id');
   if (error) throw new ApiError(403, error.message);
+  if (!data?.length) throw new ApiError(403, 'Not allowed');
   res.status(204).send();
 });
 
@@ -190,7 +194,8 @@ export const upsertLab = asyncHandler(async (req, res) => {
 
 export const deleteLab = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  const { error } = await req.supabase.from('labs').delete().eq('id', id);
+  const { data, error } = await req.supabase.from('labs').delete().eq('id', id).select('id');
   if (error) throw new ApiError(403, error.message);
+  if (!data?.length) throw new ApiError(403, 'Not allowed');
   res.status(204).send();
 });

@@ -1,5 +1,7 @@
 <div class="public-page">
 
+  <app-node-background></app-node-background>
+
   <app-public-nav active="home"></app-public-nav>
 
   <section class="hero">
@@ -8,7 +10,7 @@
       <h1>{{ heroTitle }}</h1>
       <p class="hero-sub">{{ heroSubtitle }}</p>
       <div class="hero-actions" *ngIf="!isAuthenticated; else authedHero">
-        <a routerLink="/signup" class="btn-primary">Get started — it's free</a>
+        <a routerLink="/signup" class="btn-primary">Get started </a>
         <a routerLink="/login" class="btn-secondary">I have an account</a>
       </div>
       <ng-template #authedHero>
@@ -19,6 +21,8 @@
     </div>
 
     <div class="hero-panel panel-bracket card">
+      <div class="hero-grid" aria-hidden="true"></div>
+      <div class="hero-scan" aria-hidden="true"></div>
       <div class="term-bar">
         <span class="term-dot"></span><span class="term-dot"></span><span class="term-dot"></span>
       </div>
@@ -60,7 +64,7 @@
   </section>
 
   <footer class="home-footer">
-    <span>Patch Space — Cybersecurity Training, by Data do it</span>
+    <span>Patch Space : Cybersecurity Training, by Data do it</span>
     <div class="home-footer-links">
       <a routerLink="/about">About us</a>
       <a routerLink="/contact">Contact us</a>

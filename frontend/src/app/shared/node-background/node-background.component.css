@@ -1,0 +1,9 @@
+/* Fixed + negative z-index so it paints behind normal-flow page content
+   with no need to touch z-index on every section of the pages that use it. */
+.node-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  display: block;
+}

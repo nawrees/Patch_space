@@ -13,10 +13,10 @@ export class HomeComponent implements OnInit {
   // Defaults shown until (or if) the admin-editable settings load — keeps
   // the page from ever looking blank/broken on a slow or failed fetch.
   heroEyebrow = 'Cybersecurity training';
-  heroTitle = 'Learn to break things — safely.';
+  heroTitle = 'Learn to break things safely.';
   heroSubtitle = "Hands-on courses and real Docker-backed labs for people who'd rather exploit a vulnerability than just read about one.";
   ctaTitle = 'Ready to start your first lab?';
-  ctaBody = 'Create a free account — no credit card, just a terminal.';
+  ctaBody = 'Create an account and start learning today.';
 
   ngOnInit() {
     this.api.getSiteSettings().subscribe({

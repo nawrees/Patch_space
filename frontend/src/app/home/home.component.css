@@ -36,7 +36,55 @@
 .hero-panel {
   padding: 0;
   overflow: hidden;
+  position: relative;
+  /* .hero-grid/.hero-scan are real elements, not ::before/::after — this
+     panel already uses ::before/::after for its .panel-bracket corner
+     accents (global styles.css), and only one ::before/::after can exist
+     per element: layering another set of rules onto the SAME pseudo-element
+     doesn't "win" by specificity the way you'd expect, it merges property
+     by property, so e.g. an explicit width:14px from .panel-bracket::before
+     survives alongside this rule's inset:0 and silently shrinks the whole
+     effect down to a corner-sized sliver. Real elements sidestep that. */
 }
+
+/* Faint circuit-grid, faded out toward the center via a mask so it reads as
+   texture near the edges/corners without ever fighting the terminal text
+   that sits in the middle. */
+.hero-grid {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image:
+    repeating-linear-gradient(0deg, rgba(var(--accent-rgb),.28) 0 1.5px, transparent 1.5px 48px),
+    repeating-linear-gradient(90deg, rgba(var(--accent-rgb),.28) 0 1.5px, transparent 1.5px 48px);
+  -webkit-mask-image: radial-gradient(ellipse at center, transparent 20%, black 75%);
+  mask-image: radial-gradient(ellipse at center, transparent 20%, black 75%);
+  pointer-events: none;
+}
+
+/* Scanning sweep — a crisp leading edge with a soft trailing glow underneath,
+   closer to a real CRT/oscilloscope pass than a flat band. Sits above the
+   grid and the terminal text. Killed by the site-wide prefers-reduced-motion
+   rule in styles.css (animation-duration: 0.001ms). */
+.hero-scan {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 130px;
+  top: -130px;
+  z-index: 2;
+  background:
+    linear-gradient(to bottom, rgba(var(--accent-rgb),0) 0%, rgba(var(--accent-rgb),.45) 48%, rgba(var(--accent-rgb),0) 52%),
+    linear-gradient(to bottom, transparent, rgba(var(--accent-rgb),.16) 50%, transparent);
+  animation: hero-panel-scan 6s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes hero-panel-scan {
+  to { transform: translateY(430px); }
+}
+
+.term-bar, .term-body { position: relative; z-index: 1; }
 .term-bar {
   display: flex;
   gap: 6px;
