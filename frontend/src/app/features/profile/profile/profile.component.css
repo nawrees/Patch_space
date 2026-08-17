@@ -26,6 +26,36 @@
 .pf-bio { font-size: 13px; color: var(--text-2); line-height: 1.6; margin-bottom: 20px; }
 .pf-bio-empty { color: var(--text-3); font-style: italic; }
 
+.pf-badges { margin-bottom: 20px; }
+.pf-badges-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+.pf-badges-title { font-size: 12px; font-weight: 700; color: var(--text-1); text-transform: uppercase; letter-spacing: .04em; }
+.pf-badges-link { font-size: 12px; color: var(--accent); text-decoration: none; }
+.pf-badges-link:hover { text-decoration: underline; }
+/* Featured — the highest-tier earned badge, called out bigger than the rest */
+.pf-badge-featured { display: flex; flex-direction: column; align-items: center; gap: 6px; position: relative; margin-bottom: 14px; cursor: default; }
+.pf-badge-glow {
+  position: absolute; top: -10px; width: 84px; height: 84px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(var(--accent-rgb),.30), transparent 70%);
+}
+.pf-badge-featured-chip {
+  position: relative; width: 64px; height: 64px; border-radius: 50%;
+  background: var(--role-student); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 0 3px var(--bg-card), 0 0 0 4px rgba(var(--accent-rgb),.45);
+}
+.pf-badge-featured-label { font-size: 12.5px; font-weight: 600; color: var(--text-1); }
+.pf-badge-featured-sub { font-size: 11px; color: var(--text-3); font-family: var(--font-mono); }
+
+.pf-badges-older-label { display: block; font-size: 10.5px; color: var(--text-3); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 8px; }
+.pf-badges-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.pf-badge-chip {
+  display: flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px; border-radius: 50%;
+  background: var(--bg-hover); border: 1px solid var(--border); color: var(--text-2);
+  cursor: default;
+}
+.pf-badges-empty { font-size: 12.5px; color: var(--text-3); font-style: italic; margin: 0; }
+
 .pf-edit-btn { display: block; text-align: center; padding: 9px 0; background: var(--bg-hover); border: 1px solid var(--border); border-radius: var(--radius-md); color: var(--text-1); font-size: 13px; font-weight: 600; text-decoration: none; transition: border-color .2s; }
 .pf-edit-btn:hover { border-color: var(--accent); color: var(--accent); }
 

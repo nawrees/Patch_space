@@ -210,6 +210,12 @@ export class ApiService {
     return this.http.put<{ profile: any }>(`${environment.apiUrl}/auth/profile`, data);
   }
 
+  uploadAvatar(file: File): Observable<{ profile: any }> {
+    const fd = new FormData();
+    fd.append('avatar', file);
+    return this.http.post<{ profile: any }>(`${environment.apiUrl}/auth/avatar`, fd);
+  }
+
   rateLab(labId: string, rating: number): Observable<{ avgRating: number; totalRatings: number; userRating: number }> {
     return this.http.post<{ avgRating: number; totalRatings: number; userRating: number }>(
       `${environment.apiUrl}/labs/${labId}/rate`, { rating }

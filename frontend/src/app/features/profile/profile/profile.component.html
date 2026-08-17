@@ -26,6 +26,31 @@
       <p class="pf-bio" *ngIf="profile?.bio">{{ profile.bio }}</p>
       <p class="pf-bio pf-bio-empty" *ngIf="!profile?.bio">No bio yet.</p>
 
+      <div class="pf-badges" *ngIf="!isTutor">
+        <div class="pf-badges-head">
+          <span class="pf-badges-title">Badges</span>
+          <a routerLink="/badges" class="pf-badges-link">View all →</a>
+        </div>
+        <ng-container *ngIf="featuredBadge as fb">
+          <div class="pf-badge-featured" [title]="fb.title + ' — ' + fb.description">
+            <div class="pf-badge-glow"></div>
+            <div class="pf-badge-featured-chip"><app-icon [name]="fb.icon" [size]="28"></app-icon></div>
+            <span class="pf-badge-featured-label">{{ fb.title }}</span>
+            <span class="pf-badge-featured-sub">{{ fb.required }}-day streak — your latest</span>
+          </div>
+
+          <ng-container *ngIf="olderBadges.length > 0">
+            <span class="pf-badges-older-label">Earlier badges</span>
+            <div class="pf-badges-row">
+              <span class="pf-badge-chip" *ngFor="let b of olderBadges" [title]="b.title + ' — ' + b.description">
+                <app-icon [name]="b.icon" [size]="14"></app-icon>
+              </span>
+            </div>
+          </ng-container>
+        </ng-container>
+        <p class="pf-badges-empty" *ngIf="!featuredBadge">No badges yet — build a streak to earn one.</p>
+      </div>
+
       <a routerLink="/account" class="pf-edit-btn"><app-icon name="edit" [size]="15"></app-icon> Edit Profile</a>
     </aside>
 

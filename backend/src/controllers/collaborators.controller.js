@@ -2,6 +2,15 @@ import { asyncHandler } from '../middleware/asyncHandler.js';
 import { ApiError } from '../utils/ApiError.js';
 import { getAdminClient } from '../config/supabaseClient.js';
 
+// ILIKE treats %, _, and \ as pattern metacharacters — without escaping them,
+// a caller can pass a wildcard pattern ("%taboubi%") instead of a real email
+// and match (and grant access to) an account without ever knowing its exact
+// address. Escaping makes the match behave like a case-insensitive equality
+// check again, not a pattern search.
+function escapeLikePattern(str) {
+  return str.replace(/[\\%_]/g, (ch) => `\\${ch}`);
+}
+
 // A tutor sees only their own grant; the course owner/admin sees every
 // grant for their course — course_collaborators_select RLS draws that line,
 // no extra filtering needed here.
@@ -62,6 +71,22 @@ export const grantCollaborator = asyncHandler(async (req, res) => {
   const { email } = req.body;
   if (!email?.trim()) throw new ApiError(400, 'email is required');
 
+  // Check ownership BEFORE touching the admin client for the email lookup —
+  // otherwise any tutor/admin could probe arbitrary emails against
+  // arbitrary (even nonexistent) courseIds and use the 403-vs-404 response
+  // difference as a tutor-account-enumeration oracle, without ever owning
+  // the course in question.
+  const { data: course, error: courseError } = await req.supabase
+    .from('courses')
+    .select('id, created_by')
+    .eq('id', courseId)
+    .single();
+
+  if (courseError || !course) throw new ApiError(404, 'Course not found or no access');
+  if (course.created_by !== req.user.id && req.profile.role !== 'admin') {
+    throw new ApiError(403, 'Only this course\'s owner (or an admin) can manage its access');
+  }
+
   // Resolving "which account does this email belong to" has to bypass RLS
   // (profiles_select doesn't let one tutor look up another by email) — the
   // actual authorization happens next, on the insert itself, which uses
@@ -70,7 +95,7 @@ export const grantCollaborator = asyncHandler(async (req, res) => {
   const { data: target, error: lookupError } = await getAdminClient()
     .from('profiles')
     .select('id, role')
-    .ilike('email', email.trim())
+    .ilike('email', escapeLikePattern(email.trim()))
     .maybeSingle();
 
   if (lookupError) throw new ApiError(400, lookupError.message);

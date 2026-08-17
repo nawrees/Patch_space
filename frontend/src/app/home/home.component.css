@@ -102,6 +102,23 @@
   color: var(--text-2);
   white-space: pre-wrap;
   word-break: break-word;
+  /* Content clears and retypes on a loop — a fixed min-height keeps the
+     panel (and the page layout around it) from resizing each cycle. */
+  min-height: 208px;
 }
 .term-prompt { color: var(--accent); font-weight: 600; }
 .term-ok { color: var(--sig-low-fg); }
+
+.term-line { animation: term-line-in .25s ease both; }
+@keyframes term-line-in { from { opacity: 0; } to { opacity: 1; } }
+
+.term-cursor {
+  display: inline-block;
+  width: 7px;
+  height: 14px;
+  margin-left: 1px;
+  background: var(--accent);
+  vertical-align: -2px;
+  animation: term-cursor-blink 1s step-end infinite;
+}
+@keyframes term-cursor-blink { 50% { opacity: 0; } }

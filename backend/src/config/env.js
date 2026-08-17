@@ -19,6 +19,7 @@ export const env = {
   CORS_ORIGIN: process.env.CORS_ORIGIN || 'http://localhost:4200',
   LESSON_RESOURCES_BUCKET: process.env.LESSON_RESOURCES_BUCKET || 'lesson-resources',
   COURSE_THUMBNAILS_BUCKET: process.env.COURSE_THUMBNAILS_BUCKET || 'course-thumbnails',
+  AVATARS_BUCKET: process.env.AVATARS_BUCKET || 'avatars',
   // Docker lab orchestration
   LAB_HOST: process.env.LAB_HOST || 'localhost',
   DOCKER_SOCKET: process.env.DOCKER_SOCKET || null,

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../../../core/services/api.service';
 
-interface Badge {
+export interface Badge {
   id: string;
   icon: string;
   title: string;
@@ -9,7 +9,7 @@ interface Badge {
   required: number;
 }
 
-const BADGES: Badge[] = [
+export const BADGES: Badge[] = [
   { id: 'first-step',   icon: 'sprout', title: 'First Step',   description: 'Maintained a 1-day streak',    required: 1   },
   { id: 'on-fire',      icon: 'flame',  title: 'On Fire',       description: 'Maintained a 3-day streak',    required: 3   },
   { id: 'momentum',     icon: 'zap',    title: 'Momentum',      description: 'Maintained a 7-day streak',    required: 7   },

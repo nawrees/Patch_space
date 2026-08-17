@@ -26,12 +26,7 @@
       <div class="term-bar">
         <span class="term-dot"></span><span class="term-dot"></span><span class="term-dot"></span>
       </div>
-      <pre class="term-body"><span class="term-prompt">$</span> docker start lab-cmd-injection-01
-<span class="term-ok">✓ container running — access granted</span>
-<span class="term-prompt">$</span> curl target/api?cmd=whoami
-<span class="term-ok">www-data</span>
-<span class="term-prompt">$</span> submit flag
-<span class="pill pill-low" style="margin-top:2px">FLAG CAPTURED</span></pre>
+      <pre class="term-body"><div class="term-line" *ngFor="let l of termLines"><ng-container [ngSwitch]="l.kind"><ng-container *ngSwitchCase="'cmd'"><span class="term-prompt">$</span> {{ l.text }}</ng-container><span *ngSwitchCase="'result'" [ngClass]="l.cls">{{ l.text }}</span><span *ngSwitchCase="'pill'" class="pill pill-low" style="margin-top:2px">{{ l.text }}</span></ng-container></div><div class="term-line" *ngIf="currentTypingText !== null"><span class="term-prompt">$</span> {{ currentTypingText }}<span class="term-cursor"></span></div></pre>
     </div>
   </section>
 

@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
 import { ApiService } from '../../../core/services/api.service';
 import { UserService } from '../../../core/services/user.service';
 
@@ -14,6 +15,10 @@ export class AccountComponent implements OnInit {
   saved = false;
   errorMsg = '';
   imgError = false;
+
+  pendingAvatarFile: File | null = null;
+  avatarPreview: string | null = null;
+  uploadingAvatar = false;
 
   constructor(private api: ApiService, private userSvc: UserService) {}
 
@@ -35,26 +40,55 @@ export class AccountComponent implements OnInit {
       ?? '?';
   }
 
-  save() {
+  onAvatarFileSelected(event: Event) {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+    this.pendingAvatarFile = file;
+    this.imgError = false;
+    const reader = new FileReader();
+    reader.onload = (e) => { this.avatarPreview = e.target?.result as string; };
+    reader.readAsDataURL(file);
+    input.value = '';
+  }
+
+  removeAvatarSelection() {
+    this.pendingAvatarFile = null;
+    this.avatarPreview = null;
+  }
+
+  async save() {
     this.saving = true;
     this.saved = false;
     this.errorMsg = '';
 
-    this.api.updateProfile({
-      full_name:  this.form.full_name.trim() || undefined,
-      bio:        this.form.bio.trim()       || undefined,
-      avatar_url: this.form.avatar_url.trim() || undefined,
-    }).subscribe({
-      next: r => {
-        this.userSvc.patchProfile(r.profile);
-        this.saved = true;
-        this.saving = false;
-        setTimeout(() => this.saved = false, 3000);
-      },
-      error: err => {
-        this.errorMsg = err?.error?.error || 'Failed to save. Please try again.';
-        this.saving = false;
-      },
-    });
+    try {
+      // A newly-picked photo takes priority over whatever's in the URL
+      // field — upload it first so the profile update below carries the
+      // real storage URL, not a stale one.
+      if (this.pendingAvatarFile) {
+        this.uploadingAvatar = true;
+        const uploaded = await firstValueFrom(this.api.uploadAvatar(this.pendingAvatarFile));
+        this.uploadingAvatar = false;
+        this.userSvc.patchProfile(uploaded.profile);
+        this.form.avatar_url = uploaded.profile.avatar_url ?? '';
+        this.pendingAvatarFile = null;
+        this.avatarPreview = null;
+      }
+
+      const r = await firstValueFrom(this.api.updateProfile({
+        full_name:  this.form.full_name.trim() || undefined,
+        bio:        this.form.bio.trim()       || undefined,
+        avatar_url: this.form.avatar_url.trim() || undefined,
+      }));
+      this.userSvc.patchProfile(r.profile);
+      this.saved = true;
+      setTimeout(() => this.saved = false, 3000);
+    } catch (err: any) {
+      this.uploadingAvatar = false;
+      this.errorMsg = err?.error?.error || err?.error?.message || 'Failed to save. Please try again.';
+    } finally {
+      this.saving = false;
+    }
   }
 }

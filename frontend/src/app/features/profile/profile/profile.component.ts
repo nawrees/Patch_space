@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { UserService } from '../../../core/services/user.service';
 import { ApiService } from '../../../core/services/api.service';
+import { BADGES, Badge } from '../badges/badges.component';
 
 @Component({
   selector: 'app-profile',
@@ -16,6 +17,18 @@ export class ProfileComponent implements OnInit {
   isTutor = false;
   myStudents: any[] = [];
   tutorStats = { studentsCount: 0, coursesCreated: 0, questionsAnswered: 0, pendingQuestions: 0 };
+
+  earnedBadges: Badge[] = [];
+
+  // BADGES is ordered ascending by required streak length, and the filter
+  // in loadBadges() preserves that order, so the last earned badge is
+  // always the highest tier reached — the one worth featuring.
+  get featuredBadge(): Badge | null {
+    return this.earnedBadges.length ? this.earnedBadges[this.earnedBadges.length - 1] : null;
+  }
+  get olderBadges(): Badge[] {
+    return this.earnedBadges.slice(0, -1);
+  }
 
   constructor(private userSvc: UserService, private api: ApiService) {}
 
@@ -33,7 +46,19 @@ export class ProfileComponent implements OnInit {
       this.loadTutorStats();
     } else {
       this.loadStats();
+      this.loadBadges();
     }
+  }
+
+  // Same earned-badge rule as the full Badges page (badges.component.ts) —
+  // streak-based, so only relevant outside the tutor view.
+  private loadBadges() {
+    this.api.getStreak().subscribe({
+      next: (s) => {
+        this.earnedBadges = BADGES.filter((b) => s.longest_streak >= b.required);
+      },
+      error: () => {},
+    });
   }
 
   get initial(): string {
