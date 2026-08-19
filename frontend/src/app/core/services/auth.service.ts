@@ -40,11 +40,14 @@ export class AuthService {
     this.recoveryMode = false;
   }
 
-  async signUp(email: string, password: string, fullName: string) {
+  async signUp(email: string, password: string, firstName: string, lastName: string, phone?: string, address?: string) {
+    // first_name/last_name sent separately (not pre-joined) so the
+    // handle_new_user() DB trigger can require each one individually,
+    // not just require the combined string to be non-empty.
     const { data, error } = await this.supabase.auth.signUp({
       email,
       password,
-      options: { data: { full_name: fullName } },
+      options: { data: { first_name: firstName, last_name: lastName, phone: phone || null, address: address || null } },
     });
     if (error) throw error;
     return data;

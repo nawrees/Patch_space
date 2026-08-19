@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { ApiService } from '../../../core/services/api.service';
 import { UserService } from '../../../core/services/user.service';
+import { isValidTunisianPhone } from '../../../core/utils/phone';
 
 @Component({
   selector: 'app-account',
@@ -10,11 +11,12 @@ import { UserService } from '../../../core/services/user.service';
 })
 export class AccountComponent implements OnInit {
   profile: any = null;
-  form = { full_name: '', bio: '', avatar_url: '' };
+  form = { firstName: '', lastName: '', bio: '', avatar_url: '', phone: '', address: '' };
   saving = false;
   saved = false;
   errorMsg = '';
   imgError = false;
+  touched = false;
 
   pendingAvatarFile: File | null = null;
   avatarPreview: string | null = null;
@@ -26,18 +28,32 @@ export class AccountComponent implements OnInit {
     this.userSvc.currentUser$.subscribe(cu => {
       if (!cu) return;
       this.profile = cu.profile;
+      // full_name is stored as one field (same as signup builds it from
+      // first_name + last_name) — split it back apart for the two inputs.
+      const [firstName = '', ...rest] = (cu.profile.full_name ?? '').trim().split(/\s+/);
       this.form = {
-        full_name: cu.profile.full_name ?? '',
+        firstName,
+        lastName: rest.join(' '),
         bio:       cu.profile.bio       ?? '',
         avatar_url: cu.profile.avatar_url ?? '',
+        phone:     cu.profile.phone     ?? '',
+        address:   cu.profile.address   ?? '',
       };
     });
   }
 
   get initial(): string {
-    return this.form.full_name?.trim()[0]?.toUpperCase()
+    return this.form.firstName?.trim()[0]?.toUpperCase()
       ?? this.profile?.full_name?.trim()[0]?.toUpperCase()
       ?? '?';
+  }
+
+  get phoneValid(): boolean {
+    return isValidTunisianPhone(this.form.phone);
+  }
+
+  get formValid(): boolean {
+    return !!this.form.firstName.trim() && !!this.form.lastName.trim() && this.phoneValid;
   }
 
   onAvatarFileSelected(event: Event) {
@@ -58,6 +74,9 @@ export class AccountComponent implements OnInit {
   }
 
   async save() {
+    this.touched = true;
+    if (!this.formValid) return;
+
     this.saving = true;
     this.saved = false;
     this.errorMsg = '';
@@ -76,10 +95,13 @@ export class AccountComponent implements OnInit {
         this.avatarPreview = null;
       }
 
+      const fullName = `${this.form.firstName.trim()} ${this.form.lastName.trim()}`.trim();
       const r = await firstValueFrom(this.api.updateProfile({
-        full_name:  this.form.full_name.trim() || undefined,
+        full_name:  fullName,
         bio:        this.form.bio.trim()       || undefined,
         avatar_url: this.form.avatar_url.trim() || undefined,
+        phone:      this.form.phone.trim(),
+        address:    this.form.address.trim()   || undefined,
       }));
       this.userSvc.patchProfile(r.profile);
       this.saved = true;

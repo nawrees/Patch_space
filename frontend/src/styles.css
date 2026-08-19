@@ -314,6 +314,10 @@ textarea:focus-visible, select:focus-visible, [tabindex]:focus-visible {
   min-width: 0;
   max-width: 280px;
   padding: 22px 20px;
+  transition: box-shadow .2s ease;
+}
+.feature-card:hover {
+  box-shadow: 0 0 0 1px var(--accent), 0 8px 28px -6px rgba(var(--accent-rgb),.5);
 }
 @media (max-width: 560px) { .feature-card { flex-basis: 100%; max-width: 360px; } }
 .feature-icon {

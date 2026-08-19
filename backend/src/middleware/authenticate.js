@@ -10,7 +10,7 @@ import { asyncHandler } from './asyncHandler.js';
  * On success, attaches:
  *   req.supabase -> RLS-scoped client (acts AS this user)
  *   req.user     -> { id, email, ... } from Supabase Auth
- *   req.profile  -> { id, email, full_name, role, bio, avatar_url, created_at } from public.profiles
+ *   req.profile  -> { id, email, full_name, role, bio, avatar_url, phone, address, created_at } from public.profiles
  */
 export const authenticate = asyncHandler(async (req, res, next) => {
   const header = req.headers.authorization || '';
@@ -33,7 +33,7 @@ export const authenticate = asyncHandler(async (req, res, next) => {
   const userClient = getUserClient(token);
   const { data: profile, error: profileError } = await userClient
     .from('profiles')
-    .select('id, email, full_name, role, bio, avatar_url, created_at')
+    .select('id, email, full_name, role, bio, avatar_url, phone, address, created_at')
     .eq('id', authData.user.id)
     .single();
 

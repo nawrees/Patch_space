@@ -6,6 +6,15 @@ import { ApiError } from '../utils/ApiError.js';
 import { env } from '../config/env.js';
 
 const ALLOWED_AVATAR_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+
+// Tunisian numbers: 8 digits, optionally prefixed with +216 — same rule as
+// the frontend (core/utils/phone.ts) and the DB trigger
+// (031_validate_tunisian_phone.sql), kept in sync across all three.
+function isValidTunisianPhone(phone) {
+  const digits = phone.replace(/\D/g, '');
+  const local = digits.startsWith('216') && digits.length === 11 ? digits.slice(3) : digits;
+  return local.length === 8;
+}
 const EXTENSION_BY_MIME_TYPE = {
   'image/jpeg': 'jpg',
   'image/png': 'png',
@@ -44,12 +53,26 @@ export const getMe = (req, res) => {
 };
 
 export const updateProfile = asyncHandler(async (req, res) => {
-  const { full_name, bio, avatar_url } = req.body;
+  const { full_name, bio, avatar_url, phone, address } = req.body;
 
   const updates = {};
-  if (full_name !== undefined) updates.full_name = full_name?.trim() || null;
+  // full_name and phone are required at signup (see the handle_new_user DB
+  // trigger) — enforce the same rule here so an edit can't blank either one
+  // back out again. bio/avatar_url/address stay optional.
+  if (full_name !== undefined) {
+    const trimmed = full_name?.trim();
+    if (!trimmed) throw new ApiError(400, 'Full name is required');
+    updates.full_name = trimmed;
+  }
+  if (phone !== undefined) {
+    const trimmed = phone?.trim();
+    if (!trimmed) throw new ApiError(400, 'Phone number is required');
+    if (!isValidTunisianPhone(trimmed)) throw new ApiError(400, 'Enter a valid Tunisian phone number (8 digits, optionally with +216)');
+    updates.phone = trimmed;
+  }
   if (bio       !== undefined) updates.bio       = bio?.trim()       || null;
   if (avatar_url !== undefined) updates.avatar_url = avatar_url?.trim() || null;
+  if (address   !== undefined) updates.address   = address?.trim()   || null;
 
   if (Object.keys(updates).length === 0) throw new ApiError(400, 'No fields to update');
 

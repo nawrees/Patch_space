@@ -32,9 +32,32 @@
       <div class="ac-section">
         <h3 class="ac-section-title">Personal Information</h3>
 
+        <div class="ac-form-row">
+          <div class="ac-form-group">
+            <label>First Name</label>
+            <input type="text" [(ngModel)]="form.firstName" placeholder="John" maxlength="40" />
+          </div>
+          <div class="ac-form-group">
+            <label>Last Name</label>
+            <input type="text" [(ngModel)]="form.lastName" placeholder="Doe" maxlength="40" />
+          </div>
+        </div>
+        <p class="ac-field-error" *ngIf="touched && (!form.firstName.trim() || !form.lastName.trim())">
+          First and last name are both required.
+        </p>
+
         <div class="ac-form-group">
-          <label>Full Name</label>
-          <input type="text" [(ngModel)]="form.full_name" placeholder="Your full name" maxlength="80" />
+          <label>Phone Number</label>
+          <input type="tel" [(ngModel)]="form.phone" placeholder="+216 12 345 678" />
+          <p class="ac-field-error" *ngIf="touched && !form.phone.trim()">Phone number is required.</p>
+          <p class="ac-field-error" *ngIf="touched && form.phone.trim() && !phoneValid">
+            Enter a valid Tunisian number (8 digits, optionally with +216).
+          </p>
+        </div>
+
+        <div class="ac-form-group">
+          <label>Address</label>
+          <input type="text" [(ngModel)]="form.address" placeholder="Street, city, country" />
         </div>
 
         <div class="ac-form-group">

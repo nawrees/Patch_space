@@ -206,7 +206,7 @@ export class ApiService {
     return this.http.delete<{ saved: boolean }>(`${environment.apiUrl}/saved/${courseId}`);
   }
 
-  updateProfile(data: { full_name?: string; bio?: string; avatar_url?: string }): Observable<{ profile: any }> {
+  updateProfile(data: { full_name?: string; bio?: string; avatar_url?: string; phone?: string; address?: string }): Observable<{ profile: any }> {
     return this.http.put<{ profile: any }>(`${environment.apiUrl}/auth/profile`, data);
   }
 

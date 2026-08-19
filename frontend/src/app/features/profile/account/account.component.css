@@ -41,6 +41,10 @@
 .ac-form-group:last-child { margin-bottom: 0; }
 label { font-size: 13px; font-weight: 600; color: var(--text-2); }
 
+.ac-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 6px; }
+.ac-form-row .ac-form-group { min-width: 0; margin-bottom: 0; }
+.ac-field-error { font-size: 12px; color: var(--sig-critical-fg); margin: 0 0 18px; }
+
 input, textarea {
   padding: 10px 12px;
   background: var(--bg-input);

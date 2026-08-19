@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { isValidTunisianPhone } from '../../../core/utils/phone';
 
 @Component({
   selector: 'app-signup',
@@ -8,12 +9,18 @@ import { AuthService } from '../../../core/services/auth.service';
   styleUrls: ['./signup.component.css'],
 })
 export class SignupComponent {
-  fullName = '';
+  firstName = '';
+  lastName = '';
   email = '';
+  phone = '';
+  address = '';
   password = '';
+  confirmPassword = '';
   loading = false;
   error = '';
   passwordTouched = false;
+  confirmTouched = false;
+  phoneTouched = false;
 
   constructor(private auth: AuthService, private router: Router) {}
 
@@ -32,6 +39,14 @@ export class SignupComponent {
     return Object.values(this.pwChecks).every(Boolean);
   }
 
+  get passwordsMatch(): boolean {
+    return this.password.length > 0 && this.password === this.confirmPassword;
+  }
+
+  get phoneValid(): boolean {
+    return isValidTunisianPhone(this.phone);
+  }
+
   get strengthLevel(): number {
     return Object.values(this.pwChecks).filter(Boolean).length; // 0–4
   }
@@ -48,13 +63,15 @@ export class SignupComponent {
 
   async onSignUp() {
     this.passwordTouched = true;
-    if (!this.passwordValid) return;
+    this.confirmTouched = true;
+    this.phoneTouched = true;
+    if (!this.passwordValid || !this.passwordsMatch || !this.phoneValid) return;
 
     this.loading = true;
     this.error = '';
 
     try {
-      await this.auth.signUp(this.email, this.password, this.fullName);
+      await this.auth.signUp(this.email, this.password, this.firstName.trim(), this.lastName.trim(), this.phone.trim(), this.address.trim());
       this.router.navigate(['/login'], {
         queryParams: { message: 'Check your email to confirm your account' },
       });

@@ -10,6 +10,8 @@ export interface UserProfile {
   role: 'student' | 'tutor' | 'admin';
   bio: string | null;
   avatar_url: string | null;
+  phone: string | null;
+  address: string | null;
   created_at: string;
 }
 
