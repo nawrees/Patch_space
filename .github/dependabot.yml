@@ -1,0 +1,27 @@
+version: 2
+updates:
+  # Minor/patch bumps are grouped into one weekly PR per ecosystem to avoid
+  # PR spam across ~1000 frontend + ~275 backend packages. Major bumps (more
+  # likely to be breaking) still get their own individual PR for visibility.
+  - package-ecosystem: "npm"
+    directory: "/frontend"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    groups:
+      minor-and-patch:
+        update-types: ["minor", "patch"]
+
+  - package-ecosystem: "npm"
+    directory: "/backend"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    groups:
+      minor-and-patch:
+        update-types: ["minor", "patch"]
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
