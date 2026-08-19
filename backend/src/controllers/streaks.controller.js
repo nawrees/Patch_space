@@ -1,5 +1,4 @@
 import { asyncHandler } from '../middleware/asyncHandler.js';
-import { ApiError } from '../utils/ApiError.js';
 import { getAdminClient } from '../config/supabaseClient.js';
 
 const todayStr  = () => new Date().toISOString().split('T')[0];

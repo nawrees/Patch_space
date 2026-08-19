@@ -15,7 +15,7 @@ export class authGuard {
   }
 }
 
-export const authGuardFn: CanActivateFn = (route, state) => {
+export const authGuardFn: CanActivateFn = (_route, _state) => {
   const auth = new AuthService();
   const router = new Router();
   return auth.isAuthenticated() ? true : router.createUrlTree(['/login']);

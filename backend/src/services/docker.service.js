@@ -124,7 +124,7 @@ export async function startContainer({ dockerImage, cpuLimit, memoryLimitMb, ser
     // entrypoint, missing required env var, etc.) can vanish before we get
     // to inspect it — surface that plainly instead of a raw Docker 404.
     if (err.statusCode === 404) {
-      throw new Error(`Container for image "${dockerImage}" exited immediately after start and was auto-removed — check the image's entrypoint requirements`);
+      throw new Error(`Container for image "${dockerImage}" exited immediately after start and was auto-removed — check the image's entrypoint requirements`, { cause: err });
     }
     throw err;
   }

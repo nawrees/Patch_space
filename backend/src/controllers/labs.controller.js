@@ -220,7 +220,7 @@ export const startLab = asyncHandler(async (req, res) => {
 
   // Background: pull image + start container, then update session to 'running'
   ;(async () => {
-    let containerId = null;
+    let containerId;
     try {
       await pullImage(lab.docker_image);
 

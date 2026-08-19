@@ -7,9 +7,9 @@
     "start": "ng serve --open",
     "build": "ng build",
     "test": "ng test",
-    "lint": "ng lint"
+    "lint": "ng lint",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
   },
-  
   "dependencies": {
     "@angular/animations": "^18.0.0",
     "@angular/common": "^18.0.0",
@@ -29,6 +29,9 @@
     "@angular/cli": "^18.0.0",
     "@angular/compiler-cli": "^18.0.0",
     "@types/node": "^20.11.0",
-    "typescript": "~5.4.0"
+    "angular-eslint": "21.0.1",
+    "eslint": "^9.39.1",
+    "typescript": "~5.4.0",
+    "typescript-eslint": "8.46.4"
   }
 }
