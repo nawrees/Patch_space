@@ -31,6 +31,13 @@ begin
     raise exception 'A phone number is required to sign up.';
   end if;
 
+  -- Reject stray characters (letters, symbols) up front — otherwise
+  -- something like "21025126hh" would have its letters silently stripped
+  -- by regexp_replace above and pass as a clean 8-digit number.
+  if phone_raw !~ '^\+?[0-9\s-]+$' then
+    raise exception 'Enter a valid Tunisian phone number (8 digits, optionally with +216).';
+  end if;
+
   if length(phone_local) <> 8 then
     raise exception 'Enter a valid Tunisian phone number (8 digits, optionally with +216).';
   end if;

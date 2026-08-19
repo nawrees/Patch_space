@@ -11,9 +11,15 @@ const ALLOWED_AVATAR_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gi
 // the frontend (core/utils/phone.ts) and the DB trigger
 // (031_validate_tunisian_phone.sql), kept in sync across all three.
 function isValidTunisianPhone(phone) {
-  const digits = phone.replace(/\D/g, '');
+  const trimmed = phone.trim();
+  // Reject stray characters (letters, symbols) up front — otherwise
+  // something like "21025126hh" would have its letters silently stripped
+  // by the digit-count check below and pass as a clean 8-digit number.
+  if (!/^\+?[\d\s-]+$/.test(trimmed)) return false;
+
+  const digits = trimmed.replace(/[\s-]/g, '').replace(/^\+/, '');
   const local = digits.startsWith('216') && digits.length === 11 ? digits.slice(3) : digits;
-  return local.length === 8;
+  return /^\d{8}$/.test(local);
 }
 const EXTENSION_BY_MIME_TYPE = {
   'image/jpeg': 'jpg',
