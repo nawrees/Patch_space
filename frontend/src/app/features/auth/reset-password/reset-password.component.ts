@@ -14,6 +14,8 @@ export class ResetPasswordComponent {
   error = '';
   success = false;
   passwordTouched = false;
+  showPassword = false;
+  showConfirmPassword = false;
 
   constructor(private auth: AuthService, private router: Router) {}
 
@@ -46,6 +48,14 @@ export class ResetPasswordComponent {
 
   get strengthClass(): string {
     return this.newPassword ? ['', 'pw-weak', 'pw-fair', 'pw-good', 'pw-strong'][this.strengthLevel] : '';
+  }
+
+  togglePasswordVisibility() {
+    this.showPassword = !this.showPassword;
+  }
+
+  toggleConfirmVisibility() {
+    this.showConfirmPassword = !this.showConfirmPassword;
   }
 
   async onSubmit() {

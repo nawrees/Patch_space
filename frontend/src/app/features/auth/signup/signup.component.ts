@@ -21,6 +21,8 @@ export class SignupComponent {
   passwordTouched = false;
   confirmTouched = false;
   phoneTouched = false;
+  showPassword = false;
+  showConfirmPassword = false;
 
   constructor(private auth: AuthService, private router: Router) {}
 
@@ -59,6 +61,14 @@ export class SignupComponent {
   get strengthClass(): string {
     const classes = ['', 'pw-weak', 'pw-fair', 'pw-good', 'pw-strong'];
     return this.password ? classes[this.strengthLevel] : '';
+  }
+
+  togglePasswordVisibility() {
+    this.showPassword = !this.showPassword;
+  }
+
+  toggleConfirmVisibility() {
+    this.showConfirmPassword = !this.showConfirmPassword;
   }
 
   async onSignUp() {

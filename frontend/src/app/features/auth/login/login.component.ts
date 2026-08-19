@@ -22,6 +22,7 @@ export class LoginComponent {
   password = '';
   loading = false;
   error = '';
+  showPassword = false;
 
   failedAttempts = 0;
   isLocked = false;
@@ -39,6 +40,10 @@ export class LoginComponent {
 
   get attemptsLeft(): number {
     return MAX_ATTEMPTS - this.failedAttempts;
+  }
+
+  togglePasswordVisibility() {
+    this.showPassword = !this.showPassword;
   }
 
   async onLogin() {

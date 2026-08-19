@@ -38,14 +38,19 @@
 
           <div class="form-group">
             <label>Password</label>
-            <input
-              type="password"
-              [(ngModel)]="password"
-              name="password"
-              placeholder="••••••••"
-              required
-              autocomplete="current-password"
-            />
+            <div class="pw-field">
+              <input
+                [type]="showPassword ? 'text' : 'password'"
+                [(ngModel)]="password"
+                name="password"
+                placeholder="••••••••"
+                required
+                autocomplete="current-password"
+              />
+              <button type="button" class="pw-toggle" (click)="togglePasswordVisibility()" [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'">
+                <app-icon [name]="showPassword ? 'eye-off' : 'eye'" [size]="18"></app-icon>
+              </button>
+            </div>
           </div>
 
           <!-- Attempt warning -->
