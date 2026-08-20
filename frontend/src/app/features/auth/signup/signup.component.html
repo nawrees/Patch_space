@@ -15,7 +15,10 @@
                 placeholder="John"
                 required
                 autocomplete="given-name"
+                [class.invalid]="firstNameTouched && !firstName.trim()"
+                (blur)="firstNameTouched = true"
               />
+              <span class="field-error" *ngIf="firstNameTouched && !firstName.trim()">Name is required</span>
             </div>
 
             <div class="form-group">
@@ -27,7 +30,10 @@
                 placeholder="Doe"
                 required
                 autocomplete="family-name"
+                [class.invalid]="lastNameTouched && !lastName.trim()"
+                (blur)="lastNameTouched = true"
               />
+              <span class="field-error" *ngIf="lastNameTouched && !lastName.trim()">Last name is required</span>
             </div>
           </div>
 
@@ -40,7 +46,10 @@
               placeholder="your@email.com"
               required
               autocomplete="email"
+              [class.invalid]="emailTouched && !email.trim()"
+              (blur)="emailTouched = true"
             />
+            <span class="field-error" *ngIf="emailTouched && !email.trim()">Email is required</span>
           </div>
 
           <div class="form-group">
@@ -52,9 +61,11 @@
               placeholder="+216 12 345 678"
               required
               autocomplete="tel"
+              [class.invalid]="phoneTouched && (!phone.trim() || !phoneValid)"
               (blur)="phoneTouched = true"
             />
-            <span class="field-error" *ngIf="phoneTouched && phone && !phoneValid">
+            <span class="field-error" *ngIf="phoneTouched && !phone.trim()">Phone number is required</span>
+            <span class="field-error" *ngIf="phoneTouched && phone.trim() && !phoneValid">
               Enter a valid Tunisian number (8 digits, optionally with +216)
             </span>
           </div>
@@ -80,6 +91,7 @@
                 placeholder="••••••••"
                 required
                 autocomplete="new-password"
+                [class.invalid]="passwordTouched && !passwordValid"
                 (blur)="passwordTouched = true"
               />
               <button type="button" class="pw-toggle" (click)="togglePasswordVisibility()" [attr.aria-label]="showPassword ? 'Hide password' : 'Show password'">
@@ -123,13 +135,15 @@
                 placeholder="••••••••"
                 required
                 autocomplete="new-password"
+                [class.invalid]="confirmTouched && (!confirmPassword.trim() || !passwordsMatch)"
                 (blur)="confirmTouched = true"
               />
               <button type="button" class="pw-toggle" (click)="toggleConfirmVisibility()" [attr.aria-label]="showConfirmPassword ? 'Hide password' : 'Show password'">
                 <app-icon [name]="showConfirmPassword ? 'eye-off' : 'eye'" [size]="18"></app-icon>
               </button>
             </div>
-            <span class="pw-mismatch" *ngIf="confirmTouched && confirmPassword && !passwordsMatch">
+            <span class="pw-mismatch" *ngIf="confirmTouched && !confirmPassword.trim()">Confirm your password</span>
+            <span class="pw-mismatch" *ngIf="confirmTouched && confirmPassword.trim() && !passwordsMatch">
               Passwords don't match
             </span>
           </div>

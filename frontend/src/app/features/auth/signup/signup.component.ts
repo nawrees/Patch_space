@@ -21,6 +21,9 @@ export class SignupComponent {
   passwordTouched = false;
   confirmTouched = false;
   phoneTouched = false;
+  firstNameTouched = false;
+  lastNameTouched = false;
+  emailTouched = false;
   showPassword = false;
   showConfirmPassword = false;
 
@@ -72,16 +75,28 @@ export class SignupComponent {
   }
 
   async onSignUp() {
-    this.passwordTouched = true;
-    this.confirmTouched = true;
-    this.phoneTouched = true;
-    if (!this.passwordValid || !this.passwordsMatch || !this.phoneValid) return;
+    const firstName = this.firstName.trim();
+    const lastName = this.lastName.trim();
+    const email = this.email.trim();
+    const phone = this.phone.trim();
+
+    // Validate in field order and stop at the first problem — lighting up
+    // every missing field at once on a first submit attempt is overwhelming,
+    // so only the first one is revealed; fixing it and resubmitting reveals
+    // the next, if any.
+    if (!firstName)          { this.firstNameTouched = true; return; }
+    if (!lastName)           { this.lastNameTouched = true; return; }
+    if (!email)              { this.emailTouched = true; return; }
+    if (!phone)              { this.phoneTouched = true; return; }
+    if (!this.phoneValid)    { this.phoneTouched = true; return; }
+    if (!this.passwordValid) { this.passwordTouched = true; return; }
+    if (!this.passwordsMatch) { this.confirmTouched = true; return; }
 
     this.loading = true;
     this.error = '';
 
     try {
-      await this.auth.signUp(this.email, this.password, this.firstName.trim(), this.lastName.trim(), this.phone.trim(), this.address.trim());
+      await this.auth.signUp(email, this.password, firstName, lastName, phone, this.address.trim());
       this.router.navigate(['/login'], {
         queryParams: { message: 'Check your email to confirm your account' },
       });
