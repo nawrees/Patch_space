@@ -7,6 +7,11 @@
     radial-gradient(circle at 15% 20%, rgba(var(--accent-rgb),.10), transparent 45%),
     var(--bg-page);
   padding: 24px;
+  /* Establishes a stacking context so app-node-background's fixed,
+     z-index:-1 canvas sits behind this page's content without being
+     covered by .app-container's opaque background further up the tree. */
+  position: relative;
+  z-index: 0;
 }
 
 .auth-box {
