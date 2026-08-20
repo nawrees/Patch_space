@@ -21,7 +21,7 @@ import {
 // briefly but silently broke every session for those images (container
 // exits immediately, session goes straight to 'error') — confirmed by
 // running the images directly and reading their entrypoint/init scripts.
-function buildSessionFlag() {
+export function buildSessionFlag() {
   return `FLAG{${crypto.randomBytes(16).toString('hex')}}`;
 }
 

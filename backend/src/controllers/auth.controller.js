@@ -10,7 +10,7 @@ const ALLOWED_AVATAR_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gi
 // Tunisian numbers: 8 digits, optionally prefixed with +216 — same rule as
 // the frontend (core/utils/phone.ts) and the DB trigger
 // (031_validate_tunisian_phone.sql), kept in sync across all three.
-function isValidTunisianPhone(phone) {
+export function isValidTunisianPhone(phone) {
   const trimmed = phone.trim();
   // Reject stray characters (letters, symbols) up front — otherwise
   // something like "21025126hh" would have its letters silently stripped
