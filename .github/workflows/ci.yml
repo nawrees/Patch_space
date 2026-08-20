@@ -122,6 +122,18 @@ jobs:
     steps:
       - run: echo "Stage 1 checks passed"
 
+  # Matching checkpoint for Stage 2, purely so both branches have equal
+  # depth from secret-scan (2 hops to their own checkpoint, 1 more to
+  # ci-passed) instead of backend-test being one hop shorter than Stage 1 —
+  # that depth mismatch was making GitHub's graph draw backend-test's edge
+  # to ci-passed as if it passed through/connected to stage1-complete.
+  stage2-complete:
+    name: "Stage 2 — All Checks Passed"
+    runs-on: ubuntu-latest
+    needs: [backend-test]
+    steps:
+      - run: echo "Stage 2 checks passed"
+
   # Single stable name to require in branch protection instead of listing
   # every job individually (which silently stops blocking merges if one
   # ever gets renamed). Needs if: always() — otherwise this job would just
@@ -133,7 +145,7 @@ jobs:
   ci-passed:
     name: CI passed
     runs-on: ubuntu-latest
-    needs: [stage1-complete, backend-test]
+    needs: [stage1-complete, stage2-complete]
     if: always()
     steps:
       - name: Check all required jobs succeeded
