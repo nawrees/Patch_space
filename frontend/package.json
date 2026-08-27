@@ -28,7 +28,7 @@
     "@angular-devkit/build-angular": "^18.0.0",
     "@angular/cli": "^18.0.0",
     "@angular/compiler-cli": "^18.0.0",
-    "@types/node": "^20.11.0",
+    "@types/node": "^26.3.0",
     "angular-eslint": "21.0.1",
     "eslint": "^9.39.1",
     "typescript": "~5.4.0",
