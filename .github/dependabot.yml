@@ -11,6 +11,31 @@ updates:
     groups:
       minor-and-patch:
         update-types: ["minor", "patch"]
+    ignore:
+      # Angular's own packages must be upgraded together in lockstep via
+      # `ng update` (which also runs migration schematics) — Dependabot
+      # bumping one independently of the others (e.g. @angular/forms to 22
+      # while @angular/core stays on 18) always breaks with an ERESOLVE
+      # peer-dependency conflict. Confirmed repeatedly in practice: every
+      # single CI failure from an open Dependabot PR traced back to one of
+      # these packages. A real Angular major upgrade is a deliberate manual
+      # `ng update` process, not something to automate here.
+      - dependency-name: "@angular/*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@angular-devkit/*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@angular-eslint/*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "angular-eslint"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "typescript-eslint"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
+      # zone.js's versioning tracks Angular's major version directly rather
+      # than independent semver — even a "minor" 0.14.x -> 0.16.x bump
+      # broke Angular 18 in practice. Ignored entirely, not just majors.
+      - dependency-name: "zone.js"
 
   - package-ecosystem: "npm"
     directory: "/backend"
