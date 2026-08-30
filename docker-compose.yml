@@ -23,11 +23,13 @@ services:
       # into the compiled bundle at build time by write-env.mjs. Neither of
       # these is a sensitive secret — SUPABASE_ANON_KEY is designed to be
       # public; RLS is the real security boundary, same as every other
-      # client-side use of it in this app.
+      # client-side use of it in this app. No API_URL arg — nginx proxies
+      # /api to the backend service on the same origin (see
+      # frontend/nginx.conf), so the frontend never needs to know the
+      # deployment's specific host/IP at all.
       args:
         SUPABASE_URL: ${SUPABASE_URL}
         SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY}
-        API_URL: ${API_URL}
     restart: unless-stopped
     ports:
       - "80:80"
