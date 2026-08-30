@@ -1,0 +1,41 @@
+services:
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    ports:
+      - "4000:4000"
+    # Bind-mounts the HOST's Docker socket so the backend can orchestrate
+    # student lab containers as siblings on the same engine — the same
+    # pattern docker.service.js already assumes (it auto-detects
+    # /var/run/docker.sock on Linux). No Docker-in-Docker here.
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    env_file:
+      - .env
+    networks:
+      - patchspace
+
+  frontend:
+    build:
+      context: ./frontend
+      # Real values are read from the root .env file (docker compose
+      # substitutes ${VAR} in this file from .env automatically) and baked
+      # into the compiled bundle at build time by write-env.mjs. Neither of
+      # these is a sensitive secret — SUPABASE_ANON_KEY is designed to be
+      # public; RLS is the real security boundary, same as every other
+      # client-side use of it in this app.
+      args:
+        SUPABASE_URL: ${SUPABASE_URL}
+        SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY}
+        API_URL: ${API_URL}
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - patchspace
+
+networks:
+  patchspace:
+    driver: bridge
