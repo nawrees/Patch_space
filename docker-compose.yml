@@ -4,12 +4,16 @@ services:
     restart: unless-stopped
     ports:
       - "4000:4000"
-    # Bind-mounts the HOST's Docker socket so the backend can orchestrate
-    # student lab containers as siblings on the same engine — the same
-    # pattern docker.service.js already assumes (it auto-detects
-    # /var/run/docker.sock on Linux). No Docker-in-Docker here.
     volumes:
+      # Bind-mounts the HOST's Docker socket so the backend can orchestrate
+      # student lab containers as siblings on the same engine — the same
+      # pattern docker.service.js already assumes (it auto-detects
+      # /var/run/docker.sock on Linux). No Docker-in-Docker here.
       - /var/run/docker.sock:/var/run/docker.sock
+      # Stable host path for the rotating access log (see app.js) — Docker's
+      # own default log location embeds the container ID, which changes on
+      # every deploy, making it useless as a fixed target for Wazuh to watch.
+      - ./backend/logs:/app/logs
     env_file:
       - .env
     networks:
