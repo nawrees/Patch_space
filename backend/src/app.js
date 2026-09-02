@@ -1,7 +1,10 @@
+import fs from 'node:fs';
+import path from 'node:path';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
+import { createStream } from 'rotating-file-stream';
 import { env } from './config/env.js';
 import routes from './routes/index.js';
 import { errorHandler } from './middleware/errorHandler.js';
@@ -21,6 +24,25 @@ app.set('trust proxy', 1);
 app.use(helmet());
 app.use(cors({ origin: env.CORS_ORIGIN, credentials: true }));
 app.use(morgan(env.NODE_ENV === 'production' ? 'combined' : 'dev'));
+
+// Also write access logs to a stable, bind-mounted path (see
+// docker-compose.yml's backend volumes) so Wazuh's FIM/log-collection can
+// point at a fixed host path — Docker's own default json-file log location
+// embeds the container ID, which changes every time the container gets
+// recreated (every deploy), making it useless as a stable watch target.
+// 'combined' format specifically so Wazuh's built-in Apache/web-log
+// decoders parse it with zero custom decoder work.
+if (env.NODE_ENV === 'production') {
+  const logsDir = path.join(process.cwd(), 'logs');
+  fs.mkdirSync(logsDir, { recursive: true });
+  const accessLogStream = createStream('access.log', {
+    interval: '1d',
+    maxFiles: 14,
+    path: logsDir,
+  });
+  app.use(morgan('combined', { stream: accessLogStream }));
+}
+
 app.use(express.json());
 
 app.get('/health', (req, res) => res.json({ status: 'ok' }));
