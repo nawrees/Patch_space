@@ -1,0 +1,37 @@
+name: CD
+
+# Deliberately ONLY triggers on push to main, never pull_request. This
+# workflow runs on a self-hosted runner (the actual home VM) — GitHub
+# explicitly warns against ever running self-hosted-runner jobs from
+# pull_request on a public repo, since a malicious PR could otherwise
+# execute arbitrary code on real, personally-owned hardware. Since main is
+# protected (PR + passing "CI passed" required, no direct pushes allowed —
+# see branch protection), every push this workflow ever sees has already
+# been through the full CI gate before landing here.
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+
+      # .env lives in a stable location independent of wherever this
+      # checkout happens to be (self-hosted runner work directories aren't
+      # as predictable as a fresh hosted-runner checkout) — copied in fresh
+      # each deploy rather than relying on it already being in place here.
+      - name: Stage the real .env
+        run: cp ~/patch-space-secrets/.env .env
+
+      - name: Deploy
+        run: docker compose up --build -d
+
+      - name: Wait for containers to come up
+        run: sleep 5
+
+      - name: Smoke test
+        run: |
+          curl -f http://localhost:4000/health || (echo "Backend health check failed after deploy" && exit 1)
+          curl -f http://localhost/ || (echo "Frontend health check failed after deploy" && exit 1)
