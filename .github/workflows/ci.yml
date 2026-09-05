@@ -204,6 +204,13 @@ jobs:
     name: "Stage 4 — Backend Image Scan"
     runs-on: ubuntu-latest
     needs: ci-passed
+    # security-events: write is required by upload-sarif — the default
+    # GITHUB_TOKEN doesn't grant this on its own; without it the upload
+    # step fails outright with "Resource not accessible by integration"
+    # (confirmed: this is exactly what happened on the first real run).
+    permissions:
+      contents: read
+      security-events: write
     steps:
       - uses: actions/checkout@v4
       - name: Build backend image
@@ -217,7 +224,7 @@ jobs:
           severity: CRITICAL,HIGH
           exit-code: "0"
       - name: Upload results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: trivy-backend.sarif
           category: trivy-backend
@@ -226,6 +233,9 @@ jobs:
     name: "Stage 4 — Frontend Image Scan"
     runs-on: ubuntu-latest
     needs: ci-passed
+    permissions:
+      contents: read
+      security-events: write
     steps:
       - uses: actions/checkout@v4
       - name: Build frontend image
@@ -243,7 +253,7 @@ jobs:
           severity: CRITICAL,HIGH
           exit-code: "0"
       - name: Upload results to GitHub Security tab
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: trivy-frontend.sarif
           category: trivy-frontend
