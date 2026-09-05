@@ -190,3 +190,60 @@ jobs:
           cp src/environments/environment.prod.example.ts src/environments/environment.prod.ts
       - working-directory: frontend
         run: npm run build
+
+  # Stage 4 — scans the actual built Docker images for known CVEs in their
+  # OS-level packages (openssl, libc, etc. baked into node:22-alpine /
+  # nginx:1.27-alpine) — a gap nothing else here covers: Dependabot only
+  # sees npm packages, Wazuh's vulnerability-detection only sees the VM
+  # host's own OS packages, neither looks inside an image's own filesystem.
+  # Deliberately NOT wired into ci-passed / branch protection yet —
+  # exit-code 0 means this only reports (via GitHub's Security tab), never
+  # blocks a merge, until there's been a real baseline to see what these
+  # base images actually contain and decide what severity should gate.
+  backend-image-scan:
+    name: "Stage 4 — Backend Image Scan"
+    runs-on: ubuntu-latest
+    needs: ci-passed
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build backend image
+        run: docker build -t backend-image:scan ./backend
+      - name: Scan with Trivy
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: backend-image:scan
+          format: sarif
+          output: trivy-backend.sarif
+          severity: CRITICAL,HIGH
+          exit-code: "0"
+      - name: Upload results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-backend.sarif
+          category: trivy-backend
+
+  frontend-image-scan:
+    name: "Stage 4 — Frontend Image Scan"
+    runs-on: ubuntu-latest
+    needs: ci-passed
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build frontend image
+        run: |
+          docker build -t frontend-image:scan \
+            --build-arg SUPABASE_URL=https://dummy-test.supabase.co \
+            --build-arg SUPABASE_ANON_KEY=dummy-anon \
+            ./frontend
+      - name: Scan with Trivy
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: frontend-image:scan
+          format: sarif
+          output: trivy-frontend.sarif
+          severity: CRITICAL,HIGH
+          exit-code: "0"
+      - name: Upload results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-frontend.sarif
+          category: trivy-frontend
