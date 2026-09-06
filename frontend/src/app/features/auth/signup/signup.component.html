@@ -148,7 +148,22 @@
             </span>
           </div>
 
-          <button type="submit" [disabled]="loading || !passwordValid || !passwordsMatch">
+          <div class="form-group form-checkbox">
+            <label>
+              <input
+                type="checkbox"
+                [(ngModel)]="acceptedTerms"
+                name="acceptedTerms"
+                (change)="termsTouched = true"
+              />
+              I agree to the Terms of Service and Privacy Policy
+            </label>
+            <span class="field-error" *ngIf="termsTouched && !acceptedTerms">
+              You must accept the terms and conditions to create an account
+            </span>
+          </div>
+
+          <button type="submit" [disabled]="loading || !passwordValid || !passwordsMatch || !acceptedTerms">
             {{ loading ? 'Creating account…' : 'Sign Up' }}
           </button>
         </form>
