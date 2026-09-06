@@ -257,3 +257,27 @@ jobs:
         with:
           sarif_file: trivy-frontend.sarif
           category: trivy-frontend
+
+  # Stage 4 — static analysis of our OWN source (backend/src, backend/tests,
+  # frontend/src) for real code-level bugs, security hotspots, and code
+  # smells. This is a different gap than everything else here: ESLint only
+  # catches style/basic-correctness, Trivy/Dependabot only scan OS packages
+  # and npm dependency versions, nothing else looks for vulnerability
+  # patterns inside the app code we actually write. Deliberately not wired
+  # into ci-passed yet — same reasoning as the image scans: needs a real
+  # baseline first before any quality gate should be allowed to block merges.
+  sonarcloud:
+    name: "Stage 4 — SonarCloud Analysis"
+    runs-on: ubuntu-latest
+    needs: ci-passed
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # SonarCloud's new-code/blame analysis needs real history, not the
+          # default shallow clone.
+          fetch-depth: 0
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarqube-scan-action@v4
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
