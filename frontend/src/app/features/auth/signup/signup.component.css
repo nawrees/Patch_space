@@ -225,6 +225,11 @@ button:disabled { background: var(--bg-hover); color: var(--text-3); cursor: not
   accent-color: var(--accent);
   cursor: pointer;
 }
+.form-checkbox label a {
+  color: var(--accent);
+  text-decoration: none;
+}
+.form-checkbox label a:hover { text-decoration: underline; }
 
 .pw-mismatch, .field-error {
   display: block;

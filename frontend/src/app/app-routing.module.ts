@@ -4,12 +4,16 @@ import { UnauthorizedComponent } from './unauthorized/unauthorized.component';
 import { HomeComponent } from './home/home.component';
 import { AboutComponent } from './about/about.component';
 import { ContactComponent } from './contact/contact.component';
+import { TermsComponent } from './terms/terms.component';
+import { PrivacyComponent } from './privacy/privacy.component';
 import { authGuardFn, studentGuardFn, tutorGuardFn, adminGuardFn } from './core/guards/role.guard';
 
 const routes: Routes = [
   { path: '', component: HomeComponent, pathMatch: 'full' },
   { path: 'about', component: AboutComponent },
   { path: 'contact', component: ContactComponent },
+  { path: 'terms', component: TermsComponent },
+  { path: 'privacy', component: PrivacyComponent },
   { path: '', loadChildren: () => import('./features/auth/auth.module').then(m => m.AuthModule) },
   { path: 'student', canActivate: [studentGuardFn], loadChildren: () => import('./features/student/student.module').then(m => m.StudentModule) },
   { path: 'tutor',   canActivate: [tutorGuardFn],   loadChildren: () => import('./features/tutor/tutor.module').then(m => m.TutorModule) },

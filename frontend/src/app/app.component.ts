@@ -30,7 +30,7 @@ export class AppComponent implements OnInit {
   @ViewChild(NotificationBellComponent) notifBell?: NotificationBellComponent;
 
   // Pages a signed-out visitor is allowed to browse without being bounced to /login.
-  private readonly publicPaths = ['/', '/login', '/signup', '/reset-password', '/about', '/contact'];
+  private readonly publicPaths = ['/', '/login', '/signup', '/reset-password', '/about', '/contact', '/terms', '/privacy'];
   // Of those, the ones an already-logged-in visitor should be sent away from
   // (straight to their dashboard) rather than shown again. "/" is deliberately
   // excluded — clicking the "Patch Space" brand should always show the real

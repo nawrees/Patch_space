@@ -8,9 +8,11 @@ import { UnauthorizedComponent } from './unauthorized/unauthorized.component';
 import { HomeComponent } from './home/home.component';
 import { AboutComponent } from './about/about.component';
 import { ContactComponent } from './contact/contact.component';
+import { TermsComponent } from './terms/terms.component';
+import { PrivacyComponent } from './privacy/privacy.component';
 
 @NgModule({
-  declarations: [AppComponent, UnauthorizedComponent, HomeComponent, AboutComponent, ContactComponent],
+  declarations: [AppComponent, UnauthorizedComponent, HomeComponent, AboutComponent, ContactComponent, TermsComponent, PrivacyComponent],
   imports: [BrowserModule, AppRoutingModule, CoreModule, SharedModule],
   bootstrap: [AppComponent],
 })
