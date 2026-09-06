@@ -26,6 +26,12 @@ RUN npm run build
 
 # Serve stage — just the compiled static output behind nginx.
 FROM nginx:1.27-alpine
+# Trivy flagged CVE-2026-31789 (OpenSSL heap buffer overflow) in the base
+# image's libssl3/libcrypto3 — a fix already exists upstream in Alpine's
+# package repo, just not yet in this nginx image tag. Force-upgrading these
+# two specific packages rather than bumping the whole base image tag keeps
+# this a minimal, targeted fix instead of an unreviewed wider version jump.
+RUN apk update && apk upgrade --no-cache libssl3 libcrypto3
 COPY --from=build /app/dist/elearning-frontend /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 EXPOSE 80
