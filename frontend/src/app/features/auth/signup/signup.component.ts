@@ -26,6 +26,8 @@ export class SignupComponent {
   emailTouched = false;
   showPassword = false;
   showConfirmPassword = false;
+  acceptedTerms = false;
+  termsTouched = false;
 
   constructor(private auth: AuthService, private router: Router) {}
 
@@ -91,6 +93,7 @@ export class SignupComponent {
     if (!this.phoneValid)    { this.phoneTouched = true; return; }
     if (!this.passwordValid) { this.passwordTouched = true; return; }
     if (!this.passwordsMatch) { this.confirmTouched = true; return; }
+    if (!this.acceptedTerms) { this.termsTouched = true; return; }
 
     this.loading = true;
     this.error = '';
