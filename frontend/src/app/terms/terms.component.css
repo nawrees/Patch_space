@@ -1,0 +1,15 @@
+/* Shared public-site shell lives in the global stylesheet. Only the
+   legal-text panel is specific to this page. */
+
+.legal {
+  max-width: 720px;
+  margin: 4vh auto 6vh;
+  padding: 36px 32px;
+}
+.legal h2 { font-size: 1.05rem; color: var(--text-1); margin: 24px 0 10px; }
+.legal h2:first-child { margin-top: 0; }
+.legal p { color: var(--text-2); line-height: 1.65; font-size: 15px; margin: 0 0 12px; }
+.legal ul { color: var(--text-2); line-height: 1.65; font-size: 15px; margin: 0 0 12px; padding-left: 1.3rem; }
+.legal li { margin-bottom: 6px; }
+.legal a { color: var(--accent); text-decoration: none; }
+.legal a:hover { text-decoration: underline; }

@@ -156,7 +156,10 @@
                 name="acceptedTerms"
                 (change)="termsTouched = true"
               />
-              I agree to the Terms of Service and Privacy Policy
+              I agree to the
+              <a routerLink="/terms" target="_blank" (click)="$event.stopPropagation()">Terms of Service</a>
+              and
+              <a routerLink="/privacy" target="_blank" (click)="$event.stopPropagation()">Privacy Policy</a>
             </label>
             <span class="field-error" *ngIf="termsTouched && !acceptedTerms">
               You must accept the terms and conditions to create an account
