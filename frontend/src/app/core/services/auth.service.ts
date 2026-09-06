@@ -12,7 +12,9 @@ export class AuthService {
 
   constructor() {
     this.supabase = createClient(environment.supabaseUrl, environment.supabaseAnonKey);
-    this.initializeSession();
+    // Fire-and-forget from a constructor can't be awaited, so an unhandled
+    // rejection here would otherwise vanish silently instead of surfacing.
+    this.initializeSession().catch((err) => console.error('Failed to initialize session', err));
   }
 
   private async initializeSession() {
