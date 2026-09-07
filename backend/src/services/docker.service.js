@@ -81,6 +81,17 @@ async function ensureLabNetwork() {
   return labNetworkReady;
 }
 
+// Images whose vulnerable endpoint shells out to a tool that needs a raw
+// socket (e.g. the command-injection labs run `ping`, which requires
+// CAP_NET_RAW) - gVisor blocks raw sockets by default, so `ping` just fails
+// and breaks the challenge. Kept on the default runc runtime instead of
+// loosening gVisor's raw-socket restriction platform-wide for every lab.
+const GVISOR_INCOMPATIBLE_IMAGE_SUBSTRINGS = ['cmdinj-'];
+
+function needsRawSockets(dockerImage) {
+  return GVISOR_INCOMPATIBLE_IMAGE_SUBSTRINGS.some((s) => dockerImage.includes(s));
+}
+
 /**
  * Create and start a container for a lab session.
  * Returns { containerId, containerName, assignedPort }.
@@ -98,14 +109,15 @@ export async function startContainer({ dockerImage, cpuLimit, memoryLimitMb, ser
       Memory: memoryLimitMb * 1024 * 1024,
       NanoCpus: Math.round(cpuLimit * 1e9),
       NetworkMode: LAB_NETWORK_NAME,
-      // Runs every lab under gVisor (runsc) instead of the default runc.
-      // Lab images are student-facing and this backend orchestrates them as
-      // sibling containers via a bind-mounted docker.sock — gVisor intercepts
-      // syscalls in userspace, so a container-escape bug in a lab image has a
-      // much smaller kernel attack surface to work with. Requires "runsc" to
-      // already be registered as a Docker runtime on the host (see
-      // /etc/docker/daemon.json) - not something this app can configure itself.
-      Runtime: 'runsc',
+      // Runs lab containers under gVisor (runsc) instead of the default runc.
+      // This backend orchestrates them as sibling containers via a
+      // bind-mounted docker.sock — gVisor intercepts syscalls in userspace,
+      // so a container-escape bug in a lab image has a much smaller kernel
+      // attack surface to work with. Requires "runsc" to already be
+      // registered as a Docker runtime on the host (see
+      // /etc/docker/daemon.json) - not something this app can configure
+      // itself. Skipped for images that need raw sockets (see above).
+      ...(needsRawSockets(dockerImage) ? {} : { Runtime: 'runsc' }),
       // Belt-and-suspenders: even if our own stop/cleanup paths are missed
       // (crash, missed sweep, etc.), Docker itself removes the container
       // the moment it stops for any reason.
