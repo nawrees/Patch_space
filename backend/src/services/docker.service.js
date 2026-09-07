@@ -98,6 +98,14 @@ export async function startContainer({ dockerImage, cpuLimit, memoryLimitMb, ser
       Memory: memoryLimitMb * 1024 * 1024,
       NanoCpus: Math.round(cpuLimit * 1e9),
       NetworkMode: LAB_NETWORK_NAME,
+      // Runs every lab under gVisor (runsc) instead of the default runc.
+      // Lab images are student-facing and this backend orchestrates them as
+      // sibling containers via a bind-mounted docker.sock — gVisor intercepts
+      // syscalls in userspace, so a container-escape bug in a lab image has a
+      // much smaller kernel attack surface to work with. Requires "runsc" to
+      // already be registered as a Docker runtime on the host (see
+      // /etc/docker/daemon.json) - not something this app can configure itself.
+      Runtime: 'runsc',
       // Belt-and-suspenders: even if our own stop/cleanup paths are missed
       // (crash, missed sweep, etc.), Docker itself removes the container
       // the moment it stops for any reason.
