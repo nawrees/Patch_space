@@ -22,7 +22,7 @@ jobs:
       # -ffdx) then fails with EACCES trying to delete them as the
       # unprivileged runner user. Nothing in that directory is source code,
       # so there's no benefit to scrubbing it before checkout anyway.
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           clean: false
 
