@@ -331,13 +331,19 @@ jobs:
       # downloadable report artifact nobody would routinely go re-check -
       # this converts and uploads them to the same Security tab Trivy's
       # findings already live in, so DAST results don't get siloed. Reads
-      # action-baseline's default report_json.json with no config needed.
+      # action-baseline's default report_json.json (confirmed via a real
+      # run - it also produced report_md.md alongside it, same naming
+      # convention). Originally used the SvanBoxel/zaproxy-to-ghas action for
+      # this conversion, but it's been unmaintained since 2021 and broke
+      # against GitHub's current artifact-upload backend - replaced with our
+      # own converter (.github/scripts/zap-json-to-sarif.mjs) so there's
+      # nothing external here to go stale the same way again.
       - name: Convert ZAP results to SARIF
-        uses: SvanBoxel/zaproxy-to-ghas@main
+        run: node .github/scripts/zap-json-to-sarif.mjs report_json.json zap-results.sarif
       - name: Upload results to GitHub Security tab
         uses: github/codeql-action/upload-sarif@v4
         with:
-          sarif_file: results.sarif
+          sarif_file: zap-results.sarif
           category: zap-baseline
       - name: Tear down the stack
         if: always()
