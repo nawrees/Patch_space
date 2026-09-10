@@ -281,3 +281,64 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # Stage 4 — DAST: the only scanner here that actually exercises the app
+  # while it's running, instead of reading source/images statically (that's
+  # SonarCloud's and Trivy's job respectively). Runs against a throwaway
+  # instance built fresh inside this job — never the real deployed app or
+  # real Supabase project — so there's zero risk to production data.
+  # Baseline mode only: passive crawling that inspects real HTTP responses
+  # (missing security headers, information disclosure, etc.) without ever
+  # submitting forms or attempting real exploitation. Deliberately not wired
+  # into ci-passed yet, same reasoning as the other Stage 4 scanners.
+  dast-scan:
+    name: "Stage 4 — DAST Scan (OWASP ZAP)"
+    runs-on: ubuntu-latest
+    needs: ci-passed
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Stage a dummy .env for the throwaway stack
+        run: |
+          cat > .env <<'EOF'
+          SUPABASE_URL=https://dummy-test.supabase.co
+          SUPABASE_ANON_KEY=dummy-anon
+          SUPABASE_SERVICE_ROLE_KEY=dummy-service-role
+          EOF
+      - name: Build and start the stack
+        run: docker compose up --build -d
+      - name: Wait for the frontend to be reachable
+        run: |
+          for i in $(seq 1 30); do
+            curl -sf http://localhost/ > /dev/null && exit 0
+            sleep 2
+          done
+          echo "Frontend never became reachable"
+          docker compose logs
+          exit 1
+      - name: ZAP Baseline Scan
+        uses: zaproxy/action-baseline@v0.15.0
+        with:
+          target: 'http://localhost/'
+          cmd_options: '-a'
+          allow_issue_writing: false
+          fail_action: false
+      # action-baseline has no native SARIF output (confirmed - not a gap in
+      # our setup, upstream just doesn't produce one: zaproxy/action-baseline
+      # issue #63). Without this conversion, ZAP's findings only exist as a
+      # downloadable report artifact nobody would routinely go re-check -
+      # this converts and uploads them to the same Security tab Trivy's
+      # findings already live in, so DAST results don't get siloed. Reads
+      # action-baseline's default report_json.json with no config needed.
+      - name: Convert ZAP results to SARIF
+        uses: SvanBoxel/zaproxy-to-ghas@main
+      - name: Upload results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: results.sarif
+          category: zap-baseline
+      - name: Tear down the stack
+        if: always()
+        run: docker compose down -v
