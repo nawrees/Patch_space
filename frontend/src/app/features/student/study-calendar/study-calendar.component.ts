@@ -4,9 +4,10 @@ import { ApiService } from '../../../core/services/api.service';
 interface DayCell { date: string; count: number; label: string; }
 
 @Component({
-  selector: 'app-study-calendar',
-  templateUrl: './study-calendar.component.html',
-  styleUrls: ['./study-calendar.component.css'],
+    selector: 'app-study-calendar',
+    templateUrl: './study-calendar.component.html',
+    styleUrls: ['./study-calendar.component.css'],
+    standalone: false
 })
 export class StudyCalendarComponent implements OnInit {
   pace: any = null;

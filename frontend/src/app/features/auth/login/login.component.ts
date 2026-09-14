@@ -13,9 +13,10 @@ const MAX_ATTEMPTS = 3;
 // → Rate Limits), which this codebase does not configure.
 
 @Component({
-  selector: 'app-login',
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css'],
+    selector: 'app-login',
+    templateUrl: './login.component.html',
+    styleUrls: ['./login.component.css'],
+    standalone: false
 })
 export class LoginComponent {
   email = '';

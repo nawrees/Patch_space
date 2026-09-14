@@ -2,9 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../../../core/services/api.service';
 
 @Component({
-  selector: 'app-admin-dashboard',
-  templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.css'],
+    selector: 'app-admin-dashboard',
+    templateUrl: './dashboard.component.html',
+    styleUrls: ['./dashboard.component.css'],
+    standalone: false
 })
 export class AdminDashboardComponent implements OnInit {
   activeTab = 'users';

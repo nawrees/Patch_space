@@ -2,9 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../../../core/services/api.service';
 
 @Component({
-  selector: 'app-course-catalog',
-  templateUrl: './catalog.component.html',
-  styleUrls: ['./catalog.component.css'],
+    selector: 'app-course-catalog',
+    templateUrl: './catalog.component.html',
+    styleUrls: ['./catalog.component.css'],
+    standalone: false
 })
 export class CourseCatalogComponent implements OnInit {
   courses: any[] = [];

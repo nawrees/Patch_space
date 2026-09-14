@@ -2,9 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../../../core/services/api.service';
 
 @Component({
-  selector: 'app-saved',
-  templateUrl: './saved.component.html',
-  styleUrls: ['./saved.component.css'],
+    selector: 'app-saved',
+    templateUrl: './saved.component.html',
+    styleUrls: ['./saved.component.css'],
+    standalone: false
 })
 export class SavedComponent implements OnInit {
   saved: any[] = [];

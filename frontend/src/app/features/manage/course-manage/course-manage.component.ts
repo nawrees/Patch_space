@@ -11,9 +11,10 @@ const CATEGORIES = [
 ];
 
 @Component({
-  selector: 'app-course-manage',
-  templateUrl: './course-manage.component.html',
-  styleUrls: ['./course-manage.component.css'],
+    selector: 'app-course-manage',
+    templateUrl: './course-manage.component.html',
+    styleUrls: ['./course-manage.component.css'],
+    standalone: false
 })
 export class CourseManageComponent implements OnInit {
   courses: any[] = [];

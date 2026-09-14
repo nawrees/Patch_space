@@ -3,9 +3,10 @@ import { ApiService } from '../../../core/services/api.service';
 import { UserService } from '../../../core/services/user.service';
 
 @Component({
-  selector: 'app-staff-catalog',
-  templateUrl: './staff-catalog.component.html',
-  styleUrls: ['./staff-catalog.component.css'],
+    selector: 'app-staff-catalog',
+    templateUrl: './staff-catalog.component.html',
+    styleUrls: ['./staff-catalog.component.css'],
+    standalone: false
 })
 export class StaffCatalogComponent implements OnInit {
   courses: any[] = [];

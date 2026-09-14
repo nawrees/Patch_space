@@ -4,9 +4,10 @@ import { ApiService } from '../../../core/services/api.service';
 type LabState = 'checking' | 'idle' | 'provisioning' | 'running' | 'stopped' | 'expired' | 'error';
 
 @Component({
-  selector: 'app-lab',
-  templateUrl: './lab.component.html',
-  styleUrls: ['./lab.component.css'],
+    selector: 'app-lab',
+    templateUrl: './lab.component.html',
+    styleUrls: ['./lab.component.css'],
+    standalone: false
 })
 export class LabComponent implements OnInit, OnDestroy {
   @Input() lab!: any;

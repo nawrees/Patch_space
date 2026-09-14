@@ -4,9 +4,10 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { ApiService } from '../../../core/services/api.service';
 
 @Component({
-  selector: 'app-lesson-detail',
-  templateUrl: './lesson-detail.component.html',
-  styleUrls: ['./lesson-detail.component.css'],
+    selector: 'app-lesson-detail',
+    templateUrl: './lesson-detail.component.html',
+    styleUrls: ['./lesson-detail.component.css'],
+    standalone: false
 })
 export class LessonDetailComponent implements OnInit {
   lesson: any = null;
