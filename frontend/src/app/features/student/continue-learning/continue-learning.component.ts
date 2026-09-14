@@ -3,9 +3,10 @@ import { Router } from '@angular/router';
 import { ApiService } from '../../../core/services/api.service';
 
 @Component({
-  selector: 'app-continue-learning',
-  templateUrl: './continue-learning.component.html',
-  styleUrls: ['./continue-learning.component.css'],
+    selector: 'app-continue-learning',
+    templateUrl: './continue-learning.component.html',
+    styleUrls: ['./continue-learning.component.css'],
+    standalone: false
 })
 export class ContinueLearningComponent implements OnInit {
   item: any = null;

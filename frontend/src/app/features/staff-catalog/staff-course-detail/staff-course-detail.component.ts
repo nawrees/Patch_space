@@ -5,9 +5,10 @@ import { ApiService } from '../../../core/services/api.service';
 import { UserService } from '../../../core/services/user.service';
 
 @Component({
-  selector: 'app-staff-course-detail',
-  templateUrl: './staff-course-detail.component.html',
-  styleUrls: ['./staff-course-detail.component.css'],
+    selector: 'app-staff-course-detail',
+    templateUrl: './staff-course-detail.component.html',
+    styleUrls: ['./staff-course-detail.component.css'],
+    standalone: false
 })
 export class StaffCourseDetailComponent implements OnInit {
   course: any = null;

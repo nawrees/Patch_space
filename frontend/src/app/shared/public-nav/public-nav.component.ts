@@ -8,9 +8,10 @@ import { UserService } from '../../core/services/user.service';
 // renders as just a slim About/Contact sub-nav instead of repeating the
 // brand or offering a redundant dashboard link.
 @Component({
-  selector: 'app-public-nav',
-  templateUrl: './public-nav.component.html',
-  styleUrls: ['./public-nav.component.css'],
+    selector: 'app-public-nav',
+    templateUrl: './public-nav.component.html',
+    styleUrls: ['./public-nav.component.css'],
+    standalone: false
 })
 export class PublicNavComponent {
   @Input() active: 'home' | 'about' | 'contact' | '' = '';

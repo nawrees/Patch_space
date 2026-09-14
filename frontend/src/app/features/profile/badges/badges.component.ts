@@ -20,9 +20,10 @@ export const BADGES: Badge[] = [
 ];
 
 @Component({
-  selector: 'app-badges',
-  templateUrl: './badges.component.html',
-  styleUrls: ['./badges.component.css'],
+    selector: 'app-badges',
+    templateUrl: './badges.component.html',
+    styleUrls: ['./badges.component.css'],
+    standalone: false
 })
 export class BadgesComponent implements OnInit {
   loading = true;

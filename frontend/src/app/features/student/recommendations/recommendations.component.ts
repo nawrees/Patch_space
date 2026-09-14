@@ -3,9 +3,10 @@ import { Router } from '@angular/router';
 import { ApiService } from '../../../core/services/api.service';
 
 @Component({
-  selector: 'app-recommendations',
-  templateUrl: './recommendations.component.html',
-  styleUrls: ['./recommendations.component.css'],
+    selector: 'app-recommendations',
+    templateUrl: './recommendations.component.html',
+    styleUrls: ['./recommendations.component.css'],
+    standalone: false
 })
 export class RecommendationsComponent implements OnInit {
   items: any[] = [];

@@ -36,9 +36,10 @@ const DEFAULT_SETTINGS = {
 };
 
 @Component({
-  selector: 'app-about',
-  templateUrl: './about.component.html',
-  styleUrls: ['./about.component.css'],
+    selector: 'app-about',
+    templateUrl: './about.component.html',
+    styleUrls: ['./about.component.css'],
+    standalone: false
 })
 export class AboutComponent implements OnInit {
   settings: typeof DEFAULT_SETTINGS = DEFAULT_SETTINGS;

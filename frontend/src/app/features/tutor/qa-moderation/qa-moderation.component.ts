@@ -3,9 +3,10 @@ import { ApiService } from '../../../core/services/api.service';
 import { UserService } from '../../../core/services/user.service';
 
 @Component({
-  selector: 'app-qa-moderation',
-  templateUrl: './qa-moderation.component.html',
-  styleUrls: ['./qa-moderation.component.css'],
+    selector: 'app-qa-moderation',
+    templateUrl: './qa-moderation.component.html',
+    styleUrls: ['./qa-moderation.component.css'],
+    standalone: false
 })
 export class QaModerationComponent implements OnInit {
   all: any[] = [];

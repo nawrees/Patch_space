@@ -37,6 +37,13 @@ module.exports = defineConfig([
       // here would mean rewriting ~700 call sites as a side effect of
       // wiring up CI, not catching real issues.
       "@angular-eslint/prefer-inject": "off",
+      // Same reasoning, newly surfaced by the Angular 19 upgrade: ng
+      // update's own migration explicitly set standalone: false on every
+      // existing component to preserve this NgModule architecture — this
+      // rule would immediately flag that exact, deliberate choice as an
+      // error. A full standalone-components migration is a real, separate
+      // undertaking, not something to do as a side effect of a version bump.
+      "@angular-eslint/prefer-standalone": "off",
       "@typescript-eslint/no-explicit-any": "off",
       "@typescript-eslint/consistent-type-definitions": "off",
       "@typescript-eslint/array-type": "off",

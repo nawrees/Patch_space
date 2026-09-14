@@ -5,9 +5,10 @@ import { ApiService } from '../../../core/services/api.service';
 type Panel = 'module' | 'lesson' | 'collaborators' | null;
 
 @Component({
-  selector: 'app-course-content',
-  templateUrl: './course-content.component.html',
-  styleUrls: ['./course-content.component.css'],
+    selector: 'app-course-content',
+    templateUrl: './course-content.component.html',
+    styleUrls: ['./course-content.component.css'],
+    standalone: false
 })
 export class CourseContentComponent implements OnInit {
   course: any = null;
