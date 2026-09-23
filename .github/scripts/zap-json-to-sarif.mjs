@@ -26,6 +26,32 @@ function levelFor(riskcode) {
   }
 }
 
+// alert.reference is often several "<p>url</p>" blocks (sometimes on one
+// line, not newline-separated) - strip tags first, then take the first
+// real URL token, so helpUri is never something like "<p>https://...</p>"
+// or two URLs concatenated together.
+function firstReferenceUri(reference) {
+  const stripped = (reference ?? '').replace(/<[^>]+>/g, ' ');
+  return stripped.split(/\s+/).find(Boolean) || 'https://www.zaproxy.org/';
+}
+
+// GitHub's Code Scanning SARIF ingestion expects artifactLocation.uri to be
+// a relative path resolvable against the checked-out repo (checkout URI
+// scheme "file") - a DAST finding's real location is a runtime URL like
+// "http://localhost/main.js" though, which GitHub rejects outright
+// ("SARIF URI scheme 'http' did not match the checkout URI scheme
+// 'file'"). Stripping the scheme+host down to just the path satisfies that
+// check; it won't resolve to a real committed file, but GitHub tolerates an
+// unresolvable relative path far better than a rejected upload.
+function relativeArtifactUri(rawUri, fallback) {
+  try {
+    const path = new URL(rawUri).pathname.replace(/^\//, '');
+    return path || fallback;
+  } catch {
+    return fallback;
+  }
+}
+
 const rulesById = new Map();
 const results = [];
 
@@ -40,7 +66,7 @@ for (const site of report.site ?? []) {
         shortDescription: { text: alert.alert },
         fullDescription: { text: (alert.desc ?? '').replace(/<[^>]+>/g, '') },
         help: { text: (alert.solution ?? '').replace(/<[^>]+>/g, '') },
-        helpUri: alert.reference?.split('\n').find(Boolean)?.trim() || 'https://www.zaproxy.org/',
+        helpUri: firstReferenceUri(alert.reference),
         properties: { 'security-severity': alert.riskcode, tags: ['security', `cwe-${alert.cweid ?? 'unknown'}`] },
       });
     }
@@ -52,7 +78,7 @@ for (const site of report.site ?? []) {
         message: { text: `${alert.alert}${instance.param ? ` (parameter: ${instance.param})` : ''}` },
         locations: [{
           physicalLocation: {
-            artifactLocation: { uri: instance.uri ?? site['@name'] ?? 'unknown' },
+            artifactLocation: { uri: relativeArtifactUri(instance.uri ?? site['@name'] ?? '', 'index.html') },
           },
         }],
       });
