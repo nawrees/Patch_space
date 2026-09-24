@@ -103,6 +103,34 @@ jobs:
       - working-directory: backend
         run: npm test
 
+  # Matches backend-test's shape rather than relying on the sonarcloud job
+  # to be where a Jest failure surfaces - that job also runs the frontend
+  # test suite (via test:coverage, to produce the lcov file it needs), but
+  # burying the only pass/fail signal for "do the frontend tests pass" a
+  # step into an unrelated job makes failures slower to show up and harder
+  # to attribute. This job is just plain `npm test` (no coverage) for a
+  # fast, clearly-labeled signal; sonarcloud's own coverage run stays as-is.
+  frontend-test:
+    name: "Stage 2 — Frontend Unit Tests"
+    runs-on: ubuntu-latest
+    needs: secret-scan
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - working-directory: frontend
+        run: npm ci
+      - name: Stage placeholder environment files
+        working-directory: frontend
+        run: |
+          cp src/environments/environment.example.ts src/environments/environment.ts
+          cp src/environments/environment.prod.example.ts src/environments/environment.prod.ts
+      - working-directory: frontend
+        run: npm test
+
   migration-check:
     name: "Stage 1 — Migration Check"
     runs-on: ubuntu-latest
@@ -191,7 +219,7 @@ jobs:
   stage2-complete:
     name: "Stage 2 — All Checks Passed"
     runs-on: ubuntu-latest
-    needs: [backend-test]
+    needs: [backend-test, frontend-test]
     steps:
       - run: echo "Stage 2 checks passed"
 
