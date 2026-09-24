@@ -8,7 +8,8 @@
     "start": "node server.js",
     "dev": "nodemon server.js",
     "lint": "eslint .",
-    "test": "node --env-file=.env.test --test"
+    "test": "node --env-file=.env.test --test",
+    "test:coverage": "mkdir -p coverage && node --env-file=.env.test --test --experimental-test-coverage --test-reporter=spec --test-reporter-destination=stdout --test-reporter=lcov --test-reporter-destination=coverage/lcov.info"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.45.4",
