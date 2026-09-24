@@ -4,9 +4,10 @@ import { forkJoin } from 'rxjs';
 import { ApiService } from '../../../core/services/api.service';
 
 @Component({
-  selector: 'app-student-progress',
-  templateUrl: './student-progress.component.html',
-  styleUrls: ['./student-progress.component.css'],
+    selector: 'app-student-progress',
+    templateUrl: './student-progress.component.html',
+    styleUrls: ['./student-progress.component.css'],
+    standalone: false
 })
 export class StudentProgressComponent implements OnInit {
   enrollments: any[] = [];

@@ -4,9 +4,10 @@ import { AuthService } from '../../../core/services/auth.service';
 import { isValidTunisianPhone } from '../../../core/utils/phone';
 
 @Component({
-  selector: 'app-signup',
-  templateUrl: './signup.component.html',
-  styleUrls: ['./signup.component.css'],
+    selector: 'app-signup',
+    templateUrl: './signup.component.html',
+    styleUrls: ['./signup.component.css'],
+    standalone: false
 })
 export class SignupComponent {
   firstName = '';

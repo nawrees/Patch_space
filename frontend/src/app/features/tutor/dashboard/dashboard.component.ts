@@ -5,9 +5,10 @@ import { UserService } from '../../../core/services/user.service';
 type Tab = 'students' | 'analytics' | 'qa';
 
 @Component({
-  selector: 'app-tutor-dashboard',
-  templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.css'],
+    selector: 'app-tutor-dashboard',
+    templateUrl: './dashboard.component.html',
+    styleUrls: ['./dashboard.component.css'],
+    standalone: false
 })
 export class TutorDashboardComponent implements OnInit {
   students: any[] = [];

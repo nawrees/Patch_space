@@ -63,11 +63,11 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "elearning-frontend:build"
+            "buildTarget": "elearning-frontend:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "elearning-frontend:build:production"
+              "buildTarget": "elearning-frontend:build:production"
             }
           }
         },

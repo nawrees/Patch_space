@@ -10,12 +10,13 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
  *         <app-icon name="trophy" [size]="20"></app-icon>
  */
 @Component({
-  selector: 'app-icon',
-  template: `<span class="app-icon" [style.width.px]="size" [style.height.px]="size" [innerHTML]="svg"></span>`,
-  styles: [`
+    selector: 'app-icon',
+    template: `<span class="app-icon" [style.width.px]="size" [style.height.px]="size" [innerHTML]="svg"></span>`,
+    styles: [`
     .app-icon { display: inline-flex; align-items: center; justify-content: center; vertical-align: -0.125em; line-height: 0; }
     .app-icon ::ng-deep svg { width: 100%; height: 100%; display: block; }
   `],
+    standalone: false
 })
 export class IconComponent {
   private _name = '';

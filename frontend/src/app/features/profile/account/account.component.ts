@@ -5,9 +5,10 @@ import { UserService } from '../../../core/services/user.service';
 import { isValidTunisianPhone } from '../../../core/utils/phone';
 
 @Component({
-  selector: 'app-account',
-  templateUrl: './account.component.html',
-  styleUrls: ['./account.component.css'],
+    selector: 'app-account',
+    templateUrl: './account.component.html',
+    styleUrls: ['./account.component.css'],
+    standalone: false
 })
 export class AccountComponent implements OnInit {
   profile: any = null;

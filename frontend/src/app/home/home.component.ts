@@ -21,9 +21,10 @@ const HOLD_MS = 2600;
 const RESTART_PAUSE = 500;
 
 @Component({
-  selector: 'app-home',
-  templateUrl: './home.component.html',
-  styleUrls: ['./home.component.css'],
+    selector: 'app-home',
+    templateUrl: './home.component.html',
+    styleUrls: ['./home.component.css'],
+    standalone: false
 })
 export class HomeComponent implements OnInit, OnDestroy {
   constructor(private user: UserService, private api: ApiService) {}

@@ -13,9 +13,10 @@ const CLICK_NODE_FADE_MS = 900;
 const MAX_CLICK_NODES = 40;
 
 @Component({
-  selector: 'app-node-background',
-  templateUrl: './node-background.component.html',
-  styleUrls: ['./node-background.component.css'],
+    selector: 'app-node-background',
+    templateUrl: './node-background.component.html',
+    styleUrls: ['./node-background.component.css'],
+    standalone: false
 })
 export class NodeBackgroundComponent implements AfterViewInit, OnDestroy {
   @ViewChild('canvas', { static: true }) canvasRef!: ElementRef<HTMLCanvasElement>;

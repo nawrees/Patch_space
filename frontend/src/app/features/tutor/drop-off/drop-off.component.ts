@@ -2,9 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../../../core/services/api.service';
 
 @Component({
-  selector: 'app-drop-off',
-  templateUrl: './drop-off.component.html',
-  styleUrls: ['./drop-off.component.css'],
+    selector: 'app-drop-off',
+    templateUrl: './drop-off.component.html',
+    styleUrls: ['./drop-off.component.css'],
+    standalone: false
 })
 export class DropOffComponent implements OnInit {
   courses: any[] = [];

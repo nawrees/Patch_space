@@ -3,9 +3,10 @@ import { Router } from '@angular/router';
 import { NotificationService } from '../../core/services/notification.service';
 
 @Component({
-  selector: 'app-notification-bell',
-  templateUrl: './notification-bell.component.html',
-  styleUrls: ['./notification-bell.component.css'],
+    selector: 'app-notification-bell',
+    templateUrl: './notification-bell.component.html',
+    styleUrls: ['./notification-bell.component.css'],
+    standalone: false
 })
 export class NotificationBellComponent implements OnInit {
   open = false;

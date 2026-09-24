@@ -4,9 +4,10 @@ import { ApiService } from '../../../core/services/api.service';
 import { UserService } from '../../../core/services/user.service';
 
 @Component({
-  selector: 'app-student-dashboard',
-  templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.css'],
+    selector: 'app-student-dashboard',
+    templateUrl: './dashboard.component.html',
+    styleUrls: ['./dashboard.component.css'],
+    standalone: false
 })
 export class StudentDashboardComponent implements OnInit {
   enrollments: any[] = [];
