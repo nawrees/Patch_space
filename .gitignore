@@ -17,6 +17,9 @@ backend/logs/
 frontend/.angular/
 frontend/dist/
 
+# ── Jest coverage output ────────────────────────────────
+frontend/coverage/
+
 # ── Angular environment files (contain real Supabase keys locally) ──
 # Committed versions are placeholder-only. Fill in your real values
 # locally and never stage these files.
