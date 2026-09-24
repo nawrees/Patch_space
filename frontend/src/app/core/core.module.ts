@@ -5,8 +5,6 @@ import { AuthService } from './services/auth.service';
 import { UserService } from './services/user.service';
 import { ApiService } from './services/api.service';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
-import { authGuard } from './guards/auth.guard';
-import { roleGuard } from './guards/role.guard';
 
 @NgModule({
   imports: [CommonModule, HttpClientModule],
@@ -14,8 +12,6 @@ import { roleGuard } from './guards/role.guard';
     AuthService,
     UserService,
     ApiService,
-    authGuard,
-    roleGuard,
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
   ],
 })
