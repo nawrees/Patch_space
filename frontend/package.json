@@ -31,12 +31,12 @@
     "@angular/compiler-cli": "^19.2.25",
     "@types/jest": "^30.0.0",
     "@types/node": "^20.11.0",
-    "angular-eslint": "21.0.1",
+    "angular-eslint": "21.4.0",
     "eslint": "^9.39.1",
     "jest": "^30.5.2",
     "jest-environment-jsdom": "^30.5.2",
     "jest-preset-angular": "^15.0.2",
-    "typescript": "~5.8.3",
-    "typescript-eslint": "8.46.4"
+    "typescript": "~5.9.3",
+    "typescript-eslint": "8.70.0"
   }
 }
