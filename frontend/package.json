@@ -6,9 +6,10 @@
     "ng": "ng",
     "start": "ng serve --open",
     "build": "ng build",
-    "test": "ng test",
+    "test": "jest",
+    "test:coverage": "jest --coverage",
     "lint": "ng lint",
-    "typecheck": "tsc --noEmit -p tsconfig.json"
+    "typecheck": "tsc --noEmit -p tsconfig.app.json"
   },
   "dependencies": {
     "@angular/animations": "^18.0.0",
@@ -28,10 +29,14 @@
     "@angular-devkit/build-angular": "^18.0.0",
     "@angular/cli": "^18.0.0",
     "@angular/compiler-cli": "^18.0.0",
+    "@types/jest": "^30.0.0",
     "@types/node": "^20.11.0",
     "angular-eslint": "21.0.1",
     "eslint": "^9.39.1",
-    "typescript": "~5.4.0",
+    "jest": "^30.5.2",
+    "jest-environment-jsdom": "^30.5.2",
+    "jest-preset-angular": "^15.0.2",
+    "typescript": "~5.5.0",
     "typescript-eslint": "8.46.4"
   }
 }
