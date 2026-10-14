@@ -27,7 +27,7 @@
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^20.3.37",
-    "@angular/cli": "^20.3.37",
+    "@angular/cli": "^20.3.39",
     "@angular/compiler-cli": "^20.3.32",
     "@types/jest": "^30.0.0",
     "@types/node": "^20.11.0",
