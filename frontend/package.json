@@ -7,7 +7,7 @@
     "start": "ng serve --open",
     "build": "ng build",
     "test": "jest",
-    "test:coverage": "jest --coverage",
+    "test:coverage": "jest --coverage && node scripts/fix-lcov-paths.mjs",
     "lint": "ng lint",
     "typecheck": "tsc --noEmit -p tsconfig.app.json"
   },
