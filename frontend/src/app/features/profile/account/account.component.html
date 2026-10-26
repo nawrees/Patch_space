@@ -72,6 +72,93 @@
         </div>
       </div>
 
+      <!-- Change Password -->
+      <div class="ac-section">
+        <h3 class="ac-section-title">Change Password</h3>
+
+        <div class="ac-form-group">
+          <label>Current Password</label>
+          <div class="pw-field">
+            <input
+              [type]="showCurrentPassword ? 'text' : 'password'"
+              [(ngModel)]="currentPassword"
+              name="currentPassword"
+              placeholder="••••••••"
+              autocomplete="current-password"
+            />
+            <button type="button" class="pw-toggle" (click)="toggleCurrentPasswordVisibility()" [attr.aria-label]="showCurrentPassword ? 'Hide password' : 'Show password'">
+              <app-icon [name]="showCurrentPassword ? 'eye-off' : 'eye'" [size]="18"></app-icon>
+            </button>
+          </div>
+        </div>
+
+        <div class="ac-form-group">
+          <label>New Password</label>
+          <div class="pw-field">
+            <input
+              [type]="showNewPassword ? 'text' : 'password'"
+              [(ngModel)]="newPassword"
+              name="newPassword"
+              placeholder="••••••••"
+              autocomplete="new-password"
+            />
+            <button type="button" class="pw-toggle" (click)="toggleNewPasswordVisibility()" [attr.aria-label]="showNewPassword ? 'Hide password' : 'Show password'">
+              <app-icon [name]="showNewPassword ? 'eye-off' : 'eye'" [size]="18"></app-icon>
+            </button>
+          </div>
+
+          <div class="pw-strength-bar" *ngIf="newPassword">
+            <div class="pw-strength-fill" [ngClass]="strengthClass" [style.width.%]="strengthLevel * 25"></div>
+          </div>
+          <span class="pw-strength-label" *ngIf="newPassword" [ngClass]="strengthClass">{{ strengthLabel }}</span>
+
+          <ul class="pw-requirements" *ngIf="newPassword || pwTouched">
+            <li [class.met]="pwChecks.length">
+              <span>{{ pwChecks.length ? '✓' : '○' }}</span> At least 8 characters
+            </li>
+            <li [class.met]="pwChecks.upper">
+              <span>{{ pwChecks.upper ? '✓' : '○' }}</span> At least 1 uppercase letter (A–Z)
+            </li>
+            <li [class.met]="pwChecks.lower">
+              <span>{{ pwChecks.lower ? '✓' : '○' }}</span> At least 1 lowercase letter (a–z)
+            </li>
+            <li [class.met]="pwChecks.number">
+              <span>{{ pwChecks.number ? '✓' : '○' }}</span> At least 1 number (0–9)
+            </li>
+            <li [class.met]="pwChecks.special">
+              <span>{{ pwChecks.special ? '✓' : '○' }}</span> At least 1 special character (!&#64;#$…)
+            </li>
+          </ul>
+        </div>
+
+        <div class="ac-form-group">
+          <label>Confirm New Password</label>
+          <div class="pw-field">
+            <input
+              [type]="showConfirmNewPassword ? 'text' : 'password'"
+              [(ngModel)]="confirmNewPassword"
+              name="confirmNewPassword"
+              placeholder="••••••••"
+              autocomplete="new-password"
+            />
+            <button type="button" class="pw-toggle" (click)="toggleConfirmNewPasswordVisibility()" [attr.aria-label]="showConfirmNewPassword ? 'Hide password' : 'Show password'">
+              <app-icon [name]="showConfirmNewPassword ? 'eye-off' : 'eye'" [size]="18"></app-icon>
+            </button>
+          </div>
+          <p class="mismatch-warn" *ngIf="confirmNewPassword && !newPasswordsMatch">
+            Passwords do not match
+          </p>
+        </div>
+
+        <p class="ac-success" *ngIf="pwSuccess">✓ Password updated successfully</p>
+        <p class="ac-error" *ngIf="pwError">{{ pwError }}</p>
+        <div class="ac-btn-row">
+          <button class="ac-btn-save" (click)="changePassword()" [disabled]="changingPassword">
+            {{ changingPassword ? 'Updating…' : 'Update Password' }}
+          </button>
+        </div>
+      </div>
+
       <div class="ac-section ac-section-readonly">
         <h3 class="ac-section-title">Account Details</h3>
         <div class="ac-readonly-row">
