@@ -3,14 +3,13 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { UserService } from '../../../core/services/user.service';
 
-const MAX_ATTEMPTS = 3;
-
-// NOTE: this lockout is UI-only friction, not real brute-force protection —
-// signIn() below calls Supabase Auth directly from the browser, so this
-// component's state resets on page refresh and is trivially bypassed by
-// calling the Supabase API directly. The actual enforcement point is
-// Supabase's own project-level Auth rate limits (Dashboard → Authentication
-// → Rate Limits), which this codebase does not configure.
+// Lockout state (3 attempts, 15-minute window) lives server-side in
+// Postgres now — see database/migrations/032_account_lockout.sql — so it
+// survives a page refresh and applies no matter which client hit Supabase
+// Auth. This component just reflects check_login_locked()/
+// record_failed_login()/clear_login_attempts() rather than counting
+// anything itself; the threshold and duration are deliberately not
+// duplicated here.
 
 @Component({
     selector: 'app-login',
@@ -25,13 +24,10 @@ export class LoginComponent {
   error = '';
   showPassword = false;
 
-  failedAttempts = 0;
   isLocked = false;
+  lockedUntil: Date | null = null;
   resetEmailSent = false;
-  // Which email the current failedAttempts count belongs to — switching to a
-  // different email should start that email's own 3 attempts, not inherit
-  // whatever count was racked up trying a different account.
-  private attemptsEmail: string | null = null;
+  lastFailedCount = 0;
 
   constructor(
     private auth: AuthService,
@@ -39,8 +35,14 @@ export class LoginComponent {
     private router: Router
   ) {}
 
+  get lockedMinutesRemaining(): number {
+    if (!this.lockedUntil) return 0;
+    const ms = this.lockedUntil.getTime() - Date.now();
+    return Math.max(1, Math.ceil(ms / 60000));
+  }
+
   get attemptsLeft(): number {
-    return MAX_ATTEMPTS - this.failedAttempts;
+    return Math.max(0, 3 - this.lastFailedCount);
   }
 
   togglePasswordVisibility() {
@@ -48,7 +50,7 @@ export class LoginComponent {
   }
 
   async onLogin() {
-    if (this.isLocked || this.loading) return;
+    if (this.loading) return;
     this.error = '';
 
     // Catch an empty/incomplete form before it ever reaches the real sign-in
@@ -60,15 +62,20 @@ export class LoginComponent {
     }
 
     const normalizedEmail = this.email.trim().toLowerCase();
-    if (this.attemptsEmail !== normalizedEmail) {
-      this.attemptsEmail = normalizedEmail;
-      this.failedAttempts = 0;
-    }
-
     this.loading = true;
+
+    // Ask Postgres first — this is the step that makes the lockout real:
+    // even a freshly refreshed page, with no local state at all, still
+    // reports as locked if the account actually is.
+    const alreadyLocked = await this.checkLocked(normalizedEmail);
+    if (alreadyLocked) {
+      this.loading = false;
+      return;
+    }
 
     try {
       await this.auth.signIn(this.email, this.password);
+      await this.auth.client.rpc('clear_login_attempts', { p_email: normalizedEmail });
       const current = await this.user.fetchCurrentUser();
       const role = current.profile.role;
       if (role === 'admin') this.router.navigate(['/admin']);
@@ -86,13 +93,36 @@ export class LoginComponent {
         return;
       }
 
-      this.failedAttempts++;
-      if (this.failedAttempts >= MAX_ATTEMPTS) {
-        this.isLocked = true;
+      const { data, error: rpcError } = await this.auth.client.rpc('record_failed_login', {
+        p_email: normalizedEmail,
+      });
+      if (!rpcError && data) {
+        this.lastFailedCount = data.failed_count ?? this.lastFailedCount + 1;
+        if (data.locked_until) {
+          this.isLocked = true;
+          this.lockedUntil = new Date(data.locked_until);
+        } else {
+          this.error = err.message || 'Invalid email or password';
+        }
       } else {
+        // The RPC call itself failed (network, etc.) — still show the
+        // underlying auth error rather than silently swallowing it.
         this.error = err.message || 'Invalid email or password';
       }
     }
+  }
+
+  /** Returns true if the account is locked (and sets isLocked/lockedUntil accordingly). */
+  private async checkLocked(normalizedEmail: string): Promise<boolean> {
+    const { data: lockedUntil, error } = await this.auth.client.rpc('check_login_locked', {
+      p_email: normalizedEmail,
+    });
+    if (!error && lockedUntil) {
+      this.isLocked = true;
+      this.lockedUntil = new Date(lockedUntil);
+      return true;
+    }
+    return false;
   }
 
   async onForgotPassword() {
@@ -112,11 +142,21 @@ export class LoginComponent {
     }
   }
 
-  unlockAndRetry() {
-    this.failedAttempts = 0;
-    this.isLocked = false;
+  /**
+   * Re-checks the real lockout status instead of just clearing local state —
+   * if the 15-minute window genuinely hasn't passed yet, this keeps the
+   * lockout screen up instead of handing back a free retry.
+   */
+  async unlockAndRetry() {
+    const normalizedEmail = this.email.trim().toLowerCase();
     this.resetEmailSent = false;
     this.password = '';
     this.error = '';
+
+    const stillLocked = normalizedEmail ? await this.checkLocked(normalizedEmail) : false;
+    if (!stillLocked) {
+      this.isLocked = false;
+      this.lockedUntil = null;
+    }
   }
 }

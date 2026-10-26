@@ -10,17 +10,21 @@
           <h3>Account temporarily locked</h3>
           <ng-container *ngIf="resetEmailSent; else noReset">
             <p>
-              Too many failed attempts. A password reset link has been sent to
-              <strong>{{ email }}</strong>. Check your inbox and follow the link.
+              A password reset link has been sent to
+              <strong>{{ email }}</strong>. Check your inbox and follow the link, or
+              wait {{ lockedMinutesRemaining }} minute{{ lockedMinutesRemaining === 1 ? '' : 's' }} and try again.
             </p>
           </ng-container>
           <ng-template #noReset>
-            <p>Too many failed attempts. Please reset your password.</p>
+            <p>
+              Too many failed attempts. Try again in {{ lockedMinutesRemaining }}
+              minute{{ lockedMinutesRemaining === 1 ? '' : 's' }}, or reset your password now.
+            </p>
           </ng-template>
           <button class="btn-secondary" (click)="onForgotPassword()" *ngIf="!resetEmailSent" [disabled]="loading">
             {{ loading ? 'Sending…' : 'Send reset link' }}
           </button>
-          <a class="auth-retry-link" (click)="unlockAndRetry()">Try again with different credentials</a>
+          <a class="auth-retry-link" (click)="unlockAndRetry()">Check again</a>
         </div>
 
         <!-- ── Normal form ──────────────────────────────────── -->
@@ -55,7 +59,7 @@
           </div>
 
           <!-- Attempt warning -->
-          <div *ngIf="failedAttempts > 0" class="attempts-warn">
+          <div *ngIf="lastFailedCount > 0" class="attempts-warn">
             <app-icon name="alert-triangle" [size]="14"></app-icon> {{ attemptsLeft }} attempt{{ attemptsLeft === 1 ? '' : 's' }} remaining before lockout
           </div>
 
