@@ -61,6 +61,49 @@ textarea { resize: vertical; }
 
 .ac-char-count { font-family: var(--font-mono); font-size: 11px; color: var(--text-3); text-align: right; }
 
+/* Change Password */
+.pw-field { position: relative; }
+.pw-field input { padding-right: 2.6rem; }
+.pw-toggle {
+  position: absolute;
+  top: 50%;
+  right: 0.55rem;
+  transform: translateY(-50%);
+  width: auto;
+  margin: 0;
+  padding: 4px;
+  background: none;
+  border: none;
+  color: var(--text-3);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  transition: color .15s;
+}
+.pw-toggle:hover { color: var(--text-1); background: none; }
+
+.mismatch-warn { color: var(--sig-critical-fg); font-size: 12px; margin: 4px 0 0; }
+
+.pw-strength-bar { height: 4px; background: var(--bg-skeleton); border-radius: 2px; margin-top: 8px; overflow: hidden; }
+.pw-strength-fill { height: 100%; border-radius: 2px; transition: width .3s, background .3s; }
+.pw-strength-fill.pw-weak   { background: var(--sig-critical-fg); }
+.pw-strength-fill.pw-fair   { background: var(--sig-high-fg); }
+.pw-strength-fill.pw-good   { background: var(--sig-medium-fg); }
+.pw-strength-fill.pw-strong { background: var(--sig-low-fg); }
+
+.pw-strength-label { font-family: var(--font-mono); font-size: 10.5px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; margin-top: 4px; display: block; }
+.pw-strength-label.pw-weak   { color: var(--sig-critical-fg); }
+.pw-strength-label.pw-fair   { color: var(--sig-high-fg); }
+.pw-strength-label.pw-good   { color: var(--sig-medium-fg); }
+.pw-strength-label.pw-strong { color: var(--sig-low-fg); }
+
+.pw-requirements { list-style: none; padding: 8px 0 0; margin: 0; display: flex; flex-direction: column; gap: 4px; }
+.pw-requirements li { font-size: 12px; color: var(--text-3); display: flex; align-items: center; gap: 6px; transition: color .2s; }
+.pw-requirements li.met { color: var(--sig-low-fg); }
+.pw-requirements li span { font-size: 13px; width: 14px; text-align: center; }
+
 /* Read-only section */
 .ac-section-readonly { background: var(--bg-hover); }
 .ac-readonly-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }

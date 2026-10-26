@@ -44,11 +44,11 @@ export class ResetPasswordComponent {
   }
 
   get strengthLabel(): string {
-    return this.newPassword ? ['', 'Weak', 'Fair', 'Good', 'Strong'][this.strengthLevel] : '';
+    return this.newPassword ? ['', 'Weak', 'Fair', 'Good', 'Strong', 'Strong'][this.strengthLevel] : '';
   }
 
   get strengthClass(): string {
-    return this.newPassword ? ['', 'pw-weak', 'pw-fair', 'pw-good', 'pw-strong'][this.strengthLevel] : '';
+    return this.newPassword ? ['', 'pw-weak', 'pw-fair', 'pw-good', 'pw-strong', 'pw-strong'][this.strengthLevel] : '';
   }
 
   togglePasswordVisibility() {
