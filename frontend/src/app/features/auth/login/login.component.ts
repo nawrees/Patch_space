@@ -78,9 +78,9 @@ export class LoginComponent {
       await this.auth.client.rpc('clear_login_attempts', { p_email: normalizedEmail });
       const current = await this.user.fetchCurrentUser();
       const role = current.profile.role;
-      if (role === 'admin') this.router.navigate(['/admin']);
-      else if (role === 'tutor') this.router.navigate(['/tutor']);
-      else this.router.navigate(['/student']);
+      if (role === 'admin') await this.router.navigate(['/admin']);
+      else if (role === 'tutor') await this.router.navigate(['/tutor']);
+      else await this.router.navigate(['/student']);
     } catch (err: any) {
       this.loading = false;
 
